@@ -1,0 +1,23 @@
+# ide
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.project
+.classpath
+
+# secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+application-local.properties
+application-local.yml
+
+# logs
+*.log
+logs/
+tmp/

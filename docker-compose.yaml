@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: furnimi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: furnimi
+      POSTGRES_PASSWORD: furnimi
+      POSTGRES_DB: furnimi
+    ports:
+      - "5432:5432"
+    volumes:
+      - furnimi-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U furnimi -d furnimi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  furnimi-db-data:
