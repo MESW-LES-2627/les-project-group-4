@@ -1,14 +1,23 @@
-# RoomPlanner
+# FurniMi
 
-2D room forniture planner: user inputs room's dimensions, explores a furniture cathalog and sees final result before buying.
+A 2D room planner that helps people furnish a space before buying.
 
-**LES — First Class 2026/27** · FEUP
+You enter your room's dimensions and budget. FurniMi shows furniture that fits, where it's from, and how much it costs on a top-down plan you can
+drag around.
+
+**LES - TEAM D** · FEUP - 2026/27
+
+- Nicolas Adedoyin Ishola - up202401558@up.pt
+- Francisca Vilares Portugal - up202303640@up.pt
+- Francisco Tavares Ventura Barros Nunes - up201908253@up.pt
+- João Francisco Costa Cordeiro - up202205682@up.pt
+
 
 ## Stack
 
 - Backend: Spring Boot 3 (Java 21)
 - BD: PostgreSQL (dev: Docker)
-- Frontend: React + Vite (to be confirmed)
+- Frontend: React + Vite
 - 2D Blueprint: SVG
 - LLM: backend, optional
 
