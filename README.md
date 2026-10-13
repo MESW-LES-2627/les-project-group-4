@@ -37,3 +37,6 @@ drag around.
 - [MVP](docs/iterations/0/mvp.md)
 - [Stories](docs/iterations/0/stories.md)
 - [CLAIM Iter 0](docs/iterations/0/CLAIM.md)
+- [AI Log](docs/iterations/0/ai-log.md)
+- [Retro](docs/iterations/0/retro.md)
+-  
