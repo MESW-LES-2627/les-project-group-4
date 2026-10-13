@@ -1,14 +1,9 @@
 # FurniMi - Vision
 
-FurniMi lets anyone furnish a space with confidence before spending a cent.
+A world where furnishing a room never ends in: "it doesn't fit" or "I spent too much".
+FurniMi lets anyone plan a space before buying; real dimensions, real prices, real 
+stores nearby, and a 2D plan you can drag around until it feels right.
 
-Describe your room, where you live and your budget; FurniMi shows real furniture that fits, where to buy it, lets you arrange it on a to-scale plan, warns you about clashes and over-spending, and remembers every layout you try.
-
-# Future Plan
-
-Over time FurniMi, could grow into:
-
-- 3D augmented-reality previewsof a layout
-- nearby stores with stock and distance
-- an assistant that turns "cosy Nordic bedroom with a specified budget into a starting layout.
-- Assembling furniture with well detailed diagrams and guide.
+In the long run, FurniMi grows into a full planning assistant 3D room customization,
+collaborative, and smart enough to suggest layouts from a sentence. But the MVP is honest:
+a small catalog, a 2D plan, and persistence you can trust.
