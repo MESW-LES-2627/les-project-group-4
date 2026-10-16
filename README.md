@@ -35,6 +35,7 @@ drag around.
 
 - [Vision](docs/iterations/0/vision.md)
 - [MVP](docs/iterations/0/mvp.md)
+- [Definition of Done](docs/iterations/0/dod.md)
 - [Stories](docs/iterations/0/stories.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
 - [AI Log](docs/iterations/0/ai-log.md)
