@@ -23,8 +23,18 @@ drag around.
 
 ## How to run
 
-> TBD.
+### Backend
 
+Requires Docker and Java 21.
+
+```bash
+# 1. Start the database
+docker compose up -d
+
+# 2. Run the backend
+cd backend
+./mvnw spring-boot:run
+```
 ## Structure
 
 - backend/ Spring Boot app
