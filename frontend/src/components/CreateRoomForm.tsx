@@ -1,5 +1,8 @@
+import { useState } from 'react'
+
 import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
+import { CreateRoomSuccess } from '@/components/CreateRoomSuccess'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -9,9 +12,31 @@ import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
 
 export function CreateRoomForm() {
   const form = useRoomForm()
-  const { isSubmitting, submitError, submit } = useCreateRoom({
+  const {
+    isSubmitting,
+    submitError,
+    createdRoom,
+    submit,
+    reset: resetCreateRoom,
+  } = useCreateRoom({
     onFieldErrors: form.applyServerErrors,
   })
+  const [focusNameOnMount, setFocusNameOnMount] = useState(false)
+
+  function handleCreateAnother() {
+    setFocusNameOnMount(true)
+    form.reset()
+    resetCreateRoom()
+  }
+
+  if (createdRoom !== null) {
+    return (
+      <CreateRoomSuccess
+        room={createdRoom}
+        onCreateAnother={handleCreateAnother}
+      />
+    )
+  }
 
   return (
     <form
@@ -27,6 +52,7 @@ export function CreateRoomForm() {
         maxLength={NAME_MAX_LENGTH}
         autoComplete="off"
         spellCheck={false}
+        autoFocus={focusNameOnMount}
         required
       />
 
