@@ -59,7 +59,7 @@ export function validateDimension(
     return `${label} is required`;
   }
   if (!WHOLE_NUMBER_PATTERN.test(dimension)) {
-    return `${label} must be a whole number of centimetres`;
+    return `${label} must be a positive whole number`;
   }
 
   const centimetres = Number(dimension);
