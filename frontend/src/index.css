@@ -1,25 +1,129 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --color-success: var(--success);
+    --color-brand: var(--brand);
+    --color-brand-soft: var(--brand-soft);
+    --color-brand-ink: var(--brand-ink);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius-input);
+    --radius-xl: var(--radius-card);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
 :root {
-  --text: #4b5563;
-  --text-strong: #111827;
-  --bg: #ffffff;
-  --border: #e5e7eb;
+    color-scheme: light;
 
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+    /* FurniMi design tokens (raw values) */
+    --paper: #FAF8F5;
+    --surface: #FFFFFF;
+    --surface-2: #F4F0EA;
+    --line: #E7E1D8;
+    --line-strong: #D8D0C4;
+    --ink: #2A2622;
+    --muted-fg: #6F6860;
+    --brand: #B4552D;
+    --brand-hover: #9E4823;
+    --brand-ink: #FFFFFF;
+    --brand-soft: #F6E9E1;
+    --danger: #B3261E;
+    --danger-bg: #FBEDEB;
+    --danger-line: #EEC9C4;
+    --success: #3F6B45;
+    --success-soft: #E7F0E6;
+    --radius-input: 10px;
+    --radius-card: 12px;
+
+    /* shadcn/ui variables mapped to FurniMi tokens */
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --primary: var(--brand);
+    --primary-foreground: var(--brand-ink);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--muted-fg);
+    --accent: var(--brand-soft);
+    --accent-foreground: var(--brand);
+    --destructive: var(--danger);
+    --border: var(--line);
+    --input: var(--line-strong);
+    --ring: var(--brand);
+    --chart-1: var(--brand);
+    --chart-2: var(--brand-soft);
+    --chart-3: var(--muted-fg);
+    --chart-4: var(--line-strong);
+    --chart-5: var(--success);
+    --radius: var(--radius-input);
+    --sidebar: var(--surface-2);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: var(--brand-ink);
+    --sidebar-accent: var(--brand-soft);
+    --sidebar-accent-foreground: var(--brand);
+    --sidebar-border: var(--line);
+    --sidebar-ring: var(--brand);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #d1d5db;
-    --text-strong: #f9fafb;
-    --bg: #111827;
-    --border: #374151;
-  }
-}
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
 
-body {
-  margin: 0;
+    html {
+        @apply font-sans;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        margin: 0;
+        min-height: 100%;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
 }
