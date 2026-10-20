@@ -1,20 +1,23 @@
+import { LoaderCircle, TriangleAlert } from 'lucide-react'
+
 import { TextField } from '@/components/form/TextField'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { useCreateRoom } from '@/hooks/useCreateRoom'
 import { useRoomForm } from '@/hooks/useRoomForm'
 import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
 
 export function CreateRoomForm() {
   const form = useRoomForm()
-
-  function handleValid() {
-    // later on wire this submit to the API
-  }
+  const { isSubmitting, submitError, submit } = useCreateRoom({
+    onFieldErrors: form.applyServerErrors,
+  })
 
   return (
     <form
       className="grid gap-3"
       noValidate
-      onSubmit={form.handleSubmit(handleValid)}
+      onSubmit={form.handleSubmit(submit)}
     >
       <TextField
         {...form.getFieldProps('name')}
@@ -48,10 +51,29 @@ export function CreateRoomForm() {
         />
       </div>
 
-      {/* Activated even when invalid: validation reveals what needs fixing. */}
-      <Button type="submit" className="h-11 w-full px-6 text-[15px] sm:w-auto">
-        Create room
+      <Button
+        type="submit"
+        aria-busy={isSubmitting}
+        className="h-11 w-full px-6 text-[15px] sm:w-auto"
+      >
+        {isSubmitting ? (
+          <>
+            <LoaderCircle className="animate-spin" aria-hidden="true" />
+            Creating…
+          </>
+        ) : (
+          'Create room'
+        )}
       </Button>
+
+      {/* Kept below the button so submission errors do not shift the form. */}
+      {submitError !== null ? (
+        <Alert variant="destructive">
+          <TriangleAlert aria-hidden="true" />
+          <AlertTitle>Could not create room</AlertTitle>
+          <AlertDescription>{submitError}</AlertDescription>
+        </Alert>
+      ) : null}
     </form>
   )
 }

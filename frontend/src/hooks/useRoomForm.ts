@@ -101,7 +101,15 @@ export function useRoomForm() {
   }
 
   function applyServerErrors(nextErrors: RoomFormErrors) {
+    setSubmitted(true)
     setServerErrors(nextErrors)
+
+    const firstInvalid = FIELD_ORDER.find(
+      (field) => nextErrors[field] !== undefined,
+    )
+    if (firstInvalid !== undefined) {
+      focusField(firstInvalid)
+    }
   }
 
   function reset() {
