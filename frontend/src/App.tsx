@@ -1,20 +1,11 @@
-import './App.css'
+import { AppHeader } from '@/components/layout/AppHeader'
+import { CreateRoomPage } from '@/pages/CreateRoomPage'
 
 function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1 className="app-title">FurniMi</h1>
-        <p className="app-tagline">Plan your room before you buy.</p>
-      </header>
-
-      <main className="app-main">
-        <section className="panel" aria-labelledby="create-room-heading">
-          <h2 id="create-room-heading">Create a room</h2>
-          {/* ISS-5 replaces this placeholder with <CreateRoomForm /> */}
-          <p className="placeholder">The create-room form will appear here.</p>
-        </section>
-      </main>
+    <div className="flex min-h-screen flex-col bg-background">
+      <AppHeader />
+      <CreateRoomPage />
     </div>
   )
 }
