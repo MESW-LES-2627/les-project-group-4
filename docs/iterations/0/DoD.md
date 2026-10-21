@@ -14,8 +14,8 @@ Nothing here replaces the acceptance criteria of a story; it is what applies _on
 
 2. **It matches the story.** The acceptance criteria of the issue are met and the change traces to an MVP outcome (O1–O4).
 
-3. **Green locally.** `./mvnw test`, `npm run build`, and `npx oxlint` all pass, and the backend boots with `ddl-auto=validate` (the entity matches
-   the Flyway schema).
+3. **Green locally.** `npm run lint`, `npm run build`, and `npm test` all pass, and the Prisma migrations apply cleanly to a fresh database
+   (`npx prisma migrate deploy`).
 
 4. **It is in history.** Merged to `main` via a reviewed PR.
 
@@ -24,8 +24,8 @@ Nothing here replaces the acceptance criteria of a story; it is what applies _on
 
 ## Per iteration (tagged increment)
 
-1. **It runs from the tag.** From a clean clone following only `README.md`: `docker compose up -d db`, run the backend, run the frontend — from the
-   `iter-N` tag, not only on one laptop.
+1. **It runs from the tag.** From a clean clone following only `README.md`: `npm install`, then `npm run dev` — from the `iter-N` tag, not only on
+   one laptop.
 
 2. **A non-author ran the walkthrough.** The end-to-end flow was run by someone who did not write that code.
 
