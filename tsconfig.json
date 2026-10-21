@@ -17,10 +17,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    /* Linting */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
