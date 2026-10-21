@@ -14,8 +14,15 @@
 !.env.example
 *.key
 *.pem
-application-local.properties
-application-local.yml
+
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
 
 # logs
 *.log
