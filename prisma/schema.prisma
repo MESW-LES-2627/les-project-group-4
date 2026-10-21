@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// The connection URL lives in prisma.config.ts.
+datasource db {
+  provider = "postgresql"
+}
+
+model Room {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  widthCm  Int    @map("width_cm")
+  lengthCm Int    @map("length_cm")
+
+  @@map("room")
+}
+
+model Item {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  category String?  @db.VarChar(100)
+  widthCm  Int?     @map("width_cm")
+  depthCm  Int?     @map("depth_cm")
+  priceEur Decimal? @map("price_eur") @db.Decimal(10, 2)
+
+  @@map("item")
+}
