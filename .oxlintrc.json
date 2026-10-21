@@ -1,13 +1,13 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "typescript", "oxc", "nextjs"],
   "rules": {
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
   },
   "overrides": [
     {
-      "files": ["src/components/ui/**/*.tsx"],
+      "files": ["src/components/ui/**/*.tsx", "src/app/**/*.tsx"],
       "rules": {
         "react/only-export-components": "off"
       }

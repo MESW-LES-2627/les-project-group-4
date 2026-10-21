@@ -6,19 +6,15 @@ import type {
   ValidationErrorBody,
 } from './types'
 
-// Empty by default, so requests go to the same origin ("/api/...") and the
-// Vite dev proxy forwards them to the backend. Set VITE_API_BASE_URL to call
-// a backend on another host (for example a staging server).
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
-
+// The API is served by the same Next.js app, so requests use relative paths ("/api/...").
 const NETWORK_ERROR_MESSAGE =
-  'Could not reach the server. Check that the backend is running.'
+  'Could not reach the server. Check that the app is running.'
 
 /** Sends a JSON request and turns any outcome into an ApiResult. */
 async function request<T>(path: string, init: RequestInit): Promise<ApiResult<T>> {
   let response: Response
   try {
-    response = await fetch(`${BASE_URL}${path}`, {
+    response = await fetch(path, {
       ...init,
       headers: {
         'Content-Type': 'application/json',
@@ -26,7 +22,7 @@ async function request<T>(path: string, init: RequestInit): Promise<ApiResult<T>
       },
     })
   } catch {
-    // fetch only rejects when no HTTP response arrived at all (offline, DNS, CORS).
+    // fetch only rejects when no HTTP response arrived at all (offline, DNS).
     return { ok: false, error: { status: 0, message: NETWORK_ERROR_MESSAGE, fieldErrors: {} } }
   }
 
@@ -72,7 +68,6 @@ function toApiError(status: number, body: unknown): ApiError {
   if (status === 400) {
     message = 'Some fields are invalid. Please correct them and try again.'
   } else if (status >= 500) {
-    // The Vite proxy also answers 5xx when the backend is down.
     message = 'The server is unavailable right now. Please try again later.'
   } else {
     message = `Unexpected response from the server (HTTP ${status}).`

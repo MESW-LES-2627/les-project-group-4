@@ -1,7 +1,7 @@
 // Types for the FurniMi REST API.
 // This file is the frontend's single source of truth for the API shape.
 // Field names must stay identical to the frozen contract in the epic
-// (backend: CreateRoomRequest.java and RoomResponse.java).
+// (served by the route handlers under src/app/api).
 
 /** Body sent to POST /api/rooms. */
 export interface CreateRoomRequest {
@@ -18,7 +18,7 @@ export interface Room {
   lengthCm: number
 }
 
-/** Body returned by the backend with 400 Bad Request. */
+/** Body returned by the API with 400 Bad Request. */
 export interface ValidationErrorBody {
   errors: Record<string, string>
 }
