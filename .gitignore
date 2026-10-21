@@ -24,6 +24,9 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
+# prisma client (generated on npm install)
+src/generated/
+
 # logs
 *.log
 logs/
