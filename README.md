@@ -36,6 +36,7 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 | Command              | What it does                                         |
 |----------------------|------------------------------------------------------|
 | `npm run lint`       | Lints with oxlint                                    |
+| `npm run typecheck`  | Type-checks without emitting                         |
 | `npm run build`      | Production build (also type-checks)                  |
 | `npm run db:migrate` | Creates a migration after changing `prisma/schema.prisma` |
 | `npm run db:down`    | Stops the database                                   |
