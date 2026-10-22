@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 justify-center px-4 py-8 sm:px-8 sm:py-12">
-      <section className="w-full max-w-lg" aria-labelledby="create-room-heading">
+    <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
+      <section
+        className="m-auto w-full max-w-lg"
+        aria-labelledby="create-room-heading"
+      >
         <Card className="gap-0 py-6">
           <CardHeader className="gap-2 px-6 pb-5">
             <h1
