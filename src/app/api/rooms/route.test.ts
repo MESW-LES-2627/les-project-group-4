@@ -24,6 +24,7 @@ function postRequest(body: unknown): Request {
 
 beforeEach(() => {
   createRoom.mockReset()
+  vi.restoreAllMocks() // undo any vi.spyOn from the previous test (e.g. console.error)
 })
 
 describe('POST /api/rooms', () => {
@@ -55,6 +56,9 @@ describe('POST /api/rooms', () => {
   })
 
   it('returns 500 without leaking the error when the database throws', async () => {
+    // The route logs the real error on the server; catch that log so it is not
+    // printed during the test run (it looks like a failure, but it is expected).
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     createRoom.mockRejectedValue(new Error('connection refused'))
 
     const response = await POST(postRequest(validBody))
@@ -63,6 +67,7 @@ describe('POST /api/rooms', () => {
     expect(response.status).toBe(500)
     expect(text).not.toContain('connection refused')
     expect(text).not.toMatch(/\bat \S+:\d+:\d+/) // no stack-trace lines
+    expect(consoleError).toHaveBeenCalled() // the details were logged on the server
   })
 })
 
