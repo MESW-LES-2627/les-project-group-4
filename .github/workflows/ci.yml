@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+# A new push to the same PR/branch cancels the run that is already in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  # Documentation-only changes (README, docs/, *.md) do not need the expensive jobs.
+  changes:
+    name: Detect changed files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history so the diff against the base branch works.
+          fetch-depth: 0
+      - name: Decide whether the code jobs are needed
+        id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            range="origin/${BASE_REF}...HEAD"
+          elif git rev-parse --verify --quiet "${BEFORE_SHA}^{commit}" > /dev/null; then
+            range="${BEFORE_SHA}...HEAD"
+          else
+            # First push on a branch, or a force push, has no usable "before" commit.
+            range="HEAD~1...HEAD"
+          fi
+
+          changed="$(git diff --name-only "$range")"
+          printf 'Changed files:\n%s\n' "${changed:-<none>}"
+
+          if [ -z "$changed" ] || printf '%s\n' "$changed" | grep -Ev '^(docs/|LICENSE)|\.md$' > /dev/null; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Documentation-only change: skipping lint, typecheck, build and database jobs."
+          fi
+
+  quality:
+    name: Lint, typecheck and build
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      # Tests land with a separate change. Until package.json has a "test" script,
+      # this step is skipped instead of failing; once it exists, it runs every time.
+      - name: Check for a test script
+        id: test
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.test ? 0 : 1)"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No \"test\" script in package.json yet, skipping tests."
+          fi
+      - name: Test
+        if: steps.test.outputs.exists == 'true'
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  database:
+    name: Migrations on a fresh database
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: furnimi
+          POSTGRES_PASSWORD: furnimi
+          POSTGRES_DB: furnimi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U furnimi -d furnimi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://furnimi:furnimi@localhost:5432/furnimi
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate the Prisma schema
+        run: npx prisma validate
+      # Applies every migration to an empty database, the same way the app does on
+      # start-up. This is the "migrations apply cleanly from scratch" part of the DoD.
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+      # Exit code 2 means the database no longer matches prisma/schema.prisma, i.e.
+      # the schema was edited without a matching migration.
+      - name: Check that migrations match the schema
+        run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+
+  # Single required check for branch protection. It passes when the jobs above pass
+  # or are deliberately skipped (documentation-only changes).
+  ci:
+    name: CI
+    if: always()
+    needs: [changes, quality, database]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check job results
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          QUALITY: ${{ needs.quality.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          for result in "$CHANGES" "$QUALITY" "$DATABASE"; do
+            case "$result" in
+              success|skipped) ;;
+              *)
+                echo "::error::A required job did not succeed (result: $result)."
+                exit 1
+                ;;
+            esac
+          done
