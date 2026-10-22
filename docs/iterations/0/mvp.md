@@ -13,8 +13,15 @@ explicitly to Vision.
 
 ## Who it's for?
 
-Someone moving into a new room, or rearranging an existing one, who
-wants to know what fits and how much it costs before buying.
+Someone moving into a new home, or rearranging a room they already
+have, who wants to know **what fits** and **what it will cost** before
+buying anything.
+
+Today they juggle a tape measure, store websites and guesswork, and
+only find out at delivery that the sofa blocks the door or that the
+room went over budget. FurniMi puts real dimensions and real prices in
+one plan.
+
 
 ## MVP Outcomes
 
