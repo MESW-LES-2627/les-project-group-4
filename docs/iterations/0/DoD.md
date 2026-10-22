@@ -17,7 +17,7 @@ Nothing here replaces the acceptance criteria of a story; it is what applies _on
 3. **Green locally.** `npm run lint`, `npm run build`, and `npm test` all pass, and the Prisma migrations apply cleanly to a fresh database
    (`npx prisma migrate deploy`).
 
-4. **It is in history.** Merged to `main` via a reviewed PR.
+4. **It is in history.** Merged to `develop` via a reviewed PR (and to `main` at the end of the iteration).
 
 5. **Team-done.** Any teammate could pull the change and reproduce it without the author present. If only the author can open it, it is not
    team-done.
