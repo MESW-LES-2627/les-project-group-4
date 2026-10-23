@@ -75,19 +75,7 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
-      # Tests land with a separate change. Until package.json has a "test" script,
-      # this step is skipped instead of failing; once it exists, it runs every time.
-      - name: Check for a test script
-        id: test
-        run: |
-          if node -e "process.exit(require('./package.json').scripts?.test ? 0 : 1)"; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No \"test\" script in package.json yet, skipping tests."
-          fi
       - name: Test
-        if: steps.test.outputs.exists == 'true'
         run: npm test
       - name: Build
         run: npm run build

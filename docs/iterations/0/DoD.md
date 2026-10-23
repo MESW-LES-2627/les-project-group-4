@@ -12,7 +12,7 @@ Nothing here replaces the acceptance criteria of a story; it is what applies _on
 1. **Code is written and peer reviewed.** At least one other team member has read the change and approved it. A PR from a single author with no
    review is not done, no matter how small.
 
-2. **It matches the story.** The acceptance criteria of the issue are met and the change traces to an MVP outcome (O1–O4).
+2. **It matches the story.** The acceptance criteria of the issue are met and the change traces to an MVP outcome (O1–O5).
 
 3. **Green locally.** `npm run lint`, `npm run build`, and `npm test` all pass, and the Prisma migrations apply cleanly to a fresh database
    (`npx prisma migrate deploy`).
