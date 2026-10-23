@@ -53,11 +53,5 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 
 ## Documentation
 
-- [Vision](docs/iterations/0/vision.md)
-- [MVP](docs/iterations/0/mvp.md)
-- [Definition of Done](docs/iterations/0/DoD.md)
-- [Stories](docs/iterations/0/stories.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
-- [AI Log](docs/iterations/0/ai-log.md)
-- [Retrospective](docs/iterations/0/retro.md)
   
