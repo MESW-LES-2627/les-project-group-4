@@ -12,6 +12,25 @@ repository.
 | --- | --- |
 | Open Design | Drafting prototypes and exploring the interface before implementing it. |
 | OpenCode (DeepSeek V4.1 Flash) | The frontend move during the stack migration, refactoring, general coding help, and automating GitHub issue creation from the finished user stories. |
+| Claude | Planning the move from Spring Boot + Vite to Next.js + Prisma, a first version of `POST /api/rooms` and its shared Zod schema (#2), drafting issue texts, reviewing pull requests, and checking `vision.md`, `mvp.md` and `stories.md` against each other. |
+
+### Claude
+
+- **Stack migration.** Compared the free-tier deploy options for Spring Boot
+  and Next.js, then helped plan the move to Next.js + Prisma and port the
+  existing React code (shadcn/ui, Tailwind tokens, typed API client) into
+  `src/` on `chore/migrate-nextjs` (#17).
+- **#2 `POST /api/rooms`.** Wrote a first version of the shared Zod schema
+  (`src/lib/schemas/room.ts`) and the route handler
+  (`src/app/api/rooms/route.ts`), with 201 / 400 `{ errors: { field: msg } }`
+  / 500. João reviewed it and ran lint and build before opening #18.
+- **Issues.** Drafted new texts for #2, #3 and #5 after the migration, plus
+  the new CI and deploy issues. João edited and posted them.
+- **PR reviews.** Reviewed #19, #20 and #21 against `develop` and the project
+  conventions.
+- **Docs consistency.** Checked `vision.md` and `stories.md` against
+  `mvp.md` for #6 and listed where they disagreed (whether O5 was a stretch,
+  and the iteration for US-15). The team then decided the scope in #22.
 
 ## One place the model was wrong
 
