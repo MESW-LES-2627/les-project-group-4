@@ -13,6 +13,11 @@ drag around.
 - João Francisco Costa Cordeiro - up202205682@up.pt
 
 
+## Documentation
+
+- [CLAIM iter 0](docs/iterations/0/CLAIM.md)
+
+
 ## Stack
 
 - App: Next.js (React + TypeScript), with the API as route handlers under `src/app/api`
@@ -49,9 +54,4 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 - src/components/ React components (ui/ holds shadcn/ui)
 - src/api/ Typed client for the API
 - prisma/ Schema and migrations
-- docs/ Vision, MVP, stories, CLAIM, retro, AI log per iteration
-
-## Documentation
-
-- [CLAIM iter 0](docs/iterations/0/CLAIM.md)
-  
+- docs/ Vision, MVP, stories, CLAIM, retro, AI log per iteration  
