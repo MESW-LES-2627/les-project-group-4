@@ -11,7 +11,7 @@ repository.
 | Tool | What we used it for |
 | --- | --- |
 | Open Design | Drafting prototypes and exploring the interface before implementing it. |
-| OpenCode (DeepSeek V4.1 Flash) | The frontend move during the stack migration, refactoring, and general coding help. |
+| OpenCode (DeepSeek V4.1 Flash) | The frontend move during the stack migration, refactoring, general coding help, and automating GitHub issue creation from the finished user stories. |
 
 ## One place the model was wrong
 
@@ -22,11 +22,10 @@ when it did not.
 
 **What the model suggested.** It described that guard as a harmless
 leftover and wrote that the test step was "unconditional in practice",
-implying the workflow needed no change. That was wrong: the `if:
-steps.test.outputs.exists == 'true'` condition was still there. If the
-`test` script were ever removed or renamed, the Test step would be
-skipped, `quality` would still pass, and CI would report green without
-running a single test.
+implying the workflow needed no change. That was wrong: the condition on
+`steps.test.outputs.exists` was still there. If the `test` script were
+ever removed or renamed, the Test step would be skipped, `quality` would
+still pass, and CI would report green without running a single test.
 
 **What we changed.** We pointed out that tests already exist (two files,
 17 tests), removed the "Check for a test script" step, and made
