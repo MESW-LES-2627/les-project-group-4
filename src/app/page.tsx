@@ -1,20 +1,31 @@
+import { CreateRoomForm } from '@/components/CreateRoomForm'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-[720px] px-4 py-8">
-      <header className="mb-6">
-        <h1 className="m-0 text-[2rem]">FurniMi</h1>
-        <p className="mt-1 mb-0">Plan your room before you buy.</p>
-      </header>
-
-      <main>
-        <section aria-labelledby="create-room-heading" className="rounded-lg border p-6">
-          <h2 id="create-room-heading" className="mt-0 text-xl">
-            Create a room
-          </h2>
-          {/* ISS-5 replaces this placeholder with <CreateRoomForm /> */}
-          <p className="italic">The create-room form will appear here.</p>
-        </section>
-      </main>
-    </div>
+    <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
+      <section
+        className="m-auto w-full max-w-lg"
+        aria-labelledby="create-room-heading"
+      >
+        <Card className="gap-0 py-6">
+          <CardHeader className="gap-2 px-6 pb-5">
+            <h1
+              id="create-room-heading"
+              className="text-2xl font-bold tracking-tight text-foreground"
+            >
+              Create a room
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Add a room's name and its real dimensions so FurniMi can check
+              what fits.
+            </p>
+          </CardHeader>
+          <CardContent className="px-6">
+            <CreateRoomForm />
+          </CardContent>
+        </Card>
+      </section>
+    </main>
   )
 }
