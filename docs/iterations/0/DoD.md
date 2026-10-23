@@ -12,20 +12,20 @@ Nothing here replaces the acceptance criteria of a story; it is what applies _on
 1. **Code is written and peer reviewed.** At least one other team member has read the change and approved it. A PR from a single author with no
    review is not done, no matter how small.
 
-2. **It matches the story.** The acceptance criteria of the issue are met and the change traces to an MVP outcome (O1–O4).
+2. **It matches the story.** The acceptance criteria of the issue are met and the change traces to an MVP outcome (O1–O5).
 
-3. **Green locally.** `./mvnw test`, `npm run build`, and `npx oxlint` all pass, and the backend boots with `ddl-auto=validate` (the entity matches
-   the Flyway schema).
+3. **Green locally.** `npm run lint`, `npm run build`, and `npm test` all pass, and the Prisma migrations apply cleanly to a fresh database
+   (`npx prisma migrate deploy`).
 
-4. **It is in history.** Merged to `main` via a reviewed PR.
+4. **It is in history.** Merged to `develop` via a reviewed PR (and to `main` at the end of the iteration).
 
 5. **Team-done.** Any teammate could pull the change and reproduce it without the author present. If only the author can open it, it is not
    team-done.
 
 ## Per iteration (tagged increment)
 
-1. **It runs from the tag.** From a clean clone following only `README.md`: `docker compose up -d db`, run the backend, run the frontend — from the
-   `iter-N` tag, not only on one laptop.
+1. **It runs from the tag.** From a clean clone following only `README.md`: `npm install`, then `npm run dev` — from the `iter-N` tag, not only on
+   one laptop.
 
 2. **A non-author ran the walkthrough.** The end-to-end flow was run by someone who did not write that code.
 
