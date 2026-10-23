@@ -48,8 +48,11 @@ Explicitly not done in Iter 0, planned for later:
 - 2D preview of the room (SVG)     → Iter 1
 - Catalog of furniture items       → Iter 1
 - Add item to room                 → Iter 1
+- Running total cost               → Iter 1
 - Save / load layouts              → Iter 1
 - Location / geolocation           → Iter 1
+- Drag / rotate items              → Iter 2
+- Collision highlight              → Iter 2
 - LLM-based filters                → Iter 2
 - Nearest stores list              → Iter 2
 - Store map / navigation           → Vision
@@ -73,7 +76,7 @@ Explicitly not done in Iter 0, planned for later:
 | US-14 | As a user, I can reload a previously saved layout.                  | O4      | Must     | 1    |
 | US-15 | As a user, I can set my location (city or browser geolocation).     | O1      | Must     | 1    |
 | US-16 | As a user, I can type "Nordic bedroom under €500" and get filters.  | O5      | Must     | 2    |
-| US-17 | As a user, I can see the stores nearest to my room's location that stock an item. | O2      | Should   | 2    |
+| US-17 | As a user, I can see the stores nearest to my room's location that stock an item. | O2      | Must   | 2    |
 | US-18 | As a user, if my sentence can't be understood, I'm told and can still filter manually. | O5      | Must     | 2    |
 
 ## Iteration 0 slice

@@ -115,8 +115,8 @@ The MVP is done when **all** of the following are true:
 
 6. **Each outcome has a check that would fail if it broke.**
    Iteration 0 uses a documented walkthrough; from Iteration 1,
-   automation must appear and grow (`./mvnw test`, `npm run build`,
-   `npx oxlint`, plus outcome-level tests).
+   automation must appear and grow (`npm test`, `npm run build`,
+   `npm run lint`, plus outcome-level tests).
 
 7. **It is in history.** Every change was peer-reviewed and merged to
    `main` before the tag — not a Friday dump and not work that exists
