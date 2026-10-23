@@ -27,7 +27,7 @@ the stack and how to run the app from a clean clone.
 
 - Production: TBD
 - Staging: TBD
-- Tag: TBD (`iter-0` once created)
+- Tag: [`iter-0`](https://github.com/MESW-LES-2627/les-project-group-4/releases/tag/iter-0)
 - Compare with previous tag: N/A (first iteration)
 - Production / staging: TBD
 - Artefacts someone will be asked to open: TBD
