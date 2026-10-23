@@ -1,5 +1,35 @@
 # Stories
 
+## MVP outcomes
+
+These are the milestones the backlog maps to. The full definitions and
+the boundaries around them are in [mvp.md](mvp.md).
+
+- **O1 - Room setup:** The user creates a room by defining dimensions and
+  a location.
+- **O2 - Catalog and stores:** The user explores a furniture catalog,
+  sees the nearest stores that stock each item, and adds items to the
+  room.
+- **O3 - 2D plan:** The user views a 2D floor plan with placed items,
+  collision highlights, and running total cost.
+- **O4 - Persistence:** The user saves and reloads layouts from storage.
+- **O5 (stretch) - Natural language:** The user describes what they want
+  in natural language and gets catalog filters applied.
+
+## Story to outcome map
+
+| Outcome | Stories | Iterations |
+| --- | --- | --- |
+| **O1** | US-01, US-02, US-03, US-04, US-05, US-06, US-15 | 0: US-01 · 1: US-02–US-06, US-15 |
+| **O2** | US-07, US-08, US-09, US-17 | 1: US-07–US-09 · 2: US-17 |
+| **O3** | US-10, US-11, US-12 | 1: US-12 · 2: US-10–US-11 |
+| **O4** | US-13, US-14 | 1 |
+| **O5** (stretch) | US-16, US-18 | 2 |
+
+Every story has one primary outcome. An outcome can span iterations: O1
+starts with US-01 in Iteration 0 and completes with location in
+Iteration 1; O2, O3 and O5 are completed by the end of Iteration 2.
+
 ## Iteration 0 - In scope
 
 One story. UI to data, end to end.
