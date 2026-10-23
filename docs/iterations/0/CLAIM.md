@@ -16,6 +16,7 @@ reduced MVP and does not complete O1.
 | [mvp.md](mvp.md) | The scope contract: MVP outcomes O1–O5, what is out of scope, and the Iteration 0 cut. |
 | [stories.md](stories.md) | The story for this iteration (US-01), the public cut, and the full backlog. |
 | [DoD.md](DoD.md) | The shared bar for "done", per change and per iteration. |
+| [ci.md](ci.md) | How the GitHub Actions pipeline works and how to run it locally. |
 | [retro.md](retro.md) | What went well, what went badly, and what changes in Iteration 1. |
 | [ai-log.md](ai-log.md) | Which AI tools were used and where the model was wrong. |
 
@@ -24,9 +25,9 @@ the stack and how to run the app from a clean clone.
 
 ## Permalinks
 
-- Repository: [MESW-LES-2627/les-project-group-4](https://github.com/MESW-LES-2627/les-project-group-4)
+- Production: TBD
+- Staging: TBD
 - Tag: TBD (`iter-0` once created)
 - Compare with previous tag: N/A (first iteration)
 - Production / staging: TBD
-- Pipeline: [CI workflow](../../../.github/workflows/ci.yml)
 - Artefacts someone will be asked to open: TBD
