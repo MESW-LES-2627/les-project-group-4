@@ -20,8 +20,9 @@ Explicitly not done in Iter 0, planned for later:
 - Add item to room                 → Iter 1
 - Save / load layouts              → Iter 1
 - Location / geolocation           → Iter 1
-- LLM-based filters                → Iter 3+
-- Nearby stores map                → Vision
+- LLM-based filters                → Iter 2
+- Nearest stores list              → Iter 2
+- Store map / navigation           → Vision
 
 ## Full backlog
 
@@ -40,9 +41,10 @@ Explicitly not done in Iter 0, planned for later:
 | US-12 | As a user, I can view the running total cost of placed items.       | O3      | Must     | 1    |
 | US-13 | As a user, I can save a layout with a custom name.                  | O4      | Must     | 1    |
 | US-14 | As a user, I can reload a previously saved layout.                  | O4      | Must     | 1    |
-| US-15 | As a user, I can set my location (city or browser geolocation).     | O1      | Must     | 2    |
-| US-16 | As a user, I can type "Nordic bedroom under €500" and get filters.  | O5      | Should   | 3+   |
-| US-17 | As a user, I can see nearby stores stocking the selected items.     | Vision  | Could    | -    |
+| US-15 | As a user, I can set my location (city or browser geolocation).     | O1      | Must     | 1    |
+| US-16 | As a user, I can type "Nordic bedroom under €500" and get filters.  | O5      | Must     | 2    |
+| US-17 | As a user, I can see the stores nearest to my room's location that stock an item. | O2      | Should   | 2    |
+| US-18 | As a user, if my sentence can't be understood, I'm told and can still filter manually. | O5      | Must     | 2    |
 
 ## Iteration 0 slice
 
