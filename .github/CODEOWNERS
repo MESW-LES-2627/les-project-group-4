@@ -1,0 +1,7 @@
+# Reviewers requested automatically on every pull request.
+# Add the remaining team members' GitHub handles once they are known.
+# Format: <pattern> <@user-or-team>...
+* @franpts2 @joaocordeiro7 @up202401558 @heisenunes
+
+# CI, templates and repository configuration.
+/.github/ @franpts2 @joaocordeiro7 @up202401558 @heisenunes
