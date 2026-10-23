@@ -35,8 +35,8 @@ highlights, and running total cost.
 
 O4: The user saves and reloads layouts from storage.
 
-O5 (stretch): The user describes what they want in natural
-language and gets catalog filters applied.
+O5: The user describes what they want in natural language and gets
+catalog filters applied.
 
 ## Out of scope (Vision)
 
@@ -49,7 +49,7 @@ difference is visible in the product.
 | --- | --- | --- |
 | **3D room customisation** | 3D engine, walkthrough, editable wall colours, floors and lighting, 3D furniture models | 2D SVG floor plan; furniture shown as true-to-scale footprints |
 | **Collaborative planning** | Accounts, invitations, shared rooms, real-time co-editing, comments, presence | Single-user layouts; no login, sharing or comments |
-| **Layouts from a sentence** | Autonomous LLM layout generation, auto-placement, conversational editing | O5 stretch only maps one sentence to catalog filters; the user still chooses and places every item |
+| **Layouts from a sentence** | Autonomous LLM layout generation, auto-placement, conversational editing | O5 only maps one sentence to catalog filters; the user still chooses and places every item |
 | **Live stores, maps and routes** | Live stock and prices, store map, route and pickup planning, live store feeds | O2 uses a seeded store list sorted by distance; prices are catalog prices, not live prices |
 
 **Enablers deliberately not built.** The four directions above depend on
@@ -76,8 +76,8 @@ implementation detail.
 - Future work in `vision.md` is not a commitment and is not in the
   backlog.
 - A missing feature is not a cut unless it is written in `stories.md`.
-- O5 is the only stretch. If it threatens O1–O4, it is dropped
-  explicitly — not quietly half-built.
+- O5 is scheduled with O2 and O3 in Iteration 2. It stays sentence →
+  filters only; it never becomes layout generation.
 
 ## Definition of Done
 
@@ -94,9 +94,11 @@ The MVP is done when **all** of the following are true:
    collisions and total cost, and save/reload a layout. This runs
    through UI → REST → PostgreSQL, not against a mock.
 
-2. **O5 is handled honestly.** It is either demonstrated as
-   sentence → filters only, or it stays in the public cut as a stretch.
-   It never blocks O1–O4 and is never described as layout generation.
+2. **O5 is demonstrated end to end.** A sentence that matches the
+   catalog becomes filters (US-16); a sentence that cannot be understood
+   is rejected with a message and manual filtering still works (US-18).
+   O5 stays sentence → filters only and is never described as layout
+   generation.
 
 3. **Persistence is real.** Rooms, layouts and placed items survive a
    backend restart; reload returns the same data; totals are computed
@@ -155,9 +157,9 @@ PostgreSQL → response → confirmation in the UI.
 | Running total (US-12) | Iter 1 | Needs placed items |
 | Save and reload layouts (US-13–14) | Iter 1 | Needs items and a total worth saving |
 | Drag/rotate (US-10) and collision highlight (US-11) | Iter 2 | O3 needs the plan and placement model first |
-| Location: city or browser geolocation (US-15) | Iter 2 | Completes O1; not needed for the first create flow |
-| Seeded nearby-store list, sorted by distance | Iter 2 | Completes O2; live stock, maps and routes stay in Vision |
-| O5 sentence → filters (US-16) | Stretch, after O1–O4 | Only if the core outcomes are stable |
+| Location: city or browser geolocation (US-15) | Iter 1 | Completes O1; not needed for the first create flow |
+| Nearest stores list (US-17) | Iter 2 | Completes O2; live stock, maps and routes stay in Vision |
+| O5 sentence → filters (US-16, US-18) | Iter 2 | Must stories; filters only, with a manual fallback |
 | 3D, collaboration, generated layouts, live stores/maps/routes | Vision | Out of the MVP entirely |
 
 ### What Iteration 0 does not claim

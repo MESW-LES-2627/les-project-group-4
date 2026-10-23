@@ -13,8 +13,8 @@ the boundaries around them are in [mvp.md](mvp.md).
 - **O3 - 2D plan:** The user views a 2D floor plan with placed items,
   collision highlights, and running total cost.
 - **O4 - Persistence:** The user saves and reloads layouts from storage.
-- **O5 (stretch) - Natural language:** The user describes what they want
-  in natural language and gets catalog filters applied.
+- **O5 - Natural language:** The user describes what they want in
+  natural language and gets catalog filters applied.
 
 ## Story to outcome map
 
@@ -24,7 +24,7 @@ the boundaries around them are in [mvp.md](mvp.md).
 | **O2** | US-07, US-08, US-09, US-17 | 1: US-07–US-09 · 2: US-17 |
 | **O3** | US-10, US-11, US-12 | 1: US-12 · 2: US-10–US-11 |
 | **O4** | US-13, US-14 | 1 |
-| **O5** (stretch) | US-16, US-18 | 2 |
+| **O5** | US-16, US-18 | 2 |
 
 Every story has one primary outcome. An outcome can span iterations: O1
 starts with US-01 in Iteration 0 and completes with location in
