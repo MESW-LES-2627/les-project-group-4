@@ -1,8 +1,8 @@
+Closes #
+
 ## What and why
 
 <!-- What does this change do, and which issue / MVP outcome does it serve? Link the issue. -->
-
-Closes #
 
 ## How to verify
 
