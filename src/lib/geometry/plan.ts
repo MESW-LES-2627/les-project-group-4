@@ -37,13 +37,13 @@ export interface Box {
   maxY: number
 }
 
-/** Floating-point tolerance in cm (0.001 mm): treats 299.9999999 as 300. */
+/** Floating-point tolerance in cm (1e-6 cm = 0.00001 mm = 10 nm): treats 299.9999999 as 300. */
 export const EPSILON_CM = 1e-6
 
 /** Any angle -> [0, 360). -90 -> 270, 450 -> 90. */
 export function normalizeRotation(deg: number): number {
   const r = deg % 360
-  return r < 0 ? r + 360 : r
+  return r < 0 ? r + 360 : r + 0 // +0 to convert -0 to +0
 }
 
 const toRad = (deg: number) => (deg * Math.PI) / 180
@@ -71,7 +71,13 @@ export function footprintCorners(size: Size, placement: Placement): Point[] {
   }))
 }
 
-/** Axis-aligned bounding box of the rotated footprint. */
+/**
+    * Axis-aligned bounding box of the rotated footprint.
+    * Exact for the room-containment check (the room is axis-aligned).
+    * NOT for item-vs-item overlap (#33): two rotated items can have overlapping
+    * boxes while their footprints don't touch — use SAT on footprintCorners there.
+    */
+
 export function boundingBox(size: Size, placement: Placement): Box {
   const pts = footprintCorners(size, placement)
   const xs = pts.map((p) => p.x)

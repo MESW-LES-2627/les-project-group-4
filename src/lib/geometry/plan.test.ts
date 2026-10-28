@@ -23,6 +23,9 @@ describe('normalizeRotation', () => {
     [450, 90],
     [-90, 270],
     [-450, 270],
+    [-360, 0], // -360 % 360 is -0 in JavaScript
+    [-0, 0],
+    [720, 0],
   ])('%d° -> %d°', (input, expected) => {
     expect(normalizeRotation(input)).toBe(expected)
   })
