@@ -47,7 +47,7 @@ difference is visible in the product.
 
 | Vision direction | Deliberately not in the MVP | What the MVP does instead |
 | --- | --- | --- |
-| **3D room customisation** | 3D engine, walkthrough, editable wall colours, floors and lighting, 3D furniture models | 2D SVG floor plan; furniture shown as true-to-scale footprints |
+| **3D room customisation** | 3D engine, walkthrough, editable wall colours, floors and lighting, 3D furniture models | 2D plan view; furniture shown as true-to-scale footprints |
 | **Collaborative planning** | Accounts, invitations, shared rooms, real-time co-editing, comments, presence | Single-user layouts; no login, sharing or comments |
 | **Layouts from a sentence** | Autonomous LLM layout generation, auto-placement, conversational editing | O5 only maps one sentence to catalog filters; the user still chooses and places every item |
 | **Live stores, maps and routes** | Live stock and prices, store map, route and pickup planning, live store feeds | O2 uses a seeded store list sorted by distance; prices are catalog prices, not live prices |
@@ -76,8 +76,8 @@ implementation detail.
 - Future work in `vision.md` is not a commitment and is not in the
   backlog.
 - A missing feature is not a cut unless it is written in `stories.md`.
-- O5 is scheduled with O2 and O3 in Iteration 2. It stays sentence →
-  filters only; it never becomes layout generation.
+- O5 is scheduled with the completion of O2 in Iteration 4. It stays
+  sentence → filters only; it never becomes layout generation.
 
 ## Definition of Done
 
@@ -151,15 +151,15 @@ PostgreSQL → response → confirmation in the UI.
 
 | Deferred | Moved to | Reason |
 | --- | --- | --- |
-| Room list, details, edit and delete (US-02–05) | Iter 1 | Not needed to prove the first vertical slice |
-| 2D preview of the room (US-06) | Iter 1 | Depends on a room existing |
-| Catalog browse and filters (US-07–08), add item (US-09) | Iter 1 | First slice of O2 |
-| Running total (US-12) | Iter 1 | Needs placed items |
-| Save and reload layouts (US-13–14) | Iter 1 | Needs items and a total worth saving |
-| Drag/rotate (US-10) and collision highlight (US-11) | Iter 2 | O3 needs the plan and placement model first |
+| Room list, details, edit and delete (US-02–05) | Iter 1: US-02–03; Iter 2: US-04–05 | Not needed to prove the first vertical slice |
+| 2D plan view of the room (US-06) | Iter 1 | Depends on a room existing |
+| Catalog browse and filters (US-07–08), add item (US-09) | Iter 1: US-07; Iter 2: US-08–09 | First slice of O2 |
+| Running total (US-12) | Iter 2 | Needs placed items |
+| Save and reload layouts (US-13–14) | Iter 3 | Needs items and a total worth saving |
+| Drag/rotate (US-10) and collision highlight (US-11) | Iter 3 | O3 needs the plan and placement model first |
 | Location: city or browser geolocation (US-15) | Iter 1 | Completes O1; not needed for the first create flow |
-| Nearest stores list (US-17) | Iter 2 | Completes O2; live stock, maps and routes stay in Vision |
-| O5 sentence → filters (US-16, US-18) | Iter 2 | Must stories; filters only, with a manual fallback |
+| Nearest stores list (US-17) | Iter 4 | Completes O2; live stock, maps and routes stay in Vision |
+| O5 sentence → filters (US-16, US-18) | Iter 4 | Must stories; filters only, with a manual fallback |
 | 3D, collaboration, generated layouts, live stores/maps/routes | Vision | Out of the MVP entirely |
 
 ### What Iteration 0 does not claim
