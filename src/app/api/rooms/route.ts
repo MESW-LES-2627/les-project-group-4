@@ -2,8 +2,29 @@ import type { Room, ValidationErrorBody } from '@/api/types'
 import { db } from '@/lib/db'
 import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
 
+// The room fields the API returns (see Room in src/api/types.ts).
+const ROOM_SELECT = { id: true, name: true, widthCm: true, lengthCm: true } as const
+
 function validationError(errors: Record<string, string>) {
   return Response.json({ errors } satisfies ValidationErrorBody, { status: 400 })
+}
+
+/** US-02: lists every room, newest first. 200 with an array (possibly empty), 500 if the database fails. */
+export async function GET() {
+  try {
+    const rooms: Room[] = await db.room.findMany({
+      select: ROOM_SELECT,
+      // id breaks ties between rooms created in the same millisecond.
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    })
+    return Response.json(rooms)
+  } catch (error) {
+    console.error('Failed to list rooms', error)
+    return Response.json(
+      { message: 'Could not load the rooms. Please try again later.' },
+      { status: 500 },
+    )
+  }
 }
 
 /** US-01: creates a room. 201 with the room, 400 with field errors, 500 if the database fails. */
@@ -23,7 +44,7 @@ export async function POST(request: Request) {
   try {
     const room: Room = await db.room.create({
       data: parsed.data,
-      select: { id: true, name: true, widthCm: true, lengthCm: true },
+      select: ROOM_SELECT,
     })
     return Response.json(room, { status: 201 })
   } catch (error) {

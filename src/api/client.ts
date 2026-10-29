@@ -83,3 +83,8 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
     body: JSON.stringify(room),
   })
 }
+
+/** US-02: lists every room, newest first. */
+export function listRooms(): Promise<ApiResult<Room[]>> {
+  return request<Room[]>('/api/rooms', { method: 'GET' })
+}
