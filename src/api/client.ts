@@ -67,6 +67,8 @@ function toApiError(status: number, body: unknown): ApiError {
   let message: string
   if (status === 400) {
     message = 'Some fields are invalid. Please correct them and try again.'
+  } else if (status === 404) {
+    message = 'Not found. It may have been deleted, or the link is wrong.'
   } else if (status >= 500) {
     message = 'The server is unavailable right now. Please try again later.'
   } else {
@@ -87,4 +89,12 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
 /** US-02: lists every room, newest first. */
 export function listRooms(): Promise<ApiResult<Room[]>> {
   return request<Room[]>('/api/rooms', { method: 'GET' })
+}
+
+/**
+ * US-03: loads one room by the id from the URL.
+ * A missing room resolves with error.status 404; a malformed id with 400.
+ */
+export function getRoom(id: string): Promise<ApiResult<Room>> {
+  return request<Room>(`/api/rooms/${encodeURIComponent(id)}`, { method: 'GET' })
 }

@@ -1,9 +1,7 @@
 import type { Room, ValidationErrorBody } from '@/api/types'
 import { db } from '@/lib/db'
+import { ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
-
-// The room fields the API returns (see Room in src/api/types.ts).
-const ROOM_SELECT = { id: true, name: true, widthCm: true, lengthCm: true } as const
 
 function validationError(errors: Record<string, string>) {
   return Response.json({ errors } satisfies ValidationErrorBody, { status: 400 })
