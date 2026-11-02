@@ -34,5 +34,8 @@ tmp/
 
 # vercel project link (team/project IDs; machine-specific)
 .vercel/
+
+# database dumps taken before a production migration
+backup-*.sql
 .vercel
 .env*

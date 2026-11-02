@@ -8,6 +8,8 @@
     "start": "next start",
     "deploy:staging": "bash scripts/deploy.sh staging",
     "deploy:production": "bash scripts/deploy.sh production",
+    "migrate:staging": "bash scripts/migrate.sh staging",
+    "migrate:production": "bash scripts/migrate.sh production",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d --wait",
