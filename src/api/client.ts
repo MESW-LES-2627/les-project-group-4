@@ -86,11 +86,6 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
   })
 }
 
-/** US-02: lists every room, newest first. */
-export function listRooms(): Promise<ApiResult<Room[]>> {
-  return request<Room[]>('/api/rooms', { method: 'GET' })
-}
-
 /**
  * US-03: loads one room by the id from the URL.
  * A missing room resolves with error.status 404; a malformed id with 400.

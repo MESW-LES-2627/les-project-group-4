@@ -1,6 +1,6 @@
 import type { Room, ValidationErrorBody } from '@/api/types'
 import { db } from '@/lib/db'
-import { ROOM_SELECT } from '@/lib/rooms'
+import { findRooms, ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
 
 function validationError(errors: Record<string, string>) {
@@ -10,11 +10,7 @@ function validationError(errors: Record<string, string>) {
 /** US-02: lists every room, newest first. 200 with an array (possibly empty), 500 if the database fails. */
 export async function GET() {
   try {
-    const rooms: Room[] = await db.room.findMany({
-      select: ROOM_SELECT,
-      // id breaks ties between rooms created in the same millisecond.
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-    })
+    const rooms = await findRooms()
     return Response.json(rooms)
   } catch (error) {
     console.error('Failed to list rooms', error)
