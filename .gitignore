@@ -31,3 +31,8 @@ src/generated/
 *.log
 logs/
 tmp/
+
+# vercel project link (team/project IDs; machine-specific)
+.vercel/
+.vercel
+.env*

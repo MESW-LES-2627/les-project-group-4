@@ -6,6 +6,8 @@
     "dev": "docker compose up -d --wait && prisma migrate deploy && next dev",
     "build": "next build",
     "start": "next start",
+    "deploy:staging": "bash scripts/deploy.sh staging",
+    "deploy:production": "bash scripts/deploy.sh production",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d --wait",
