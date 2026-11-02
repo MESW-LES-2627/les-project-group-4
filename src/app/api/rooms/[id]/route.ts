@@ -1,6 +1,5 @@
-import type { Room, ValidationErrorBody } from '@/api/types'
-import { db } from '@/lib/db'
-import { ROOM_SELECT } from '@/lib/rooms'
+import type { ValidationErrorBody } from '@/api/types'
+import { findRoomById } from '@/lib/rooms'
 import { roomIdSchema } from '@/lib/schemas/room'
 
 /** US-03: one room. 200 with the room, 400 for a malformed id, 404 if it does not exist, 500 if the database fails. */
@@ -18,10 +17,7 @@ export async function GET(
   }
 
   try {
-    const room: Room | null = await db.room.findUnique({
-      where: { id: parsed.data },
-      select: ROOM_SELECT,
-    })
+    const room = await findRoomById(parsed.data)
     if (room === null) {
       return Response.json({ message: 'Room not found.' }, { status: 404 })
     }
