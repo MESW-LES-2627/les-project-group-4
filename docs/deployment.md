@@ -13,8 +13,8 @@ deleted.
 
 | Environment | Trigger  | Vercel project       | Supabase project     | URL |
 | ----------- | -------- | -------------------- | -------------------- | --- |
-| Staging     | `develop`| `furnimi-staging`    | `furnimi-staging`    | TBD |
-| Production  | `main`   | `furnimi-production` | `furnimi-production` | TBD |
+| Staging     | `develop`| `furnimi-staging`    | `furnimi-staging`    | <https://furnimi-staging.vercel.app/> |
+| Production  | `main`   | `furnimi-production` | `furnimi-production` | TBD — deploys at the end of the iteration |
 
 ## What the pipeline does
 
@@ -24,6 +24,8 @@ deleted.
    migration fails, the job stops and the previous deployment keeps serving.
 4. `vercel deploy --prod` with the environment's project ID, and exposes the
    resulting URL as the GitHub environment URL.
+5. Calls `GET /api/health` on the new deployment and fails the job if it does not
+   return 200 within about a minute.
 
 Runs are serialised per branch, so two quick pushes cannot migrate the same
 database at once. Preview deployments are not created for pull requests; a
@@ -98,6 +100,7 @@ Backups are written to the repository root as
 | `Invalid token` from the Vercel CLI | token expired or revoked | Create a new token and update `VERCEL_TOKEN` in both environments. |
 | Job never runs | branch is not `develop`/`main` | Use **Run workflow** (`workflow_dispatch`) or merge to the right branch. |
 | Deploy succeeds but `/api/health` is 503 | `DATABASE_URL` missing in Vercel, or Supabase paused | Check the project's Production env vars; open the Supabase dashboard to resume a paused project. |
+| Job is red at **Smoke test the deployment** | the new deployment does not answer `/api/health` | The deployment was already promoted before the check, so fix the cause (usually `DATABASE_URL` or a paused project) and re-run the workflow. |
 | Migration applied, deploy failed | build/runtime error after migrate | Fix forward and re-run; rolling back code does not undo a migration. |
 
 ## Local database
