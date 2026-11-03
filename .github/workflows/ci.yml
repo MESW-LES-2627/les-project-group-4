@@ -81,7 +81,7 @@ jobs:
         run: npm run build
 
   database:
-    name: Migrations on a fresh database
+    name: Migrations and seed on a fresh database
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
@@ -120,6 +120,13 @@ jobs:
       # the schema was edited without a matching migration.
       - name: Check that migrations match the schema
         run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+      # CH-02: the seed upserts by slug, so this also checks it is idempotent. A
+      # schema change that seedData.ts does not follow fails here instead of the
+      # first time someone runs `npm run db:seed` locally or on a demo.
+      - name: Seed the database
+        run: npm run db:seed
+      - name: Seed again to check idempotency
+        run: npm run db:seed
 
   # Single required check for branch protection. It passes when the jobs above pass
   # or are deliberately skipped (documentation-only changes).

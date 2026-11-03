@@ -1,0 +1,6 @@
+# `vercel deploy` uploads the working tree, so keep local secrets and build
+# output out of the upload. Git-based deployments already respect .gitignore.
+.env
+.env.*
+.next/
+node_modules/
