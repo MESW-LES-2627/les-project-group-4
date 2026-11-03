@@ -3,18 +3,11 @@
 // Every upsert is keyed by `slug`, so running the seed again updates rows in
 // place: ids stay the same and layouts that reference items never break.
 
-import { PrismaPg } from '@prisma/adapter-pg'
 import 'dotenv/config'
 
-import { PrismaClient } from '../src/generated/prisma/client'
+// The app's client (src/lib/db.ts): one place for the connection setup.
+import { db } from '../src/lib/db'
 import { SEED_CITIES, SEED_ITEMS } from '../src/lib/seedData'
-
-// Same fallback as prisma.config.ts and src/lib/db.ts.
-const LOCAL_DATABASE_URL = 'postgresql://furnimi:furnimi@localhost:5432/furnimi'
-
-const db = new PrismaClient({
-  adapter: new PrismaPg(process.env.DATABASE_URL ?? LOCAL_DATABASE_URL),
-})
 
 async function main(): Promise<void> {
   for (const { slug, ...data } of SEED_CITIES) {
