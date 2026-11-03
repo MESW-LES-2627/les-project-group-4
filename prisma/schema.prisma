@@ -14,6 +14,10 @@ model Room {
   widthCm  Int    @map("width_cm")
   lengthCm Int    @map("length_cm")
 
+  // US-02: the room list is ordered by createdAt, newest first.
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
   @@map("room")
 }
 

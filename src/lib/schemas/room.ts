@@ -24,6 +24,13 @@ export const createRoomSchema = z.object(
 
 export type CreateRoomInput = z.infer<typeof createRoomSchema>
 
+/** US-03: a room id from the URL. Only positive whole numbers that fit in a Postgres INTEGER. */
+export const roomIdSchema = z
+  .string()
+  .regex(/^[1-9]\d*$/, { error: 'must be a positive whole number' })
+  .transform(Number)
+  .pipe(z.int().max(MAX_INT, { error: 'is too large' }))
+
 /**
  * Turns a Zod error into the API's { field: message } map, keeping the first message per field.
  * Issues that are not about a single field (e.g. the body is not an object) go under "body".

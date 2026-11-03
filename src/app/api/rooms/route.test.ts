@@ -3,14 +3,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Room, ValidationErrorBody } from '@/api/types'
 import { db } from '@/lib/db'
 
-import { POST } from './route'
+import { GET, POST } from './route'
 
 // Replace the real Prisma client with a fake: no database is needed.
 vi.mock('@/lib/db', () => ({
-  db: { room: { create: vi.fn() } },
+  db: { room: { create: vi.fn(), findMany: vi.fn() } },
 }))
 
 const createRoom = vi.mocked(db.room.create)
+const findRooms = vi.mocked(db.room.findMany)
 
 const validBody = { name: 'Bedroom', widthCm: 300, lengthCm: 400 }
 
@@ -24,6 +25,7 @@ function postRequest(body: unknown): Request {
 
 beforeEach(() => {
   createRoom.mockReset()
+  findRooms.mockReset()
   vi.restoreAllMocks() // undo any vi.spyOn from the previous test (e.g. console.error)
 })
 
@@ -71,6 +73,52 @@ describe('POST /api/rooms', () => {
   })
 })
 
+describe('GET /api/rooms', () => {
+  it('returns 200 with every room', async () => {
+    const rooms = [
+      { id: 2, name: 'Office', widthCm: 250, lengthCm: 300 },
+      { id: 1, ...validBody },
+    ]
+    findRooms.mockResolvedValue(rooms as never)
+
+    const response = await GET()
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual(rooms)
+  })
+
+  it('asks the database for the newest rooms first', async () => {
+    findRooms.mockResolvedValue([] as never)
+
+    await GET()
+
+    expect(findRooms).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] }),
+    )
+  })
+
+  it('returns 200 with an empty array when there are no rooms', async () => {
+    findRooms.mockResolvedValue([] as never)
+
+    const response = await GET()
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual([])
+  })
+
+  it('returns 500 without leaking the error when the database throws', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    findRooms.mockRejectedValue(new Error('connection refused'))
+
+    const response = await GET()
+    const text = await response.text()
+
+    expect(response.status).toBe(500)
+    expect(text).not.toContain('connection refused')
+    expect(consoleError).toHaveBeenCalled()
+  })
+})
+
 describe('response shape matches src/api/types.ts', () => {
   // `satisfies` makes TypeScript fail if Room gains, loses or renames a field,
   // so this expected shape can never drift away from src/api/types.ts.
@@ -87,6 +135,14 @@ describe('response shape matches src/api/types.ts', () => {
     const body: unknown = await (await POST(postRequest(validBody))).json()
 
     expect(body).toEqual(roomShape) // toEqual also fails on extra fields
+  })
+
+  it('GET items have exactly the Room fields', async () => {
+    findRooms.mockResolvedValue([{ id: 7, ...validBody }] as never)
+
+    const body: unknown = await (await GET()).json()
+
+    expect(body).toEqual([roomShape])
   })
 
   it('400 body is { errors: { field: message } }', async () => {
