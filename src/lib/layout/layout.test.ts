@@ -11,7 +11,7 @@ const sofa: PlacedItem = {
   xCm: 250,
   yCm: 120,
   rotationDeg: 90,
-  priceEur: 499,
+  priceCents: 49900,
 }
 
 const lamp: PlacedItem = {
@@ -20,7 +20,7 @@ const lamp: PlacedItem = {
   name: 'Floor lamp',
   widthCm: 40,
   depthCm: 40,
-  priceEur: 39.9,
+  priceCents: 3990,
 }
 
 describe('layoutReducer', () => {

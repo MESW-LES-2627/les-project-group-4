@@ -11,7 +11,8 @@ export interface PlacedItem extends Size, Placement {
   id: string
   catalogItemId: number
   name: string
-  priceEur: number
+  /** Integer cents, matching the catalog: 34900 = 349,00 €. */
+  priceCents: number
 }
 
 /**
