@@ -1,0 +1,72 @@
+name: Deploy
+
+# Pushes to develop deploy staging; pushes to main deploy production.
+# Vercel's own Git integration needs the GitHub App installed at org level,
+# which repo admins cannot do, so the deploy is driven from here instead.
+# Migrations run before the new version serves traffic; a failed migration
+# fails the job, so the previous deployment keeps serving.
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two deploys of the same environment overlap: a second push waits
+# for the first to finish instead of migrating the same database twice.
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    env:
+      # Project identifiers, not credentials. They match .vercel/*.json locally.
+      VERCEL_ORG_ID: team_qu1XSy93GReSamvXE9KxwkN6
+      VERCEL_PROJECT_ID: ${{ github.ref_name == 'main' && 'prj_huvPEqTyOB0hSnvW0H0ECo2lXPBk' || 'prj_tx8CplqTUnWuWmjCvyHECdIcxF1B' }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check the migration URL is configured
+        run: |
+          if [ -z "${DIRECT_DATABASE_URL}" ]; then
+            echo "::error::DIRECT_DATABASE_URL is not set for the '${{ github.ref_name }}' environment."
+            echo "Add it as an environment secret: Settings -> Environments -> ${{ github.ref_name == 'main' && 'production' || 'staging' }}."
+            exit 1
+          fi
+
+      # Session pooler (port 5432) only: the transaction pooler cannot run DDL.
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          output=$(npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1)
+          printf '%s\n' "$output"
+          url=$(printf '%s\n' "$output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app[^[:space:]]*' | tail -n1)
+          if [ -z "$url" ]; then
+            echo "::error::Could not read the deployment URL from the Vercel CLI output."
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
