@@ -45,6 +45,7 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 | `npm run typecheck`  | Type-checks without emitting                         |
 | `npm run build`      | Production build (also type-checks)                  |
 | `npm run db:migrate` | Creates a migration after changing `prisma/schema.prisma` |
+| `npm run db:seed`    | Fills the database with sample cities and catalog items (safe to re-run) |
 | `npm run db:down`    | Stops the database                                   |
 
 > Coming from the Spring Boot version? Its Flyway tables are still in your Docker volume. Run
