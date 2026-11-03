@@ -1,9 +1,19 @@
 import type { Room } from '@/api/types'
+import { CITY_SELECT } from '@/lib/cities'
 import { db } from '@/lib/db'
 
 // The room fields the API returns (see Room in src/api/types.ts).
 // Shared by the rooms routes and pages so they all return the same shape.
-export const ROOM_SELECT = { id: true, name: true, widthCm: true, lengthCm: true } as const
+export const ROOM_SELECT = {
+  id: true,
+  name: true,
+  widthCm: true,
+  lengthCm: true,
+  // US-15: the location (a city, or the browser's coordinates).
+  city: { select: CITY_SELECT },
+  latitude: true,
+  longitude: true,
+} as const
 
 /** US-02: every room, newest first. Used by GET /api/rooms and the /rooms page. */
 export function findRooms(): Promise<Room[]> {

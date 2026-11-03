@@ -8,19 +8,61 @@ const dimensionCm = z
   .positive({ error: 'must be greater than 0' })
   .max(MAX_INT, { error: 'is too large' })
 
-/** US-01: the rules for creating a room, shared by POST /api/rooms and the create-room form. */
-export const createRoomSchema = z.object(
-  {
-    name: z
-      .string({ error: 'is required' })
-      .trim()
-      .min(1, { error: 'is required' })
-      .max(255, { error: 'must be at most 255 characters' }),
-    widthCm: dimensionCm,
-    lengthCm: dimensionCm,
-  },
-  { error: 'must be a JSON object' },
-)
+/** A database id: a positive whole number that fits in a Postgres INTEGER. */
+const idSchema = z
+  .int({ error: 'must be a whole number' })
+  .positive({ error: 'must be greater than 0' })
+  .max(MAX_INT, { error: 'is too large' })
+
+// US-15: browser coordinates in decimal degrees. z.number() already rejects NaN and Infinity.
+const latitudeSchema = z
+  .number({ error: 'must be a number' })
+  .min(-90, { error: 'must be between -90 and 90' })
+  .max(90, { error: 'must be between -90 and 90' })
+
+const longitudeSchema = z
+  .number({ error: 'must be a number' })
+  .min(-180, { error: 'must be between -180 and 180' })
+  .max(180, { error: 'must be between -180 and 180' })
+
+/**
+ * US-01: the rules for creating a room, shared by POST /api/rooms and the create-room form.
+ * US-15: the location is optional: a `cityId`, or `latitude` + `longitude` together, never both.
+ * Whether the city exists is checked by the route (it needs the database).
+ */
+export const createRoomSchema = z
+  .object(
+    {
+      name: z
+        .string({ error: 'is required' })
+        .trim()
+        .min(1, { error: 'is required' })
+        .max(255, { error: 'must be at most 255 characters' }),
+      widthCm: dimensionCm,
+      lengthCm: dimensionCm,
+      cityId: idSchema.optional(),
+      latitude: latitudeSchema.optional(),
+      longitude: longitudeSchema.optional(),
+    },
+    { error: 'must be a JSON object' },
+  )
+  .superRefine((room, ctx) => {
+    const hasLatitude = room.latitude !== undefined
+    const hasLongitude = room.longitude !== undefined
+    if (hasLatitude && !hasLongitude) {
+      ctx.addIssue({ code: 'custom', path: ['longitude'], message: 'is required with latitude' })
+    }
+    if (hasLongitude && !hasLatitude) {
+      ctx.addIssue({ code: 'custom', path: ['latitude'], message: 'is required with longitude' })
+    }
+    if (room.cityId !== undefined && (hasLatitude || hasLongitude)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['cityId'],
+        message: 'choose a city or your current location, not both',
+      })
+    }
+  })
 
 export type CreateRoomInput = z.infer<typeof createRoomSchema>
 
