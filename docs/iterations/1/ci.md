@@ -39,9 +39,11 @@ Steps:
 2. Fail if `DIRECT_DATABASE_URL` is missing for that environment.
 3. `prisma migrate deploy` against the Supabase **session pooler** (5432). A
    failed migration stops the job, so the previous deployment keeps serving.
-4. `vercel deploy --prod` for the environment's project ID; the deployment URL
+4. `npm run db:seed` against the same pooler (CH-02 AT-7). Upserts by slug, so
+   running it on every deploy is safe and item ids stay stable.
+5. `vercel deploy --prod` for the environment's project ID; the deployment URL
    becomes the environment URL on GitHub.
-5. `GET /api/health` on the new deployment, retried for about a minute. A
+6. `GET /api/health` on the new deployment, retried for about a minute. A
    non-200 fails the job.
 
 Runs are serialised per branch (`concurrency`), so two quick pushes cannot

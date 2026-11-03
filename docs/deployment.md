@@ -22,9 +22,11 @@ deleted.
 2. Fails if `DIRECT_DATABASE_URL` is missing for that environment.
 3. `npx prisma migrate deploy` against the **session pooler** (port 5432). If a
    migration fails, the job stops and the previous deployment keeps serving.
-4. `vercel deploy --prod` with the environment's project ID, and exposes the
+4. `npm run db:seed` against the same pooler. The seed upserts by slug, so it is
+   safe to run on every deploy and keeps item ids stable.
+5. `vercel deploy --prod` with the environment's project ID, and exposes the
    resulting URL as the GitHub environment URL.
-5. Calls `GET /api/health` on the new deployment and fails the job if it does not
+6. Calls `GET /api/health` on the new deployment and fails the job if it does not
    return 200 within about a minute.
 
 Runs are serialised per branch, so two quick pushes cannot migrate the same
