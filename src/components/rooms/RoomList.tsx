@@ -19,11 +19,16 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
   return (
     <ul className="grid gap-2">
       {rooms.map((room) => (
-        <li key={room.id} className="grid gap-1 rounded-lg border border-border p-4">
-          <span className="font-medium break-words text-foreground">{room.name}</span>
-          <span className="text-sm text-muted-foreground">
-            {room.widthCm} × {room.lengthCm} cm
-          </span>
+        <li key={room.id}>
+          <Link
+            href={`/rooms/${room.id}`}
+            className="grid gap-1 rounded-lg border border-border p-4 transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            <span className="font-medium break-words text-foreground">{room.name}</span>
+            <span className="text-sm text-muted-foreground">
+              {room.widthCm} × {room.lengthCm} cm
+            </span>
+          </Link>
         </li>
       ))}
     </ul>

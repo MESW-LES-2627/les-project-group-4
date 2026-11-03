@@ -13,3 +13,8 @@ export function findRooms(): Promise<Room[]> {
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
   })
 }
+
+/** US-03: one room, or null if it does not exist. Used by GET /api/rooms/[id] and the /rooms/[id] page. */
+export function findRoomById(id: number): Promise<Room | null> {
+  return db.room.findUnique({ where: { id }, select: ROOM_SELECT })
+}
