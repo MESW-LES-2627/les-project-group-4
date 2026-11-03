@@ -4,16 +4,21 @@ import { useState } from 'react'
 
 import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
+import type { City } from '@/api/types'
 import { CreateRoomSuccess } from '@/components/CreateRoomSuccess'
+import { LocationField } from '@/components/form/LocationField'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useCreateRoom } from '@/hooks/useCreateRoom'
 import { useRoomForm } from '@/hooks/useRoomForm'
 import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
+import type { RoomLocationInput } from '@/lib/roomValidation'
 
-export function CreateRoomForm() {
+/** US-01 + US-15: `cities` is loaded on the server by the page. */
+export function CreateRoomForm({ cities }: { cities: City[] }) {
   const form = useRoomForm()
+  const [location, setLocation] = useState<RoomLocationInput>({})
   const {
     isSubmitting,
     submitError,
@@ -28,6 +33,7 @@ export function CreateRoomForm() {
   function handleCreateAnother() {
     setFocusNameOnMount(true)
     form.reset()
+    setLocation({})
     resetCreateRoom()
   }
 
@@ -44,7 +50,7 @@ export function CreateRoomForm() {
     <form
       className="grid gap-3"
       noValidate
-      onSubmit={form.handleSubmit(submit)}
+      onSubmit={form.handleSubmit((values) => submit(values, location))}
     >
       <TextField
         {...form.getFieldProps('name')}
@@ -78,6 +84,13 @@ export function CreateRoomForm() {
           required
         />
       </div>
+
+      <LocationField
+        id="room-location"
+        cities={cities}
+        value={location}
+        onChange={setLocation}
+      />
 
       <Button
         type="submit"

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { createRoom } from '@/api/client'
 import type { Room } from '@/api/types'
 import { mapServerFieldErrors, toCreateRoomRequest } from '@/lib/roomValidation'
-import type { RoomFormErrors, RoomFormValues } from '@/lib/roomValidation'
+import type { RoomFormErrors, RoomFormValues, RoomLocationInput } from '@/lib/roomValidation'
 
 interface UseCreateRoomOptions {
   onFieldErrors: (errors: RoomFormErrors) => void
@@ -15,12 +15,12 @@ export function useCreateRoom({ onFieldErrors }: UseCreateRoomOptions) {
   const [createdRoom, setCreatedRoom] = useState<Room | null>(null)
   const inFlightRef = useRef(false)
 
-  async function submit(values: RoomFormValues) {
+  async function submit(values: RoomFormValues, location: RoomLocationInput = {}) {
     if (inFlightRef.current) {
       return
     }
 
-    const request = toCreateRoomRequest(values)
+    const request = toCreateRoomRequest(values, location)
     if (request === null) {
       return
     }

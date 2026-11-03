@@ -14,6 +14,12 @@ export type RoomFormValues = Record<RoomFormField, string>
 
 export type RoomFormErrors = Partial<Record<RoomFormField, string>>
 
+/**
+ * US-15: the optional location chosen in the form. Empty, a city, or the browser's
+ * coordinates; it comes from a select and a button, so it needs no text validation.
+ */
+export type RoomLocationInput = Pick<CreateRoomRequest, 'cityId' | 'latitude' | 'longitude'>
+
 const FORM_FIELDS: readonly RoomFormField[] = ['name', 'width', 'length']
 
 const FIELD_LABELS: Record<RoomFormField, string> = {
@@ -103,11 +109,12 @@ export function isFormValid(errors: RoomFormErrors): boolean {
 }
 
 /**
- * Converts validated form values into the API request body
+ * Converts validated form values (and the optional US-15 location) into the API request body
  * Returns null when the values would fail validation
  */
 export function toCreateRoomRequest(
   values: RoomFormValues,
+  location: RoomLocationInput = {},
 ): CreateRoomRequest | null {
   if (!isFormValid(validateForm(values))) {
     return null
@@ -117,6 +124,7 @@ export function toCreateRoomRequest(
     name: values.name.trim(),
     widthCm: Number(values.width.trim()),
     lengthCm: Number(values.length.trim()),
+    ...location,
   }
 }
 
