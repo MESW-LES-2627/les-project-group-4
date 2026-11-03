@@ -7,7 +7,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import 'dotenv/config'
 
 import { PrismaClient } from '../src/generated/prisma/client'
-import { SEED_CITIES, SEED_ITEMS } from '../src/lib/seed-data'
+import { SEED_CITIES, SEED_ITEMS } from '../src/lib/seedData'
 
 // Same fallback as prisma.config.ts and src/lib/db.ts.
 const LOCAL_DATABASE_URL = 'postgresql://furnimi:furnimi@localhost:5432/furnimi'

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { ITEM_CATEGORIES, isItemCategory } from './catalog'
-import { SAMPLE_SOURCES, SEED_CITIES, SEED_ITEMS } from './seed-data'
+import { SAMPLE_SOURCES, SEED_CITIES, SEED_ITEMS } from './seedData'
 
 const slugsOf = (rows: { slug: string }[]) => rows.map((row) => row.slug)
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
