@@ -27,11 +27,6 @@ export const CATEGORY_LABELS: Record<ItemCategory, string> = {
   lighting: 'Lighting',
 }
 
-/** True when `value` is one of the known categories (used to validate ?category=). */
-export function isItemCategory(value: string): value is ItemCategory {
-  return (ITEM_CATEGORIES as readonly string[]).includes(value)
-}
-
 // pt-PT standard: space as thousands separator, comma for decimals, € after.
 // useGrouping 'always': CLDR pt-PT skips the separator for 4-digit amounts
 // (1234,56 €); 'always' makes every amount consistent (1 234,56 €).

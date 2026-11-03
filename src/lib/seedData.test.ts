@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { ITEM_CATEGORIES, isItemCategory } from './catalog'
+import { ITEM_CATEGORIES } from './catalog'
+import { isItemCategory } from '@/lib/schemas/item'
+
 import { SAMPLE_SOURCES, SEED_CITIES, SEED_ITEMS } from './seedData'
 
 const slugsOf = (rows: { slug: string }[]) => rows.map((row) => row.slug)
