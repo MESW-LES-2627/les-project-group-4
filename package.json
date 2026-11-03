@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "docker compose up -d --wait && prisma migrate deploy && next dev",
+    "dev": "docker compose up -d --wait && prisma migrate deploy && prisma generate && next dev",
     "build": "next build",
     "start": "next start",
     "deploy:staging": "bash scripts/deploy.sh staging",
