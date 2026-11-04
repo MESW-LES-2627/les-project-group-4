@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { CURRENT_LOCATION_LABEL, formatRoomLocation, getRoomCoordinates } from './location'
+import {
+  CURRENT_LOCATION_LABEL,
+  formatRoomLocation,
+  getRoomCoordinates,
+  loadLastLocation,
+  parseSavedLocation,
+  toLocationInput,
+} from './location'
 
 const porto = { id: 1, name: 'Porto', latitude: 41.1579, longitude: -8.6291 }
 const noLocation = { city: null, latitude: null, longitude: null }
@@ -33,5 +40,47 @@ describe('getRoomCoordinates (AT-5: reuse the saved location)', () => {
 
   it('returns null when the room has no location', () => {
     expect(getRoomCoordinates(noLocation)).toBeNull()
+  })
+})
+
+describe('toLocationInput (AT-5: reuse the last room\'s location)', () => {
+  it('turns a city into its id', () => {
+    expect(toLocationInput(withCity)).toEqual({ cityId: 1 })
+  })
+
+  it('keeps browser coordinates', () => {
+    expect(toLocationInput(withCoordinates)).toEqual({ latitude: 41.15, longitude: -8.61 })
+  })
+
+  it('gives no location for a room without one', () => {
+    expect(toLocationInput(noLocation)).toEqual({})
+  })
+})
+
+describe('parseSavedLocation', () => {
+  it('reads a saved city or saved coordinates', () => {
+    expect(parseSavedLocation('{"cityId":1}')).toEqual({ cityId: 1 })
+    expect(parseSavedLocation('{"latitude":41.15,"longitude":-8.61}')).toEqual({
+      latitude: 41.15,
+      longitude: -8.61,
+    })
+  })
+
+  it.each([
+    ['nothing saved', null],
+    ['not JSON', '{ nope'],
+    ['a bad city id', '{"cityId":-1}'],
+    ['only a latitude', '{"latitude":41}'],
+    ['a latitude out of range', '{"latitude":91,"longitude":0}'],
+    ['a city and coordinates', '{"cityId":1,"latitude":41,"longitude":-8}'],
+  ])('gives no location for %s', (_label, raw) => {
+    expect(parseSavedLocation(raw)).toEqual({})
+  })
+})
+
+describe('loadLastLocation', () => {
+  it('gives no location instead of throwing when storage is unavailable', () => {
+    // Vitest runs in Node, where there is no window.localStorage.
+    expect(loadLastLocation()).toEqual({})
   })
 })
