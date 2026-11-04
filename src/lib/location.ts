@@ -76,13 +76,18 @@ export function parseSavedLocation(raw: string | null): RoomLocationInput {
   }
 }
 
-/** Reads the last location. Storage can be blocked (private mode), so it never throws. */
-export function loadLastLocation(): RoomLocationInput {
+/** The stored last location as text, or null. Storage can be blocked (private mode), so it never throws. */
+export function readLastLocationRaw(): string | null {
   try {
-    return parseSavedLocation(window.localStorage.getItem(LAST_LOCATION_KEY))
+    return window.localStorage.getItem(LAST_LOCATION_KEY)
   } catch {
-    return {}
+    return null
   }
+}
+
+/** Reads the last location; anything unreadable gives no location. */
+export function loadLastLocation(): RoomLocationInput {
+  return parseSavedLocation(readLastLocationRaw())
 }
 
 /** Remembers the last location; a room without one clears it. Never throws. */

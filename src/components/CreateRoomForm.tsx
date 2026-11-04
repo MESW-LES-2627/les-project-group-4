@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
@@ -12,15 +12,46 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useCreateRoom } from '@/hooks/useCreateRoom'
 import { useRoomForm } from '@/hooks/useRoomForm'
-import { loadLastLocation, saveLastLocation, toLocationInput } from '@/lib/location'
+import {
+  parseSavedLocation,
+  readLastLocationRaw,
+  saveLastLocation,
+  toLocationInput,
+} from '@/lib/location'
 import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
 import type { RoomLocationInput } from '@/lib/roomValidation'
+
+// The stored location only changes when this form writes it, so there is nothing to subscribe to.
+function subscribe() {
+  return () => {}
+}
+
+// The server cannot see the browser's storage: no saved location while rendering there.
+function getServerRaw(): string | null {
+  return null
+}
 
 /** US-01 + US-15: `cities` is loaded on the server by the page. */
 export function CreateRoomForm({ cities }: { cities: City[] }) {
   const form = useRoomForm()
-  const [location, setLocation] = useState<RoomLocationInput>({})
-  const [reusedLocation, setReusedLocation] = useState(false)
+
+  // US-15 AT-5: until the user picks something, the form uses the last room's location.
+  // A city that no longer exists is ignored.
+  const savedRaw = useSyncExternalStore(subscribe, readLastLocationRaw, getServerRaw)
+  const savedLocation = useMemo<RoomLocationInput>(() => {
+    const saved = parseSavedLocation(savedRaw)
+    if (saved.cityId !== undefined && !cities.some((city) => city.id === saved.cityId)) {
+      return {}
+    }
+    return saved
+  }, [savedRaw, cities])
+
+  // null = the user has not chosen a location yet.
+  const [chosenLocation, setChosenLocation] = useState<RoomLocationInput | null>(null)
+  const [keptForNextRoom, setKeptForNextRoom] = useState(false)
+  const location = chosenLocation ?? savedLocation
+  const reusedLocation =
+    chosenLocation === null ? Object.keys(savedLocation).length > 0 : keptForNextRoom
   const {
     isSubmitting,
     submitError,
@@ -32,19 +63,6 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
   })
   const [focusNameOnMount, setFocusNameOnMount] = useState(false)
 
-  // US-15 AT-5: start with the last room's location. Read after mounting, because the
-  // server cannot see the browser's storage. A city that no longer exists is ignored.
-  useEffect(() => {
-    const saved = loadLastLocation()
-    if (saved.cityId !== undefined && !cities.some((city) => city.id === saved.cityId)) {
-      return
-    }
-    if (Object.keys(saved).length > 0) {
-      setLocation(saved)
-      setReusedLocation(true)
-    }
-  }, [cities])
-
   // Remember the location that was actually saved with the room.
   useEffect(() => {
     if (createdRoom !== null) {
@@ -53,15 +71,16 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
   }, [createdRoom])
 
   function handleLocationChange(next: RoomLocationInput) {
-    setLocation(next)
-    setReusedLocation(false)
+    setChosenLocation(next)
+    setKeptForNextRoom(false)
   }
 
   function handleCreateAnother() {
     setFocusNameOnMount(true)
     form.reset()
     // AT-5: keep the location for the next room instead of asking again.
-    setReusedLocation(Object.keys(location).length > 0)
+    setChosenLocation(location)
+    setKeptForNextRoom(Object.keys(location).length > 0)
     resetCreateRoom()
   }
 
