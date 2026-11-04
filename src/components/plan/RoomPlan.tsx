@@ -40,7 +40,7 @@ export function RoomPlan({ room }: { room: Room }) {
     <figure className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
-        <p className="text-xs text-muted-foreground">Drag to pan · Scroll to zoom</p>
+        <p className="text-xs text-muted-foreground">Drag to move around · Scroll to zoom</p>
       </div>
 
       <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">

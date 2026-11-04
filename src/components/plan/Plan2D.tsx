@@ -82,6 +82,10 @@ export function Plan2D({
         enableRotate={false}
         enableDamping
         dampingFactor={0.12}
+        // MapControls' default pans along the ground plane, which is the view
+        // axis for a top-down camera: vertical drags would move the camera
+        // along its own line of sight and look like no movement at all.
+        screenSpacePanning
         target={[width / 2, 0, depth / 2]}
         minZoom={0.5}
         maxZoom={8}
