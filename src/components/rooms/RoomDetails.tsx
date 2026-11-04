@@ -19,7 +19,7 @@ export function RoomDetails({ room }: { room: Room }) {
         </div>
       </dl>
 
-      <section aria-labelledby="plan-heading">
+      <section aria-label="2D plan">
         <RoomPlan room={room} />
       </section>
     </div>

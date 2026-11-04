@@ -7,7 +7,7 @@ import type { Room } from '@/api/types'
 import { layoutReducer } from '@/lib/layout/layout'
 
 const Plan2D = dynamic(
-  () => import('./plan2d').then((module) => module.Plan2D),
+  () => import('./Plan2D').then((module) => module.Plan2D),
   {
     ssr: false,
     loading: () => <PlanLoading />,

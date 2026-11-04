@@ -8,7 +8,7 @@ import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { ItemLabel } from './ItemLabel'
 import { fitOrthoFrustum } from './ortho'
-import { RoomScene } from './RoomScene'
+import { RoomScene } from './scene/RoomScene'
 
 export interface Plan2DProps {
   room: RoomSize

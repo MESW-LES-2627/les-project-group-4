@@ -3,7 +3,7 @@ import { OrthographicCamera as OrthographicCameraImpl } from 'three'
 import { describe, expect, it } from 'vitest'
 
 import { fitOrthoFrustum } from './ortho'
-import { FitOrthoCamera } from './plan2d'
+import { FitOrthoCamera } from './Plan2D'
 
 describe('plan renderer test setup', () => {
   it('mounts a mesh in the R3F scene graph', async () => {
