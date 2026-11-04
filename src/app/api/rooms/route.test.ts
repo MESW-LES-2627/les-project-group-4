@@ -1,18 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { City, Room, ValidationErrorBody } from '@/api/types'
-import { db } from '@/lib/db'
 
 import { GET, POST } from './route'
 
-// Replace the real Prisma client with a fake: no database is needed.
-vi.mock('@/lib/db', () => ({
-  db: { room: { create: vi.fn(), findMany: vi.fn() }, city: { findUnique: vi.fn() } },
+const { createRoom, findRooms, findCity } = vi.hoisted(() => ({
+  createRoom: vi.fn(),
+  findRooms: vi.fn(),
+  findCity: vi.fn(),
 }))
 
-const createRoom = vi.mocked(db.room.create)
-const findRooms = vi.mocked(db.room.findMany)
-const findCity = vi.mocked(db.city.findUnique)
+// Replace the real Prisma client with a fake: no database is needed.
+vi.mock('@/lib/db', () => ({
+  getDb: () => ({
+    room: { create: createRoom, findMany: findRooms },
+    city: { findUnique: findCity },
+  }),
+}))
 
 const validBody = { name: 'Bedroom', widthCm: 300, lengthCm: 400 }
 const noLocation = { city: null, latitude: null, longitude: null }

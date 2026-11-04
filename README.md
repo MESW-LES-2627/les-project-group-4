@@ -16,6 +16,7 @@ drag around.
 ## Documentation
 
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
+- [Deployment and migrations](docs/deployment.md)
 
 
 ## Stack

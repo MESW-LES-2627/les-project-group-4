@@ -6,22 +6,26 @@
 import 'dotenv/config'
 
 // The app's client (src/lib/db.ts): one place for the connection setup.
-import { db } from '../src/lib/db'
+import { getDb } from '../src/lib/db'
 import { SEED_CITIES, SEED_ITEMS } from '../src/lib/seedData'
 
 async function main(): Promise<void> {
-  for (const { slug, ...data } of SEED_CITIES) {
-    await db.city.upsert({ where: { slug }, create: { slug, ...data }, update: data })
+  const db = getDb()
+
+  try {
+    for (const { slug, ...data } of SEED_CITIES) {
+      await db.city.upsert({ where: { slug }, create: { slug, ...data }, update: data })
+    }
+    for (const { slug, ...data } of SEED_ITEMS) {
+      await db.item.upsert({ where: { slug }, create: { slug, ...data }, update: data })
+    }
+    console.log(`Seeded ${SEED_CITIES.length} cities and ${SEED_ITEMS.length} items.`)
+  } finally {
+    await db.$disconnect()
   }
-  for (const { slug, ...data } of SEED_ITEMS) {
-    await db.item.upsert({ where: { slug }, create: { slug, ...data }, update: data })
-  }
-  console.log(`Seeded ${SEED_CITIES.length} cities and ${SEED_ITEMS.length} items.`)
 }
 
-main()
-  .catch((error: unknown) => {
-    console.error('Seed failed:', error)
-    process.exitCode = 1
-  })
-  .finally(() => db.$disconnect())
+main().catch((error: unknown) => {
+  console.error('Seed failed:', error)
+  process.exitCode = 1
+})

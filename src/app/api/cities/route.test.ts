@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { City } from '@/api/types'
-import { db } from '@/lib/db'
 
 import { GET } from './route'
 
+const { findCities } = vi.hoisted(() => ({ findCities: vi.fn() }))
+
 // Replace the real Prisma client with a fake: no database is needed.
 vi.mock('@/lib/db', () => ({
-  db: { city: { findMany: vi.fn() } },
+  getDb: () => ({ city: { findMany: findCities } }),
 }))
-
-const findCities = vi.mocked(db.city.findMany)
 
 const cities: City[] = [
   { id: 2, name: 'Lisboa', latitude: 38.7223, longitude: -9.1393 },

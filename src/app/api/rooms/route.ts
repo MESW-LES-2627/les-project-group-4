@@ -1,6 +1,6 @@
 import type { Room, ValidationErrorBody } from '@/api/types'
 import { cityExists } from '@/lib/cities'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { findRooms, ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       return validationError({ cityId: 'does not exist' })
     }
 
-    const room: Room = await db.room.create({
+    const room: Room = await getDb().room.create({
       data: parsed.data,
       select: ROOM_SELECT,
     })

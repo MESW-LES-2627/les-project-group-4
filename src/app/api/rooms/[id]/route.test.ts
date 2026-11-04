@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Room, ValidationErrorBody } from '@/api/types'
-import { db } from '@/lib/db'
 
 import { GET } from './route'
 
+const { findRoom } = vi.hoisted(() => ({ findRoom: vi.fn() }))
+
 // Replace the real Prisma client with a fake: no database is needed.
 vi.mock('@/lib/db', () => ({
-  db: { room: { findUnique: vi.fn() } },
+  getDb: () => ({ room: { findUnique: findRoom } }),
 }))
-
-const findRoom = vi.mocked(db.room.findUnique)
 
 const room: Room = {
   id: 3,
