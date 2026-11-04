@@ -24,6 +24,7 @@ import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
+import { PlanGrid, PlanGridProjector } from './PlanGrid'
 import { ScaleBar, ScaleBarProjector } from './ScaleBar'
 import { ItemLabel } from './ItemLabel'
 import {
@@ -140,6 +141,7 @@ export function Plan2D({
   const depthLabelRef = useRef<HTMLDivElement>(null)
   const scaleLineRef = useRef<HTMLDivElement>(null)
   const scaleTextRef = useRef<HTMLSpanElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -184,7 +186,7 @@ export function Plan2D({
           : 'relative h-full w-full'
       }
     >
-      <div className="pointer-events-none absolute inset-0 opacity-70 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[16px_16px]" />
+      <PlanGrid gridRef={gridRef} />
 
       <Canvas
         orthographic
@@ -201,6 +203,7 @@ export function Plan2D({
           depthRef={depthLabelRef}
         />
         <ScaleBarProjector lineRef={scaleLineRef} textRef={scaleTextRef} />
+        <PlanGridProjector gridRef={gridRef} />
         <RoomScene
           room={room}
           items={items}

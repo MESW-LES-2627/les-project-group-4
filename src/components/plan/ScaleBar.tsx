@@ -3,10 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import type { OrthographicCamera } from 'three'
 
 import { dimensionLabelText } from './label'
-import { niceScaleMetres } from './ortho'
-
-/** Aim for a bar about this wide, then snap the length to a round number. */
-const TARGET_BAR_PX = 110
+import { planScale } from './ortho'
 
 interface ScaleBarProps {
   lineRef: RefObject<HTMLDivElement | null>
@@ -43,13 +40,13 @@ export function ScaleBarProjector({ lineRef, textRef }: ScaleBarProps) {
     if (!Number.isFinite(visibleHeightM) || visibleHeightM <= 0) return
 
     const pxPerMetre = size.height / visibleHeightM
-    const metres = niceScaleMetres(TARGET_BAR_PX / pxPerMetre)
+    const scale = planScale(pxPerMetre)
 
     if (lineRef.current) {
-      lineRef.current.style.width = `${metres * pxPerMetre}px`
+      lineRef.current.style.width = `${scale.px}px`
     }
     if (textRef.current) {
-      textRef.current.textContent = dimensionLabelText(metres * 100)
+      textRef.current.textContent = dimensionLabelText(scale.metres * 100)
     }
   })
 

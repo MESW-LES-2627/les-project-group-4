@@ -5,6 +5,7 @@ import {
   MIN_ZOOM,
   fitOrthoFrustum,
   niceScaleMetres,
+  planScale,
   planViewPose,
   stepZoom,
 } from './ortho'
@@ -66,6 +67,34 @@ describe('niceScaleMetres', () => {
     expect(niceScaleMetres(-5)).toBe(0.1)
     expect(niceScaleMetres(Number.NaN)).toBe(0.1)
     expect(niceScaleMetres(Number.POSITIVE_INFINITY)).toBe(0.1)
+  })
+})
+
+describe('planScale', () => {
+  it.each([
+    [87, 1],
+    [190, 0.5],
+    [43.5, 2],
+    [696, 0.1],
+    [20, 5],
+  ])('picks a round bar length at %s px/m', (pxPerMetre, metres) => {
+    expect(planScale(pxPerMetre).metres).toBeCloseTo(metres)
+    expect(planScale(pxPerMetre).px).toBeCloseTo(metres * pxPerMetre)
+  })
+
+  it('keeps the bar between 40% and 100% of its target width', () => {
+    for (const pxPerMetre of [20, 43.5, 87, 190, 400, 696]) {
+      const { px } = planScale(pxPerMetre)
+
+      expect(px).toBeGreaterThanOrEqual(40)
+      expect(px).toBeLessThanOrEqual(110)
+    }
+  })
+
+  it('falls back to a 1 m bar for invalid scales', () => {
+    expect(planScale(0)).toEqual({ metres: 1, px: 0 })
+    expect(planScale(-1)).toEqual({ metres: 1, px: 0 })
+    expect(planScale(Number.NaN)).toEqual({ metres: 1, px: 0 })
   })
 })
 

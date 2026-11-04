@@ -44,6 +44,32 @@ export function niceScaleMetres(maxMetres: number): number {
   return base
 }
 
+/** Target length of the scale bar and a major grid square, in pixels. */
+const SCALE_TARGET_PX = 110
+
+/** Minor grid cells inside one major square. */
+export const MINOR_PER_MAJOR = 5
+
+export interface PlanScale {
+  /** Length of the scale bar and of one major grid square, in metres. */
+  metres: number
+  /** The same length in pixels. */
+  px: number
+}
+
+/**
+ * The labelled scale bar length at a given plan scale. The grid uses the same
+ * value for its major squares, so the ruler and the grid always agree.
+ */
+export function planScale(pxPerMetre: number): PlanScale {
+  if (!Number.isFinite(pxPerMetre) || pxPerMetre <= 0) {
+    return { metres: 1, px: 0 }
+  }
+
+  const metres = niceScaleMetres(SCALE_TARGET_PX / pxPerMetre)
+  return { metres, px: metres * pxPerMetre }
+}
+
 /** Camera position and controls target that frame the room from above. */
 export interface PlanViewPose {
   position: [number, number, number]
