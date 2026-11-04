@@ -163,9 +163,13 @@ export function Plan2D({
     }
   }, [isFullscreen])
 
+  function resetView() {
+    setResetToken((token) => token + 1)
+  }
+
   function toggleFullscreen() {
     // Expanding changes the viewport aspect, so start from the fitted view.
-    if (!isFullscreen) setResetToken((token) => token + 1)
+    if (!isFullscreen) resetView()
     setIsFullscreen(!isFullscreen)
   }
 
@@ -194,6 +198,8 @@ export function Plan2D({
         dpr={[1, 2]}
         gl={{ antialias: true }}
         onPointerMissed={onSelect ? () => onSelect(null) : undefined}
+        // Double-clicking anywhere on the plan is a quick "fit to room".
+        onDoubleClick={resetView}
         style={{ touchAction: 'none' }}
       >
         <FitOrthoCamera room={room} />
@@ -233,7 +239,7 @@ export function Plan2D({
           variant="secondary"
           size="sm"
           className="shadow-sm"
-          onClick={() => setResetToken((token) => token + 1)}
+          onClick={resetView}
           title="Fit the room back into view"
         >
           <RotateCcw aria-hidden="true" />
