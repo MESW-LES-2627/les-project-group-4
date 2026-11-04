@@ -99,6 +99,29 @@ describe('RoomScene', () => {
     await renderer.unmount()
   })
 
+  it('renders an optional label above the item', async () => {
+    const renderLabel = vi.fn((item: PlacedItemData, selected: boolean) => (
+      <mesh name={`item-label-${item.id}-${selected}`} />
+    ))
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene
+        room={room}
+        items={[sofa]}
+        selectedId="sofa"
+        renderLabel={renderLabel}
+      />,
+    )
+
+    const label = renderer.scene.findByProps({
+      name: 'item-label-sofa-true',
+    }).instance
+
+    expect(renderLabel).toHaveBeenCalledWith(sofa, true)
+    expect(label.parent?.position.y).toBeCloseTo(0.07)
+
+    await renderer.unmount()
+  })
+
   it('marks the selected item with the accent colour', async () => {
     const renderer = await ReactThreeTestRenderer.create(
       <RoomScene room={room} items={[sofa]} selectedId="sofa" />,

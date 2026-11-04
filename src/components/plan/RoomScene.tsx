@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
@@ -10,6 +12,8 @@ export interface RoomSceneProps {
   itemHeight?: number // Item box height in metres (defaults to the thin 2D footprint)
   selectedId?: string | null
   onSelect?: (id: string | null) => void
+  /** Label slot, so the shared scene does not import DOM-only components. */
+  renderLabel?: (item: PlacedItemData, selected: boolean) => ReactNode
 }
 
 /**
@@ -26,6 +30,7 @@ export function RoomScene({
   itemHeight,
   selectedId = null,
   onSelect,
+  renderLabel,
 }: RoomSceneProps) {
   return (
     <group name="room-scene">
@@ -39,6 +44,7 @@ export function RoomScene({
             height={itemHeight}
             selected={item.id === selectedId}
             onSelect={onSelect}
+            label={renderLabel?.(item, item.id === selectedId)}
           />
         ))}
       </group>

@@ -6,6 +6,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
+import { ItemLabel } from './ItemLabel'
 import { fitOrthoFrustum } from './ortho'
 import { RoomScene } from './RoomScene'
 
@@ -73,6 +74,9 @@ export function Plan2D({
         items={items}
         selectedId={selectedId}
         onSelect={onSelect}
+        renderLabel={(item, selected) => (
+          <ItemLabel item={item} selected={selected} />
+        )}
       />
       <MapControls
         makeDefault
