@@ -67,7 +67,6 @@ export function Plan2D({
       onPointerMissed={onSelect ? () => onSelect(null) : undefined}
       style={{ touchAction: 'none' }}
     >
-      <color attach="background" args={['#f8fafc']} />
       <FitOrthoCamera room={room} />
       <RoomScene
         room={room}

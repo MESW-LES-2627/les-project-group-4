@@ -16,8 +16,9 @@ const Plan2D = dynamic(
 
 function PlanLoading() {
   return (
-    <div className="flex h-80 w-full items-center justify-center rounded-lg border bg-slate-50 sm:h-105">
-      <p role="status" className="text-sm text-muted-foreground">
+    <div className="relative flex h-80 w-full items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
+      <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [background-size:16px_16px]" />
+      <p role="status" className="relative text-sm text-muted-foreground">
         Loading plan…
       </p>
     </div>
@@ -36,13 +37,16 @@ export function RoomPlan({ room }: { room: Room }) {
 
   return (
     <figure className="grid gap-3">
-      <div className="h-80 w-full overflow-hidden rounded-lg border border-slate-200 sm:h-105">
-        <Plan2D
-          room={room}
-          items={items}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
+      <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
+        <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="relative h-full w-full">
+          <Plan2D
+            room={room}
+            items={items}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        </div>
       </div>
 
       <figcaption className="grid gap-1 text-sm text-muted-foreground">
