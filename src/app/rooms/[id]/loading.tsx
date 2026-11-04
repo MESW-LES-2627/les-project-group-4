@@ -4,11 +4,23 @@ import { LoaderCircle } from 'lucide-react'
 export default function RoomLoading() {
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
-      <section className="mx-auto grid w-full max-w-2xl content-start gap-6">
+      <section className="mx-auto grid w-full max-w-4xl content-start gap-6">
         <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
           Loading room…
         </p>
+
+        <div className="grid gap-6" aria-hidden="true">
+          <div className="grid gap-2">
+            <div className="h-8 w-64 max-w-full animate-pulse rounded-sm bg-muted" />
+            <div className="h-4 w-48 max-w-full animate-pulse rounded-sm bg-muted" />
+          </div>
+
+          <div className="grid gap-3">
+            <div className="h-4 w-20 animate-pulse rounded-sm bg-muted" />
+            <div className="h-80 animate-pulse rounded-lg border border-border bg-muted sm:h-105" />
+          </div>
+        </div>
       </section>
     </main>
   )
