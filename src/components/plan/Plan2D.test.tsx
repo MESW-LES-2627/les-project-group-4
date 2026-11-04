@@ -1,9 +1,29 @@
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
+import type {
+  BoxGeometry,
+  Mesh,
+  OrthographicCamera as OrthographicCameraImpl,
+} from 'three'
 import { describe, expect, it } from 'vitest'
 
+import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+
 import { fitOrthoFrustum } from './ortho'
-import { FitOrthoCamera } from './Plan2D'
+import { FitOrthoCamera, Plan2DScene } from './Plan2D'
+
+const room = { widthCm: 300, lengthCm: 400 }
+
+const sofa: PlacedItemData = {
+  id: 'sofa',
+  catalogItemId: 1,
+  name: 'Sofa',
+  widthCm: 200,
+  depthCm: 100,
+  xCm: 250,
+  yCm: 120,
+  rotationDeg: 90,
+  priceCents: 49900,
+}
 
 describe('plan renderer test setup', () => {
   it('mounts a mesh in the R3F scene graph', async () => {
@@ -21,9 +41,29 @@ describe('plan renderer test setup', () => {
   })
 })
 
+describe('Plan2D scene', () => {
+  it('renders one placed item when mounted with one item', async () => {
+    // The Canvas needs DOM/WebGL, so mount the exact R3F subtree Plan2D uses.
+    const renderer = await ReactThreeTestRenderer.create(
+      <Plan2DScene room={room} items={[sofa]} />,
+    )
+
+    expect(
+      renderer.scene.findByProps({ name: 'placed-item-sofa' }),
+    ).toBeDefined()
+
+    const mesh = renderer.scene.findByProps({
+      name: 'placed-item-mesh-sofa',
+    }).instance as Mesh<BoxGeometry>
+    expect(mesh.geometry.parameters.width).toBeCloseTo(2)
+    expect(mesh.geometry.parameters.depth).toBeCloseTo(1)
+
+    await renderer.unmount()
+  })
+})
+
 describe('FitOrthoCamera', () => {
   it('looks straight down at the room centre with the plan upright', async () => {
-    const room = { widthCm: 300, lengthCm: 400 }
     const renderer = await ReactThreeTestRenderer.create(<FitOrthoCamera room={room} />)
 
     // Duck-type the camera: R3F loads its own copy of three (CJS), so an

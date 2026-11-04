@@ -36,13 +36,38 @@ import {
   stepZoom,
   type ZoomDirection,
 } from './ortho'
-import { RoomScene } from './scene/RoomScene'
+import { RoomScene, type RoomSceneProps } from './scene/RoomScene'
 
 export interface Plan2DProps {
   room: RoomSize
   items?: PlacedItemData[]
   selectedId?: string | null
   onSelect?: (id: string | null) => void
+}
+
+export type Plan2DSceneProps = Plan2DProps &
+  Pick<RoomSceneProps, 'renderLabel'>
+
+/**
+ * The R3F subtree Plan2D mounts inside its Canvas. It is exported separately
+ * so the renderer test can mount it without a DOM/WebGL canvas (AT-5).
+ */
+export function Plan2DScene({
+  room,
+  items = [],
+  selectedId = null,
+  onSelect,
+  renderLabel,
+}: Plan2DSceneProps) {
+  return (
+    <RoomScene
+      room={room}
+      items={items}
+      selectedId={selectedId}
+      onSelect={onSelect}
+      renderLabel={renderLabel}
+    />
+  )
 }
 
 /**
@@ -210,7 +235,7 @@ export function Plan2D({
         />
         <ScaleBarProjector lineRef={scaleLineRef} textRef={scaleTextRef} />
         <PlanGridProjector gridRef={gridRef} />
-        <RoomScene
+        <Plan2DScene
           room={room}
           items={items}
           selectedId={selectedId}
