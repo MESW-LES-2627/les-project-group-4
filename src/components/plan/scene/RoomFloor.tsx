@@ -3,8 +3,9 @@ import type { ThreeEvent } from '@react-three/fiber'
 import type { RoomSize } from '@/lib/geometry/plan'
 import { roomOutline } from '@/lib/geometry/plan'
 
-export const FLOOR_COLOR = '#f1f5f9'
-export const OUTLINE_COLOR = '#334155'
+/** Matches the room thumbnails: brand-soft floor on the surface-2 canvas. */
+export const FLOOR_COLOR = '#f6e9e1'
+export const OUTLINE_COLOR = '#b4552d'
 
 export interface RoomFloorProps {
   room: RoomSize
