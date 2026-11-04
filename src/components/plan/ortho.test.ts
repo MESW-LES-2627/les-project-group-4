@@ -1,10 +1,27 @@
 import { describe, expect, it } from 'vitest'
 
-import { fitOrthoFrustum } from './ortho'
+import { fitOrthoFrustum, planViewPose } from './ortho'
 
 const room = { widthCm: 300, lengthCm: 400 }
 const width = (frustum: ReturnType<typeof fitOrthoFrustum>) => frustum.right - frustum.left
 const height = (frustum: ReturnType<typeof fitOrthoFrustum>) => frustum.top - frustum.bottom
+
+describe('planViewPose', () => {
+  it('puts the camera above the room centre, looking down at it', () => {
+    const pose = planViewPose(room)
+
+    expect(pose.position).toEqual([1.5, 10, 2])
+    expect(pose.target).toEqual([1.5, 0, 2])
+  })
+
+  it('centres the view for any room size', () => {
+    const pose = planViewPose({ widthCm: 120, lengthCm: 250 })
+
+    expect(pose.position[0]).toBeCloseTo(0.6)
+    expect(pose.position[2]).toBeCloseTo(1.25)
+    expect(pose.target).toEqual([pose.position[0], 0, pose.position[2]])
+  })
+})
 
 describe('fitOrthoFrustum', () => {
   it('exactly fills a matching 3:4 viewport when there is no padding', () => {

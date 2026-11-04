@@ -10,6 +10,30 @@ export interface OrthoFrustum {
 
 const DEFAULT_PADDING_M = 0.4
 
+/** Height of the top-down plan camera above the floor, in metres. */
+export const CAMERA_HEIGHT_M = 10
+
+/** Camera position and controls target that frame the room from above. */
+export interface PlanViewPose {
+  position: [number, number, number]
+  target: [number, number, number]
+}
+
+/**
+ * The default plan view: the room centre in the middle of the screen and the
+ * camera straight above it. Shared by the initial camera setup and "reset
+ * view", so the two can never drift apart.
+ */
+export function planViewPose(room: RoomSize): PlanViewPose {
+  const x = room.widthCm / 200
+  const z = room.lengthCm / 200
+
+  return {
+    position: [x, CAMERA_HEIGHT_M, z],
+    target: [x, 0, z],
+  }
+}
+
 /**
  * Fit the room into an orthographic camera that looks straight down at the
  * room's centre. Both axes use the same metres-per-pixel scale, so the plan

@@ -1,5 +1,5 @@
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import { OrthographicCamera as OrthographicCameraImpl } from 'three'
+import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 import { describe, expect, it } from 'vitest'
 
 import { fitOrthoFrustum } from './ortho'
@@ -26,8 +26,10 @@ describe('FitOrthoCamera', () => {
     const room = { widthCm: 300, lengthCm: 400 }
     const renderer = await ReactThreeTestRenderer.create(<FitOrthoCamera room={room} />)
 
+    // Duck-type the camera: R3F loads its own copy of three (CJS), so an
+    // instanceof check against this file's ESM import never matches.
     const camera = renderer.scene.findAll(
-      (node) => node.instance instanceof OrthographicCameraImpl,
+      (node) => (node.instance as OrthographicCameraImpl)?.isOrthographicCamera,
     )[0].instance as OrthographicCameraImpl
     const frustum = fitOrthoFrustum(room, 1280 / 800)
 
