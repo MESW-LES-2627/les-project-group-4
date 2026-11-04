@@ -137,6 +137,16 @@ describe('POST /api/rooms with a location (US-15)', () => {
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
+  it('saves the coordinates rounded to 3 decimals', async () => {
+    createRoom.mockResolvedValue({ id: 1, ...validBody, city: null, latitude: 41.178, longitude: -8.596 } as never)
+
+    await POST(postRequest({ ...validBody, latitude: 41.177851, longitude: -8.596074 }))
+
+    expect(createRoom).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { ...validBody, latitude: 41.178, longitude: -8.596 } }),
+    )
+  })
+
   it('returns 400 when a city and coordinates are both sent', async () => {
     const response = await POST(
       postRequest({ ...validBody, cityId: 1, latitude: 41.15, longitude: -8.61 }),

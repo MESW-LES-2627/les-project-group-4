@@ -14,16 +14,32 @@ const idSchema = z
   .positive({ error: 'must be greater than 0' })
   .max(MAX_INT, { error: 'is too large' })
 
+/**
+ * US-15: decimals kept from the browser's coordinates. 3 decimals is about 110 m: enough
+ * for "stores near me" (US-17), without storing (and serving, since GET /api/rooms has no
+ * login) where the user was to the metre.
+ */
+export const COORDINATE_DECIMALS = 3
+
+/** Rounds a coordinate to COORDINATE_DECIMALS, never returning -0. */
+export function roundCoordinate(value: number): number {
+  const factor = 10 ** COORDINATE_DECIMALS
+  return Math.round(value * factor) / factor + 0
+}
+
 // US-15: browser coordinates in decimal degrees. z.number() already rejects NaN and Infinity.
+// The range is checked on the exact value, then the value is rounded before it is saved.
 const latitudeSchema = z
   .number({ error: 'must be a number' })
   .min(-90, { error: 'must be between -90 and 90' })
   .max(90, { error: 'must be between -90 and 90' })
+  .transform(roundCoordinate)
 
 const longitudeSchema = z
   .number({ error: 'must be a number' })
   .min(-180, { error: 'must be between -180 and 180' })
   .max(180, { error: 'must be between -180 and 180' })
+  .transform(roundCoordinate)
 
 /**
  * US-01: the rules for creating a room, shared by POST /api/rooms and the create-room form.

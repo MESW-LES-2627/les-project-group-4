@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createRoomSchema, roomIdSchema } from './room'
+import { createRoomSchema, roomIdSchema, roundCoordinate } from './room'
 
 const validRoom = { name: 'Bedroom', widthCm: 300, lengthCm: 400 }
 
@@ -87,6 +87,32 @@ describe('createRoomSchema location (US-15)', () => {
 
     expect(result.success).toBe(false)
     expect(result.error?.issues[0].path).toEqual([field])
+  })
+})
+
+describe('coordinate rounding (US-15 privacy)', () => {
+  it('keeps 3 decimals (about 110 m) of the browser coordinates', () => {
+    const parsed = createRoomSchema.parse({ ...validRoom, latitude: 41.177851, longitude: -8.596074 })
+
+    expect(parsed.latitude).toBe(41.178)
+    expect(parsed.longitude).toBe(-8.596)
+  })
+
+  it.each([
+    [41.1775, 41.178],
+    [-8.5965, -8.596],
+    [90, 90],
+    [-180, -180],
+  ])('rounds %f to %f', (value, rounded) => {
+    expect(roundCoordinate(value)).toBe(rounded)
+  })
+
+  it('never returns -0', () => {
+    expect(Object.is(roundCoordinate(-0.0001), 0)).toBe(true)
+  })
+
+  it('checks the range before rounding, so 90.0004 is still rejected', () => {
+    expect(createRoomSchema.safeParse({ ...validRoom, latitude: 90.0004, longitude: 0 }).success).toBe(false)
   })
 })
 

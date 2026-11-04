@@ -1,5 +1,6 @@
 import type { Room } from '@/api/types'
 import { formatRoomLocation, getRoomCoordinates } from '@/lib/location'
+import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 
 /** US-03: one room's details. US-15: with its saved location (AT-5: reused when reopened). */
 export function RoomDetails({ room }: { room: Room }) {
@@ -26,7 +27,8 @@ export function RoomDetails({ room }: { room: Room }) {
             {location ?? 'Not set'}
             {coordinates !== null && room.city === null ? (
               <span className="block text-sm font-normal text-muted-foreground">
-                {coordinates.latitude.toFixed(5)}, {coordinates.longitude.toFixed(5)}
+                {coordinates.latitude.toFixed(COORDINATE_DECIMALS)},{' '}
+                {coordinates.longitude.toFixed(COORDINATE_DECIMALS)}
               </span>
             ) : null}
           </dd>
