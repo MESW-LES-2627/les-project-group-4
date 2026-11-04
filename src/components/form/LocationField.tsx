@@ -7,6 +7,7 @@ import type { City } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
+  formatAccuracy,
   GEOLOCATION_MESSAGES,
   getGeolocationSupport,
   messageForPositionError,
@@ -47,6 +48,8 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
   const support = useSyncExternalStore(subscribe, getBrowserSupport, getServerSupport)
   const [isLocating, setIsLocating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Accuracy of the last browser position, in metres. Only shown, never saved.
+  const [accuracy, setAccuracy] = useState<number | null>(null)
 
   const hasCoordinates = value.latitude !== undefined && value.longitude !== undefined
   let selectValue = ''
@@ -61,6 +64,7 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
     if (next === 'current') {
       return
     }
+    setAccuracy(null)
     onChange(next === '' ? {} : { cityId: Number(next) })
   }
 
@@ -70,6 +74,7 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setIsLocating(false)
+        setAccuracy(position.coords.accuracy)
         // AT-6: only the coordinates are kept; nothing is sent to a geocoding service.
         onChange({ latitude: position.coords.latitude, longitude: position.coords.longitude })
       },
@@ -77,7 +82,8 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
         setIsLocating(false)
         setError(messageForPositionError(positionError.code))
       },
-      { timeout: 10_000, maximumAge: 60_000 },
+      // Ask for GPS on phones and a fresh position, not a cached one.
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 },
     )
   }
 
@@ -104,7 +110,13 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
           className={SELECT_CLASSES}
         >
           <option value="">No location</option>
-          {hasCoordinates ? <option value="current">{CURRENT_LOCATION_LABEL}</option> : null}
+          {hasCoordinates ? (
+            <option value="current">
+              {accuracy !== null
+                ? `${CURRENT_LOCATION_LABEL} (${formatAccuracy(accuracy)})`
+                : CURRENT_LOCATION_LABEL}
+            </option>
+          ) : null}
           {cities.map((city) => (
             <option key={city.id} value={city.id}>
               {city.name}

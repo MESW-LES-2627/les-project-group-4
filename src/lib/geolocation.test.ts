@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { GEOLOCATION_MESSAGES, getGeolocationSupport, messageForPositionError } from './geolocation'
+import {
+  formatAccuracy,
+  GEOLOCATION_MESSAGES,
+  getGeolocationSupport,
+  messageForPositionError,
+} from './geolocation'
 
 describe('getGeolocationSupport', () => {
   it('is available in a secure context with geolocation', () => {
@@ -31,5 +36,17 @@ describe('messageForPositionError', () => {
 
   it.each([2, 3])('other errors (code %i) get the generic message', (code) => {
     expect(messageForPositionError(code)).toBe(GEOLOCATION_MESSAGES.failed)
+  })
+})
+
+describe('formatAccuracy', () => {
+  it.each([
+    [0.4, 'within ~1 m'],
+    [34.6, 'within ~35 m'],
+    [999, 'within ~999 m'],
+    [1000, 'within ~1.0 km'],
+    [2345, 'within ~2.3 km'],
+  ])('%f m reads "%s"', (metres, label) => {
+    expect(formatAccuracy(metres)).toBe(label)
   })
 })

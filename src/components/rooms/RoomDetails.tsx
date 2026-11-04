@@ -26,7 +26,7 @@ export function RoomDetails({ room }: { room: Room }) {
             {location ?? 'Not set'}
             {coordinates !== null && room.city === null ? (
               <span className="block text-sm font-normal text-muted-foreground">
-                {coordinates.latitude.toFixed(4)}, {coordinates.longitude.toFixed(4)}
+                {coordinates.latitude.toFixed(5)}, {coordinates.longitude.toFixed(5)}
               </span>
             ) : null}
           </dd>

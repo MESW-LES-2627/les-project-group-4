@@ -29,3 +29,14 @@ const PERMISSION_DENIED = 1
 export function messageForPositionError(code: number): string {
   return code === PERMISSION_DENIED ? GEOLOCATION_MESSAGES.denied : GEOLOCATION_MESSAGES.failed
 }
+
+/**
+ * AT-2: how far off the browser's estimate may be, from `coords.accuracy` (metres).
+ * Desktop browsers estimate from Wi-Fi or IP, so this can be hundreds of metres.
+ */
+export function formatAccuracy(metres: number): string {
+  if (metres >= 1000) {
+    return `within ~${(metres / 1000).toFixed(1)} km`
+  }
+  return `within ~${Math.max(1, Math.round(metres))} m`
+}
