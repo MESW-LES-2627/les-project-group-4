@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useCreateRoom } from '@/hooks/useCreateRoom'
 import { useRoomForm } from '@/hooks/useRoomForm'
+import { loadLastLocation, saveLastLocation, toLocationInput } from '@/lib/location'
 import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
 import type { RoomLocationInput } from '@/lib/roomValidation'
 
@@ -19,6 +20,7 @@ import type { RoomLocationInput } from '@/lib/roomValidation'
 export function CreateRoomForm({ cities }: { cities: City[] }) {
   const form = useRoomForm()
   const [location, setLocation] = useState<RoomLocationInput>({})
+  const [reusedLocation, setReusedLocation] = useState(false)
   const {
     isSubmitting,
     submitError,
@@ -30,10 +32,36 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
   })
   const [focusNameOnMount, setFocusNameOnMount] = useState(false)
 
+  // US-15 AT-5: start with the last room's location. Read after mounting, because the
+  // server cannot see the browser's storage. A city that no longer exists is ignored.
+  useEffect(() => {
+    const saved = loadLastLocation()
+    if (saved.cityId !== undefined && !cities.some((city) => city.id === saved.cityId)) {
+      return
+    }
+    if (Object.keys(saved).length > 0) {
+      setLocation(saved)
+      setReusedLocation(true)
+    }
+  }, [cities])
+
+  // Remember the location that was actually saved with the room.
+  useEffect(() => {
+    if (createdRoom !== null) {
+      saveLastLocation(toLocationInput(createdRoom))
+    }
+  }, [createdRoom])
+
+  function handleLocationChange(next: RoomLocationInput) {
+    setLocation(next)
+    setReusedLocation(false)
+  }
+
   function handleCreateAnother() {
     setFocusNameOnMount(true)
     form.reset()
-    setLocation({})
+    // AT-5: keep the location for the next room instead of asking again.
+    setReusedLocation(Object.keys(location).length > 0)
     resetCreateRoom()
   }
 
@@ -89,7 +117,8 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
         id="room-location"
         cities={cities}
         value={location}
-        onChange={setLocation}
+        onChange={handleLocationChange}
+        reused={reusedLocation}
       />
 
       <Button

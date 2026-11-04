@@ -6,25 +6,18 @@ import { LoaderCircle, LocateFixed } from 'lucide-react'
 import type { City } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import {
+  GEOLOCATION_MESSAGES,
+  getGeolocationSupport,
+  messageForPositionError,
+} from '@/lib/geolocation'
+import type { GeolocationSupport } from '@/lib/geolocation'
 import { CURRENT_LOCATION_LABEL } from '@/lib/location'
 import type { RoomLocationInput } from '@/lib/roomValidation'
 
-// AT-3 and AT-4: when the browser cannot give a location, say why and point to the city list.
-const MESSAGES = {
-  insecure: 'Your location needs a secure (HTTPS) connection. Choose a city instead.',
-  unsupported: 'This browser cannot share your location. Choose a city instead.',
-  denied: 'Location permission was denied. Choose a city instead, or allow location in your browser settings.',
-  failed: 'Could not get your location. Choose a city instead.',
-} as const
-
-type GeolocationSupport = 'available' | 'insecure' | 'unsupported'
-
-/** Geolocation only works in a secure context (HTTPS or localhost). */
-function getGeolocationSupport(): GeolocationSupport {
-  if (!window.isSecureContext) {
-    return 'insecure'
-  }
-  return 'geolocation' in navigator ? 'available' : 'unsupported'
+/** AT-4: reads the browser's secure-context flag and geolocation support. */
+function getBrowserSupport(): GeolocationSupport {
+  return getGeolocationSupport(window.isSecureContext, 'geolocation' in navigator)
 }
 
 // The support never changes while the page is open, so there is nothing to subscribe to.
@@ -45,11 +38,13 @@ interface LocationFieldProps {
   cities: City[]
   value: RoomLocationInput
   onChange: (value: RoomLocationInput) => void
+  /** AT-5: true while the value is the location reused from the last room. */
+  reused?: boolean
 }
 
 /** US-15: pick a seeded city, or use the browser's coordinates (no reverse geocoding). */
-export function LocationField({ id, cities, value, onChange }: LocationFieldProps) {
-  const support = useSyncExternalStore(subscribe, getGeolocationSupport, getServerSupport)
+export function LocationField({ id, cities, value, onChange, reused = false }: LocationFieldProps) {
+  const support = useSyncExternalStore(subscribe, getBrowserSupport, getServerSupport)
   const [isLocating, setIsLocating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -80,9 +75,7 @@ export function LocationField({ id, cities, value, onChange }: LocationFieldProp
       },
       (positionError) => {
         setIsLocating(false)
-        setError(
-          positionError.code === positionError.PERMISSION_DENIED ? MESSAGES.denied : MESSAGES.failed,
-        )
+        setError(messageForPositionError(positionError.code))
       },
       { timeout: 10_000, maximumAge: 60_000 },
     )
@@ -93,7 +86,9 @@ export function LocationField({ id, cities, value, onChange }: LocationFieldProp
   if (error !== null) {
     hint = error
   } else if (support === 'insecure' || support === 'unsupported') {
-    hint = MESSAGES[support]
+    hint = GEOLOCATION_MESSAGES[support]
+  } else if (reused) {
+    hint = 'Reusing the location of your last room. You can change it.'
   }
 
   return (
