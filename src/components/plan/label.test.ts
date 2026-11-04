@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { PlacedItem } from '@/lib/layout/layout'
 
-import { itemLabelText } from './label'
+import { dimensionLabelText, itemLabelText } from './label'
 
 const sofa: PlacedItem = {
   id: 'sofa',
@@ -24,5 +24,18 @@ describe('itemLabelText', () => {
 
   it('adds the footprint size when the item is selected', () => {
     expect(itemLabelText(sofa, true)).toBe('Sofa · 200 × 100 cm')
+  })
+})
+
+describe('dimensionLabelText', () => {
+  it('shows whole metres without decimals', () => {
+    expect(dimensionLabelText(300)).toBe('3 m')
+    expect(dimensionLabelText(400)).toBe('4 m')
+  })
+
+  it('keeps the centimetres that matter', () => {
+    expect(dimensionLabelText(90)).toBe('0.9 m')
+    expect(dimensionLabelText(87)).toBe('0.87 m')
+    expect(dimensionLabelText(245)).toBe('2.45 m')
   })
 })

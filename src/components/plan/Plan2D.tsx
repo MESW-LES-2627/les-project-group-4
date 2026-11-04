@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
+import { DimensionLabels, DimensionProjector } from './DimensionLabels'
 import { ItemLabel } from './ItemLabel'
 import {
   CAMERA_HEIGHT_M,
@@ -134,6 +135,8 @@ export function Plan2D({
   onSelect,
 }: Plan2DProps) {
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
+  const widthLabelRef = useRef<HTMLDivElement>(null)
+  const depthLabelRef = useRef<HTMLDivElement>(null)
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -189,6 +192,11 @@ export function Plan2D({
         style={{ touchAction: 'none' }}
       >
         <FitOrthoCamera room={room} />
+        <DimensionProjector
+          room={room}
+          widthRef={widthLabelRef}
+          depthRef={depthLabelRef}
+        />
         <RoomScene
           room={room}
           items={items}
@@ -204,6 +212,12 @@ export function Plan2D({
           resetToken={resetToken}
         />
       </Canvas>
+
+      <DimensionLabels
+        room={room}
+        widthRef={widthLabelRef}
+        depthRef={depthLabelRef}
+      />
 
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
         <Button
