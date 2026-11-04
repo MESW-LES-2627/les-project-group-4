@@ -13,6 +13,20 @@ const DEFAULT_PADDING_M = 0.4
 /** Height of the top-down plan camera above the floor, in metres. */
 export const CAMERA_HEIGHT_M = 10
 
+/** Zoom limits shared by the scroll wheel and the zoom buttons. */
+export const MIN_ZOOM = 0.5
+export const MAX_ZOOM = 8
+
+const ZOOM_STEP = 1.25
+
+export type ZoomDirection = 'in' | 'out'
+
+/** One click of the zoom buttons, clamped to the controls' zoom limits. */
+export function stepZoom(zoom: number, direction: ZoomDirection): number {
+  const scale = direction === 'in' ? ZOOM_STEP : 1 / ZOOM_STEP
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * scale))
+}
+
 /** Camera position and controls target that frame the room from above. */
 export interface PlanViewPose {
   position: [number, number, number]

@@ -33,6 +33,10 @@ describe('FitOrthoCamera', () => {
     )[0].instance as OrthographicCameraImpl
     const frustum = fitOrthoFrustum(room, 1280 / 800)
 
+    // R3F resizes the default camera in pixels on every canvas resize; the
+    // camera must opt out so the world-unit frustum below survives resizes.
+    expect((camera as OrthographicCameraImpl & { manual?: boolean }).manual).toBe(true)
+
     expect(camera.position.x).toBeCloseTo(1.5)
     expect(camera.position.y).toBeCloseTo(10)
     expect(camera.position.z).toBeCloseTo(2)

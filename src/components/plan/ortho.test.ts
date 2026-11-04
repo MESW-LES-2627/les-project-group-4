@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { fitOrthoFrustum, planViewPose } from './ortho'
+import {
+  MAX_ZOOM,
+  MIN_ZOOM,
+  fitOrthoFrustum,
+  planViewPose,
+  stepZoom,
+} from './ortho'
 
 const room = { widthCm: 300, lengthCm: 400 }
 const width = (frustum: ReturnType<typeof fitOrthoFrustum>) => frustum.right - frustum.left
@@ -20,6 +26,23 @@ describe('planViewPose', () => {
     expect(pose.position[0]).toBeCloseTo(0.6)
     expect(pose.position[2]).toBeCloseTo(1.25)
     expect(pose.target).toEqual([pose.position[0], 0, pose.position[2]])
+  })
+})
+
+describe('stepZoom', () => {
+  it('zooms in and out by one step', () => {
+    expect(stepZoom(1, 'in')).toBeCloseTo(1.25)
+    expect(stepZoom(1, 'out')).toBeCloseTo(0.8)
+  })
+
+  it('clamps to the controls limits', () => {
+    expect(stepZoom(MAX_ZOOM, 'in')).toBe(MAX_ZOOM)
+    expect(stepZoom(MIN_ZOOM, 'out')).toBe(MIN_ZOOM)
+  })
+
+  it('does not overshoot the limits from just inside them', () => {
+    expect(stepZoom(MAX_ZOOM / 1.1, 'in')).toBe(MAX_ZOOM)
+    expect(stepZoom(MIN_ZOOM * 1.1, 'out')).toBe(MIN_ZOOM)
   })
 })
 

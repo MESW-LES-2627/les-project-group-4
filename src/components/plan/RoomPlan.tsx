@@ -44,7 +44,6 @@ export function RoomPlan({ room }: { room: Room }) {
       </div>
 
       <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
-        <div className="absolute inset-0 opacity-70 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[16px_16px]" />
         <div className="relative h-full w-full">
           <Plan2D
             room={room}

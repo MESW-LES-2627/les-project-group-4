@@ -1,9 +1,22 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState, type ComponentRef } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentRef,
+  type RefObject,
+} from 'react'
 import { MapControls, OrthographicCamera } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
-import { RotateCcw } from 'lucide-react'
+import {
+  Maximize2,
+  Minimize2,
+  RotateCcw,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
 import { Button } from '@/components/ui/button'
@@ -11,7 +24,15 @@ import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { ItemLabel } from './ItemLabel'
-import { CAMERA_HEIGHT_M, fitOrthoFrustum, planViewPose } from './ortho'
+import {
+  CAMERA_HEIGHT_M,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  fitOrthoFrustum,
+  planViewPose,
+  stepZoom,
+  type ZoomDirection,
+} from './ortho'
 import { RoomScene } from './scene/RoomScene'
 
 export interface Plan2DProps {
@@ -27,19 +48,29 @@ export interface Plan2DProps {
  */
 export function FitOrthoCamera({ room }: { room: RoomSize }) {
   const size = useThree((state) => state.size)
+  const cameraRef = useRef<OrthographicCameraImpl>(null)
   const frustum = fitOrthoFrustum(room, size.width / size.height)
   const { position } = planViewPose(room)
+  const { left, right, top, bottom } = frustum
+
+  useLayoutEffect(() => {
+    cameraRef.current?.updateProjectionMatrix()
+  }, [left, right, top, bottom])
 
   return (
     <OrthographicCamera
+      ref={cameraRef}
+      // R3F resizes the default camera in pixels on every canvas resize,
+      // which would clobber the world-unit frustum below. Fit it ourselves.
+      manual
       makeDefault
       position={position}
       rotation={[-Math.PI / 2, 0, 0]}
       up={[0, 0, -1]}
-      left={frustum.left}
-      right={frustum.right}
-      top={frustum.top}
-      bottom={frustum.bottom}
+      left={left}
+      right={right}
+      top={top}
+      bottom={bottom}
       near={0.1}
       far={100}
     />
@@ -48,12 +79,13 @@ export function FitOrthoCamera({ room }: { room: RoomSize }) {
 
 function PlanControls({
   room,
+  controlsRef,
   resetToken,
 }: {
   room: RoomSize
+  controlsRef: RefObject<ComponentRef<typeof MapControls> | null>
   resetToken: number
 }) {
-  const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const { position, target } = planViewPose(room)
   const centerX = position[0]
   const centerZ = position[2]
@@ -70,7 +102,7 @@ function PlanControls({
 
     controls.target.set(centerX, 0, centerZ)
     controls.update()
-  }, [centerX, centerZ, resetToken])
+  }, [controlsRef, centerX, centerZ, resetToken])
 
   return (
     <MapControls
@@ -84,8 +116,8 @@ function PlanControls({
       // along its own line of sight and look like no movement at all.
       screenSpacePanning
       target={target}
-      minZoom={0.5}
-      maxZoom={8}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
     />
   )
 }
@@ -93,7 +125,7 @@ function PlanControls({
 /**
  * The 2D plan mode: an orthographic top-down camera over the shared
  * camera-agnostic RoomScene. MapControls pans and zooms but never rotates,
- * and "Reset view" returns the camera to the fitted, centred default.
+ * and the overlay controls reset, zoom and expand the view.
  */
 export function Plan2D({
   room,
@@ -101,10 +133,53 @@ export function Plan2D({
   selectedId = null,
   onSelect,
 }: Plan2DProps) {
+  const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const [resetToken, setResetToken] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  // While expanded, lock page scrolling and let Escape close the plan.
+  useEffect(() => {
+    if (!isFullscreen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsFullscreen(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isFullscreen])
+
+  function toggleFullscreen() {
+    // Expanding changes the viewport aspect, so start from the fitted view.
+    if (!isFullscreen) setResetToken((token) => token + 1)
+    setIsFullscreen(!isFullscreen)
+  }
+
+  function zoom(direction: ZoomDirection) {
+    const controls = controlsRef.current
+    if (!controls) return
+
+    const camera = controls.object as OrthographicCameraImpl
+    camera.zoom = stepZoom(camera.zoom, direction)
+    camera.updateProjectionMatrix()
+  }
 
   return (
-    <div className="relative h-full w-full">
+    <div
+      className={
+        isFullscreen
+          ? 'fixed inset-0 z-50 h-dvh bg-secondary'
+          : 'relative h-full w-full'
+      }
+    >
+      <div className="pointer-events-none absolute inset-0 opacity-70 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[16px_16px]" />
+
       <Canvas
         orthographic
         flat
@@ -123,20 +198,66 @@ export function Plan2D({
             <ItemLabel item={item} selected={selected} />
           )}
         />
-        <PlanControls room={room} resetToken={resetToken} />
+        <PlanControls
+          room={room}
+          controlsRef={controlsRef}
+          resetToken={resetToken}
+        />
       </Canvas>
 
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        className="absolute top-2 right-2 z-10 shadow-sm"
-        onClick={() => setResetToken((token) => token + 1)}
-        title="Fit the room back into view"
-      >
-        <RotateCcw aria-hidden="true" />
-        Reset view
-      </Button>
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="shadow-sm"
+          onClick={() => setResetToken((token) => token + 1)}
+          title="Fit the room back into view"
+        >
+          <RotateCcw aria-hidden="true" />
+          Reset view
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          className="shadow-sm"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+          title={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+        >
+          {isFullscreen ? (
+            <Minimize2 aria-hidden="true" />
+          ) : (
+            <Maximize2 aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+
+      <div className="absolute right-2 bottom-2 z-10 flex flex-col gap-1.5">
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          className="shadow-sm"
+          onClick={() => zoom('in')}
+          aria-label="Zoom in"
+          title="Zoom in"
+        >
+          <ZoomIn aria-hidden="true" />
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          className="shadow-sm"
+          onClick={() => zoom('out')}
+          aria-label="Zoom out"
+          title="Zoom out"
+        >
+          <ZoomOut aria-hidden="true" />
+        </Button>
+      </div>
     </div>
   )
 }
