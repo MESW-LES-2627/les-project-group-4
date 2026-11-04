@@ -5,12 +5,14 @@ import type {
   Group,
   LineLoop,
   Mesh,
+  MeshBasicMaterial,
   PlaneGeometry,
 } from 'three'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
+import { SELECTED_ITEM_COLOR } from './PlacedItem'
 import { RoomScene } from './RoomScene'
 
 const room = { widthCm: 300, lengthCm: 400 }
@@ -93,6 +95,66 @@ describe('RoomScene', () => {
       .instance as Mesh<BoxGeometry>
     expect(mesh.geometry.parameters.height).toBeCloseTo(0.8)
     expect(mesh.position.y).toBeCloseTo(0.4)
+
+    await renderer.unmount()
+  })
+
+  it('marks the selected item with the accent colour', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} selectedId="sofa" />,
+    )
+
+    const mesh = renderer.scene.findByProps({ name: 'placed-item-mesh-sofa' })
+      .instance as Mesh<BoxGeometry, MeshBasicMaterial>
+    expect(mesh.material.color.getHexString()).toBe(SELECTED_ITEM_COLOR.slice(1))
+
+    await renderer.unmount()
+  })
+
+  it('selects an item on click', async () => {
+    const onSelect = vi.fn()
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} selectedId={null} onSelect={onSelect} />,
+    )
+
+    const mesh = renderer.scene.findByProps({ name: 'placed-item-mesh-sofa' })
+    await renderer.fireEvent(mesh, 'onClick', {
+      delta: 0,
+      stopPropagation: vi.fn(),
+    })
+
+    expect(onSelect).toHaveBeenCalledWith('sofa')
+
+    await renderer.unmount()
+  })
+
+  it('does not select when the pointer moved during the click', async () => {
+    const onSelect = vi.fn()
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} selectedId={null} onSelect={onSelect} />,
+    )
+
+    const mesh = renderer.scene.findByProps({ name: 'placed-item-mesh-sofa' })
+    await renderer.fireEvent(mesh, 'onClick', {
+      delta: 20,
+      stopPropagation: vi.fn(),
+    })
+
+    expect(onSelect).not.toHaveBeenCalled()
+
+    await renderer.unmount()
+  })
+
+  it('clears the selection when the floor is clicked', async () => {
+    const onSelect = vi.fn()
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} selectedId="sofa" onSelect={onSelect} />,
+    )
+
+    const floor = renderer.scene.findByProps({ name: 'room-floor' })
+    await renderer.fireEvent(floor, 'onClick', { stopPropagation: vi.fn() })
+
+    expect(onSelect).toHaveBeenCalledWith(null)
 
     await renderer.unmount()
   })

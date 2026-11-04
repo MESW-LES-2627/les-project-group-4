@@ -8,6 +8,8 @@ export interface RoomSceneProps {
   room: RoomSize
   items?: PlacedItemData[]
   itemHeight?: number // Item box height in metres (defaults to the thin 2D footprint)
+  selectedId?: string | null
+  onSelect?: (id: string | null) => void
 }
 
 /**
@@ -18,14 +20,26 @@ export interface RoomSceneProps {
  * Coordinates come from src/lib/geometry/plan.ts: cm -> metres, plan y ->
  * scene z, Y-up.
  */
-export function RoomScene({ room, items = [], itemHeight }: RoomSceneProps) {
+export function RoomScene({
+  room,
+  items = [],
+  itemHeight,
+  selectedId = null,
+  onSelect,
+}: RoomSceneProps) {
   return (
     <group name="room-scene">
-      <RoomFloor room={room} />
+      <RoomFloor room={room} onClick={onSelect ? () => onSelect(null) : undefined} />
 
       <group name="room-items">
         {items.map((item) => (
-          <PlacedItem key={item.id} item={item} height={itemHeight} />
+          <PlacedItem
+            key={item.id}
+            item={item}
+            height={itemHeight}
+            selected={item.id === selectedId}
+            onSelect={onSelect}
+          />
         ))}
       </group>
     </group>
