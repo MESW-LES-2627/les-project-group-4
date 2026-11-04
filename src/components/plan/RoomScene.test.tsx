@@ -1,10 +1,31 @@
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import type { BufferAttribute, LineLoop, Mesh, PlaneGeometry } from 'three'
+import type {
+  BoxGeometry,
+  BufferAttribute,
+  Group,
+  LineLoop,
+  Mesh,
+  PlaneGeometry,
+} from 'three'
 import { describe, expect, it } from 'vitest'
+
+import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { RoomScene } from './RoomScene'
 
 const room = { widthCm: 300, lengthCm: 400 }
+
+const sofa: PlacedItemData = {
+  id: 'sofa',
+  catalogItemId: 1,
+  name: 'Sofa',
+  widthCm: 200,
+  depthCm: 100,
+  xCm: 250,
+  yCm: 120,
+  rotationDeg: 90,
+  priceCents: 49900,
+}
 
 describe('RoomScene', () => {
   it('renders the floor at the room dimensions in metres', async () => {
@@ -28,6 +49,50 @@ describe('RoomScene', () => {
     const position = outline.geometry.getAttribute('position') as BufferAttribute
 
     expect(Array.from(position.array)).toEqual([0, 0, 0, 3, 0, 0, 3, 0, 4, 0, 0, 4])
+
+    await renderer.unmount()
+  })
+
+  it('renders one item at its stored position, rotation and size', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} />,
+    )
+
+    const group = renderer.scene.findByProps({ name: 'placed-item-sofa' })
+      .instance as Group
+    expect(group.position.x).toBeCloseTo(2.5)
+    expect(group.position.z).toBeCloseTo(1.2)
+    expect(group.rotation.y).toBeCloseTo(-Math.PI / 2)
+
+    const mesh = renderer.scene.findByProps({ name: 'placed-item-mesh-sofa' })
+      .instance as Mesh<BoxGeometry>
+    expect(mesh.geometry.parameters.width).toBeCloseTo(2)
+    expect(mesh.geometry.parameters.height).toBeCloseTo(0.02)
+    expect(mesh.geometry.parameters.depth).toBeCloseTo(1)
+    expect(mesh.position.y).toBeCloseTo(0.01)
+
+    await renderer.unmount()
+  })
+
+  it('renders no item meshes for an empty layout', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[]} />,
+    )
+
+    expect(renderer.scene.findByProps({ name: 'room-items' }).children).toEqual([])
+
+    await renderer.unmount()
+  })
+
+  it('accepts a taller height for a future 3D view', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} itemHeight={0.8} />,
+    )
+
+    const mesh = renderer.scene.findByProps({ name: 'placed-item-mesh-sofa' })
+      .instance as Mesh<BoxGeometry>
+    expect(mesh.geometry.parameters.height).toBeCloseTo(0.8)
+    expect(mesh.position.y).toBeCloseTo(0.4)
 
     await renderer.unmount()
   })
