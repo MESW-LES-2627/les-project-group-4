@@ -4,6 +4,7 @@ import {
   MAX_ZOOM,
   MIN_ZOOM,
   fitOrthoFrustum,
+  niceScaleMetres,
   planViewPose,
   stepZoom,
 } from './ortho'
@@ -43,6 +44,28 @@ describe('stepZoom', () => {
   it('does not overshoot the limits from just inside them', () => {
     expect(stepZoom(MAX_ZOOM / 1.1, 'in')).toBe(MAX_ZOOM)
     expect(stepZoom(MIN_ZOOM * 1.1, 'out')).toBe(MIN_ZOOM)
+  })
+})
+
+describe('niceScaleMetres', () => {
+  it.each([
+    [1.9, 1],
+    [2, 2],
+    [4.9, 2],
+    [5, 5],
+    [9.9, 5],
+    [12, 10],
+    [0.9, 0.5],
+    [0.35, 0.2],
+  ])('rounds %s down to the largest 1/2/5 step', (max, expected) => {
+    expect(niceScaleMetres(max)).toBeCloseTo(expected)
+  })
+
+  it('falls back to 0.1 m for invalid input', () => {
+    expect(niceScaleMetres(0)).toBe(0.1)
+    expect(niceScaleMetres(-5)).toBe(0.1)
+    expect(niceScaleMetres(Number.NaN)).toBe(0.1)
+    expect(niceScaleMetres(Number.POSITIVE_INFINITY)).toBe(0.1)
   })
 })
 

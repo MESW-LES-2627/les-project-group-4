@@ -27,6 +27,23 @@ export function stepZoom(zoom: number, direction: ZoomDirection): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * scale))
 }
 
+/**
+ * The largest "nice" length (1, 2 or 5 times a power of ten) that fits in
+ * `maxMetres`. Keeps the scale bar between roughly 40% and 100% of its target
+ * width no matter the zoom level.
+ */
+export function niceScaleMetres(maxMetres: number): number {
+  if (!Number.isFinite(maxMetres) || maxMetres <= 0) return 0.1
+
+  const exponent = Math.floor(Math.log10(maxMetres))
+  const base = 10 ** exponent
+  const fraction = maxMetres / base
+
+  if (fraction >= 5) return 5 * base
+  if (fraction >= 2) return 2 * base
+  return base
+}
+
 /** Camera position and controls target that frame the room from above. */
 export interface PlanViewPose {
   position: [number, number, number]

@@ -24,6 +24,7 @@ import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
+import { ScaleBar, ScaleBarProjector } from './ScaleBar'
 import { ItemLabel } from './ItemLabel'
 import {
   CAMERA_HEIGHT_M,
@@ -137,6 +138,8 @@ export function Plan2D({
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const widthLabelRef = useRef<HTMLDivElement>(null)
   const depthLabelRef = useRef<HTMLDivElement>(null)
+  const scaleLineRef = useRef<HTMLDivElement>(null)
+  const scaleTextRef = useRef<HTMLSpanElement>(null)
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -197,6 +200,7 @@ export function Plan2D({
           widthRef={widthLabelRef}
           depthRef={depthLabelRef}
         />
+        <ScaleBarProjector lineRef={scaleLineRef} textRef={scaleTextRef} />
         <RoomScene
           room={room}
           items={items}
@@ -218,6 +222,7 @@ export function Plan2D({
         widthRef={widthLabelRef}
         depthRef={depthLabelRef}
       />
+      <ScaleBar lineRef={scaleLineRef} textRef={scaleTextRef} />
 
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
         <Button
