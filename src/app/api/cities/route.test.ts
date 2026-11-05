@@ -41,6 +41,17 @@ describe('GET /api/cities', () => {
     )
   })
 
+  it('puts accented names in Portuguese alphabetical order', async () => {
+    const city = (id: number, name: string) => ({ id, name, latitude: 0, longitude: 0 })
+    // What the database returns with its default collation: accented letters last.
+    findCities.mockResolvedValue([city(1, 'Coimbra'), city(2, 'Faro'), city(3, 'Évora')] as never)
+
+    const response = await GET()
+
+    const names = ((await response.json()) as { name: string }[]).map((c) => c.name)
+    expect(names).toEqual(['Coimbra', 'Évora', 'Faro'])
+  })
+
   it('returns 200 with an empty array when there are no cities', async () => {
     findCities.mockResolvedValue([] as never)
 
