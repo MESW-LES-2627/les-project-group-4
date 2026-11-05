@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 
 import { createRoom } from '@/api/client'
 import type { Room } from '@/api/types'
-import { mapServerFieldErrors, toCreateRoomRequest } from '@/lib/roomValidation'
-import type { RoomFormErrors, RoomFormValues } from '@/lib/roomValidation'
+import { mapServerFieldErrors, pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
+import type { RoomFormErrors, RoomFormValues, RoomLocationInput } from '@/lib/roomValidation'
 
 interface UseCreateRoomOptions {
   onFieldErrors: (errors: RoomFormErrors) => void
@@ -12,15 +12,17 @@ interface UseCreateRoomOptions {
 export function useCreateRoom({ onFieldErrors }: UseCreateRoomOptions) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  // US-15: a location the server rejected, shown on the location field.
+  const [locationError, setLocationError] = useState<string | null>(null)
   const [createdRoom, setCreatedRoom] = useState<Room | null>(null)
   const inFlightRef = useRef(false)
 
-  async function submit(values: RoomFormValues) {
+  async function submit(values: RoomFormValues, location: RoomLocationInput = {}) {
     if (inFlightRef.current) {
       return
     }
 
-    const request = toCreateRoomRequest(values)
+    const request = toCreateRoomRequest(values, location)
     if (request === null) {
       return
     }
@@ -28,6 +30,7 @@ export function useCreateRoom({ onFieldErrors }: UseCreateRoomOptions) {
     inFlightRef.current = true
     setIsSubmitting(true)
     setSubmitError(null)
+    setLocationError(null)
     setCreatedRoom(null)
 
     try {
@@ -39,8 +42,14 @@ export function useCreateRoom({ onFieldErrors }: UseCreateRoomOptions) {
       }
 
       const fieldErrors = mapServerFieldErrors(result.error.fieldErrors)
+      const rejectedLocation = pickLocationError(result.error.fieldErrors)
+      if (rejectedLocation !== undefined) {
+        setLocationError(rejectedLocation)
+      }
       if (Object.keys(fieldErrors).length > 0) {
         onFieldErrors(fieldErrors)
+      }
+      if (rejectedLocation !== undefined || Object.keys(fieldErrors).length > 0) {
         return
       }
 
@@ -55,12 +64,19 @@ export function useCreateRoom({ onFieldErrors }: UseCreateRoomOptions) {
 
   function reset() {
     setSubmitError(null)
+    setLocationError(null)
     setCreatedRoom(null)
+  }
+
+  function clearLocationError() {
+    setLocationError(null)
   }
 
   return {
     isSubmitting,
     submitError,
+    locationError,
+    clearLocationError,
     createdRoom,
     submit,
     reset,

@@ -11,7 +11,15 @@ vi.mock('@/lib/db', () => ({
   getDb: () => ({ room: { findUnique: findRoom } }),
 }))
 
-const room: Room = { id: 3, name: 'Living room', widthCm: 450, lengthCm: 500 }
+const room: Room = {
+  id: 3,
+  name: 'Living room',
+  widthCm: 450,
+  lengthCm: 500,
+  city: { id: 1, name: 'Porto', latitude: 41.1579, longitude: -8.6291 },
+  latitude: null,
+  longitude: null,
+}
 
 /** Calls the handler the way Next.js does: `params` is a Promise. */
 function get(id: string) {
@@ -34,6 +42,16 @@ describe('GET /api/rooms/[id]', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual(room)
     expect(findRoom).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 3 } }))
+  })
+
+  it('AT-5: returns the saved location when the room is reopened', async () => {
+    const coordinates = { latitude: 41.15, longitude: -8.61 }
+    findRoom.mockResolvedValue({ ...room, city: null, ...coordinates } as never)
+
+    const body = (await (await get('3')).json()) as Room
+
+    expect(body.city).toBeNull()
+    expect({ latitude: body.latitude, longitude: body.longitude }).toEqual(coordinates)
   })
 
   it('returns 404 when the room does not exist', async () => {
@@ -81,6 +99,9 @@ describe('response shape matches src/api/types.ts', () => {
       name: expect.any(String),
       widthCm: expect.any(Number),
       lengthCm: expect.any(Number),
+      city: expect.any(Object),
+      latitude: null,
+      longitude: null,
     } satisfies Record<keyof Room, unknown>)
   })
 })

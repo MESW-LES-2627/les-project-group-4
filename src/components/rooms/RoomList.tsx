@@ -4,12 +4,7 @@ import { ChevronRight, DoorOpen, MapPin, Plus, Ruler, SquareDashed } from 'lucid
 import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
-
-/**
- * TODO(US-15 / #37): replace with `room.location` once the rooms API and
- * schema store a location. Every card shows the same placeholder for now.
- */
-const ROOM_LOCATION_PLACEHOLDER = 'TBD'
+import { formatRoomLocation } from '@/lib/location'
 
 /** 400 × 300 cm becomes 12 m². */
 function formatArea(room: Room) {
@@ -74,7 +69,7 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
                 <div className="flex items-center gap-1">
                   <MapPin className="size-3 shrink-0" aria-hidden="true" />
                   <dt className="sr-only">Location</dt>
-                  <dd>{ROOM_LOCATION_PLACEHOLDER}</dd>
+                  <dd>{formatRoomLocation(room) ?? 'No location'}</dd>
                 </div>
               </dl>
             </div>
