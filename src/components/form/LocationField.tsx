@@ -44,6 +44,8 @@ interface LocationFieldProps {
   reused?: boolean
   /** Lets the form block submitting while the browser is still looking up the position. */
   onLocatingChange?: (isLocating: boolean) => void
+  /** A location the server rejected (e.g. a city that was removed). Cleared by the form. */
+  serverError?: string | null
 }
 
 /** US-15: pick a seeded city, or use the browser's coordinates (no reverse geocoding). */
@@ -54,6 +56,7 @@ export function LocationField({
   onChange,
   reused = false,
   onLocatingChange,
+  serverError = null,
 }: LocationFieldProps) {
   const support = useSyncExternalStore(subscribe, getBrowserSupport, getServerSupport)
   const [isLocating, setIsLocatingState] = useState(false)
@@ -120,9 +123,10 @@ export function LocationField({
   }
 
   const hintId = `${id}-hint`
+  const shownError = error ?? serverError
   let hint: string | null = null
-  if (error !== null) {
-    hint = error
+  if (shownError !== null) {
+    hint = shownError
   } else if (support === 'insecure' || support === 'unsupported') {
     hint = GEOLOCATION_MESSAGES[support]
   } else if (reused) {
@@ -139,6 +143,7 @@ export function LocationField({
           value={selectValue}
           onChange={(event) => handleSelect(event.target.value)}
           aria-describedby={hint !== null ? hintId : undefined}
+          aria-invalid={shownError !== null ? true : undefined}
           className={SELECT_CLASSES}
         >
           <option value="">No location</option>
@@ -174,8 +179,8 @@ export function LocationField({
         {hint !== null ? (
           <p
             id={hintId}
-            role={error !== null ? 'alert' : undefined}
-            className={`text-[11px] leading-tight ${error !== null ? 'text-destructive' : 'text-muted-foreground'}`}
+            role={shownError !== null ? 'alert' : undefined}
+            className={`text-[11px] leading-tight ${shownError !== null ? 'text-destructive' : 'text-muted-foreground'}`}
           >
             {hint}
           </p>

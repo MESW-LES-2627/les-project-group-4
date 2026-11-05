@@ -143,3 +143,22 @@ export function mapServerFieldErrors(
   }
   return errors
 }
+
+/**
+ * US-15: the server's location errors (cityId, latitude, longitude) as one sentence for the
+ * location field, or undefined when there are none. They are not form fields, so
+ * mapServerFieldErrors leaves them out and they would otherwise be lost.
+ */
+export function pickLocationError(fieldErrors: Record<string, string>): string | undefined {
+  const cityError = fieldErrors.cityId?.trim()
+  if (cityError === 'does not exist') {
+    return 'That city is no longer available. Choose another location.'
+  }
+  if (cityError) {
+    return `Location: ${cityError}.`
+  }
+  if (fieldErrors.latitude?.trim() || fieldErrors.longitude?.trim()) {
+    return 'Your current location could not be saved. Try "Use my location" again or choose a city.'
+  }
+  return undefined
+}

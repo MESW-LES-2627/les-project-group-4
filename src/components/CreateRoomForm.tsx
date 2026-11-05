@@ -55,6 +55,8 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
   const {
     isSubmitting,
     submitError,
+    locationError,
+    clearLocationError,
     createdRoom,
     submit,
     reset: resetCreateRoom,
@@ -75,6 +77,7 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
   function handleLocationChange(next: RoomLocationInput) {
     setChosenLocation(next)
     setKeptForNextRoom(false)
+    clearLocationError()
   }
 
   function handleCreateAnother() {
@@ -145,6 +148,7 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
         onChange={handleLocationChange}
         reused={reusedLocation}
         onLocatingChange={setIsLocating}
+        serverError={locationError}
       />
 
       <Button
