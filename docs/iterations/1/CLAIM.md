@@ -16,9 +16,9 @@ until this iteration's documents are added:
 | [mvp.md](../0/mvp.md)         | The scope contract: MVP outcomes O1–O5 and what is out of scope. |
 | [stories.md](../0/stories.md) | The backlog and the public cut.                                  |
 | [DoD.md](../0/DoD.md)         | The shared bar for "done", per change and per iteration.         |
+| [ci.md](ci.md)                | What CI checks and how staging and production deploy.            |
 
-Iteration-specific documents still to add: `retro.md`, `ai-log.md`, and
-`ci.md` if the pipeline changes.
+Iteration-specific documents still to add: `retro.md` and `ai-log.md`.
 
 ## Board
 
@@ -31,7 +31,7 @@ iteration.
 
 ## Permalinks
 
-- Production: TBD
-- Staging: TBD
+- Production: TBD (auto-deploys when `develop` is merged into `main` at the end of the iteration)
+- Staging: <https://furnimi-staging.vercel.app/>
 - Tag: TBD
 - Compare with previous tag: [`iter-0...iter-1`](https://github.com/MESW-LES-2627/les-project-group-4/compare/iter-0...iter-1) (once `iter-1` exists)
