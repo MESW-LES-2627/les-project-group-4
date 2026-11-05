@@ -18,6 +18,9 @@ export function AppHeader() {
           <Link href="/rooms" className="text-muted-foreground hover:text-foreground">
             My rooms
           </Link>
+          <Link href="/catalog" className="text-muted-foreground hover:text-foreground">
+            Catalog
+          </Link>
         </nav>
       </div>
     </header>
