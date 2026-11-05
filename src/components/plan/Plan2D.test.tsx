@@ -3,6 +3,7 @@ import type {
   BoxGeometry,
   Mesh,
   OrthographicCamera as OrthographicCameraImpl,
+  PerspectiveCamera as PerspectiveCameraImpl,
 } from 'three'
 import { describe, expect, it } from 'vitest'
 
@@ -10,6 +11,7 @@ import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
 import { fitOrthoFrustum } from './ortho'
 import { FitOrthoCamera, Plan2DScene } from './Plan2D'
+import { RoomScene } from './scene/RoomScene'
 
 const room = { widthCm: 300, lengthCm: 400 }
 
@@ -88,5 +90,67 @@ describe('FitOrthoCamera', () => {
     expect(camera.bottom).toBeCloseTo(frustum.bottom)
 
     await renderer.unmount()
+  })
+
+  it('refits the camera when the room dimensions change', async () => {
+    const renderer = await ReactThreeTestRenderer.create(<FitOrthoCamera room={room} />)
+
+    const resizedRoom = { widthCm: 600, lengthCm: 200 }
+    await renderer.update(<FitOrthoCamera room={resizedRoom} />)
+
+    const camera = renderer.scene.findAll(
+      (node) => (node.instance as OrthographicCameraImpl)?.isOrthographicCamera,
+    )[0].instance as OrthographicCameraImpl
+    const frustum = fitOrthoFrustum(resizedRoom, 1280 / 800)
+
+    expect(camera.position.x).toBeCloseTo(3)
+    expect(camera.position.z).toBeCloseTo(1)
+    expect(camera.left).toBeCloseTo(frustum.left)
+    expect(camera.right).toBeCloseTo(frustum.right)
+    expect(camera.top).toBeCloseTo(frustum.top)
+    expect(camera.bottom).toBeCloseTo(frustum.bottom)
+
+    await renderer.unmount()
+  })
+})
+
+describe('reusable scene (AT-4)', () => {
+  it('renders the same scene graph and item components with a perspective camera', async () => {
+    const planRenderer = await ReactThreeTestRenderer.create(
+      <Plan2DScene room={room} items={[sofa]} />,
+    )
+    const planMesh = planRenderer.scene.findByProps({
+      name: 'placed-item-mesh-sofa',
+    }).instance as Mesh<BoxGeometry>
+    const planWidth = planMesh.geometry.parameters.width
+    const planDepth = planMesh.geometry.parameters.depth
+    await planRenderer.unmount()
+
+    const perspectiveRenderer = await ReactThreeTestRenderer.create(
+      <>
+        <perspectiveCamera position={[4, 4, 6]} />
+        <RoomScene room={room} items={[sofa]} />
+      </>,
+    )
+
+    const camera = perspectiveRenderer.scene.findAll(
+      (node) => (node.instance as PerspectiveCameraImpl)?.isPerspectiveCamera,
+    )[0]
+    expect(camera).toBeDefined()
+
+    expect(
+      perspectiveRenderer.scene.findByProps({ name: 'room-scene' }),
+    ).toBeDefined()
+    expect(
+      perspectiveRenderer.scene.findByProps({ name: 'room-items' }),
+    ).toBeDefined()
+
+    const perspectiveMesh = perspectiveRenderer.scene.findByProps({
+      name: 'placed-item-mesh-sofa',
+    }).instance as Mesh<BoxGeometry>
+    expect(perspectiveMesh.geometry.parameters.width).toBeCloseTo(planWidth)
+    expect(perspectiveMesh.geometry.parameters.depth).toBeCloseTo(planDepth)
+
+    await perspectiveRenderer.unmount()
   })
 })

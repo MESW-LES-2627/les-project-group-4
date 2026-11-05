@@ -76,6 +76,35 @@ describe('RoomScene', () => {
     await renderer.unmount()
   })
 
+  it('updates the floor, outline and item placement when the room dimensions change', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <RoomScene room={room} items={[sofa]} />,
+    )
+
+    const resizedRoom = { widthCm: 600, lengthCm: 200 }
+    await renderer.update(<RoomScene room={resizedRoom} items={[sofa]} />)
+
+    const floor = renderer.scene.findByProps({ name: 'room-floor' })
+      .instance as Mesh<PlaneGeometry>
+    expect(floor.geometry.parameters.width).toBeCloseTo(6)
+    expect(floor.geometry.parameters.height).toBeCloseTo(2)
+    expect(floor.position.x).toBeCloseTo(3)
+    expect(floor.position.z).toBeCloseTo(1)
+
+    const outline = renderer.scene.findByProps({ name: 'room-outline' }).instance as LineLoop
+    const position = outline.geometry.getAttribute('position') as BufferAttribute
+    expect(Array.from(position.array)).toEqual([0, 0, 0, 6, 0, 0, 6, 0, 2, 0, 0, 2])
+
+    // Positions are stored in cm from the room origin, so the item keeps its
+    // placement while the floor and outline follow the new dimensions.
+    const group = renderer.scene.findByProps({ name: 'placed-item-sofa' })
+      .instance as Group
+    expect(group.position.x).toBeCloseTo(2.5)
+    expect(group.position.z).toBeCloseTo(1.2)
+
+    await renderer.unmount()
+  })
+
   it('renders no item meshes for an empty layout', async () => {
     const renderer = await ReactThreeTestRenderer.create(
       <RoomScene room={room} items={[]} />,
