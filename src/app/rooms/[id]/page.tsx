@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
 import { findRoomById } from '@/lib/rooms'
@@ -28,9 +29,16 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
 
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
-      <section className="mx-auto grid w-full max-w-2xl content-start gap-6">
-        <Link href="/rooms" className="text-sm text-muted-foreground hover:text-foreground">
-          ← My rooms
+      <section className="mx-auto grid w-full max-w-4xl content-start gap-6">
+        <Link
+          href="/rooms"
+          className="group inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft
+            className="size-4 transition-transform group-hover:-translate-x-0.5"
+            aria-hidden="true"
+          />
+          My rooms
         </Link>
         <RoomDetails room={room} />
       </section>
