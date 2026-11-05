@@ -1,7 +1,28 @@
+import { connection } from 'next/server'
+
+import type { City } from '@/api/types'
 import { CreateRoomForm } from '@/components/CreateRoomForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { findCities } from '@/lib/cities'
 
-export default function HomePage() {
+/**
+ * US-15: the city list, or null if it cannot be loaded. The form then says so and still
+ * lets the user create the room (with their current location or without one).
+ */
+async function loadCities(): Promise<City[] | null> {
+  try {
+    return await findCities()
+  } catch (error) {
+    console.error('Failed to load cities', error)
+    return null
+  }
+}
+
+export default async function HomePage() {
+  // Render on every request, never at build time, so the city list comes from the database.
+  await connection()
+  const cities = await loadCities()
+
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
       <section
@@ -22,7 +43,7 @@ export default function HomePage() {
             </p>
           </CardHeader>
           <CardContent className="px-6">
-            <CreateRoomForm />
+            <CreateRoomForm cities={cities} />
           </CardContent>
         </Card>
       </section>

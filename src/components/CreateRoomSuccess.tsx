@@ -6,6 +6,7 @@ import { CircleCheck } from 'lucide-react'
 
 import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
+import { formatRoomLocation } from '@/lib/location'
 
 interface CreateRoomSuccessProps {
   room: Room
@@ -17,6 +18,7 @@ export function CreateRoomSuccess({
   onCreateAnother,
 }: CreateRoomSuccessProps) {
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const location = formatRoomLocation(room)
 
   useEffect(() => {
     headingRef.current?.focus()
@@ -45,6 +47,7 @@ export function CreateRoomSuccess({
             <span className="font-medium text-foreground">{room.name}</span>
             {' · '}
             {room.widthCm} × {room.lengthCm} cm
+            {location !== null ? ` · ${location}` : null}
           </p>
         </div>
       </div>
