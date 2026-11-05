@@ -5,12 +5,7 @@ import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
 import { formatRoomLocation } from '@/lib/location'
-
-/** 400 × 300 cm becomes 12 m². */
-function formatArea(room: Room) {
-  const area = (room.widthCm * room.lengthCm) / 10_000
-  return `${new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(area)} m²`
-}
+import { formatArea } from '@/lib/roomFormat'
 
 /** US-02: the saved rooms, newest first, or an empty state when there are none. */
 export function RoomList({ rooms }: { rooms: Room[] }) {

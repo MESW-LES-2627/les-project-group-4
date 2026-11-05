@@ -1,13 +1,8 @@
 import type { Room } from '@/api/types'
 import { RoomPlan } from '@/components/plan/RoomPlan'
 import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
+import { formatArea } from '@/lib/roomFormat'
 import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
-
-/** 400 × 300 cm becomes 12 m². */
-function formatArea(room: Room) {
-  const area = (room.widthCm * room.lengthCm) / 10_000
-  return `${new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(area)} m²`
-}
 
 /** US-03: one room's details, including the 2D plan. US-15: with its saved location. */
 export function RoomDetails({ room }: { room: Room }) {
