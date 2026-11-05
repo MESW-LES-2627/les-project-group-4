@@ -59,6 +59,12 @@ jobs:
       - name: Apply migrations
         run: npx prisma migrate deploy
 
+      # CH-02 AT-7: the seed runs from the pipeline, not by hand. It upserts by
+      # slug, so re-running keeps ids stable. Point the app client at the
+      # session pooler, since only DIRECT_DATABASE_URL is available here.
+      - name: Seed sample data
+        run: DATABASE_URL="$DIRECT_DATABASE_URL" npm run db:seed
+
       - name: Deploy to Vercel
         id: deploy
         run: |
@@ -70,3 +76,21 @@ jobs:
             exit 1
           fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      # A deployment that does not serve a working database is not a deployment.
+      # Retry briefly: the alias can lag a few seconds behind the build.
+      - name: Smoke test the deployment
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if body=$(curl --fail --silent --show-error --max-time 10 "$DEPLOYMENT_URL/api/health"); then
+              echo "$body"
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying in 10s"
+            sleep 10
+          done
+          echo "::error::/api/health is not returning 200 on $DEPLOYMENT_URL"
+          exit 1
+

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
 import { RoomList } from '@/components/rooms/RoomList'
+import { RoomsHeader } from '@/components/rooms/RoomsHeader'
 import { findRooms } from '@/lib/rooms'
 
 export const metadata: Metadata = {
@@ -17,12 +18,10 @@ export default async function RoomsPage() {
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
       <section
-        className="mx-auto grid w-full max-w-2xl content-start gap-6"
+        className="mx-auto grid w-full max-w-4xl content-start"
         aria-labelledby="rooms-heading"
       >
-        <h1 id="rooms-heading" className="text-2xl font-bold tracking-tight text-foreground">
-          My rooms
-        </h1>
+        <RoomsHeader count={rooms.length} />
         <RoomList rooms={rooms} />
       </section>
     </main>

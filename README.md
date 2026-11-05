@@ -50,6 +50,22 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 
 > Coming from the Spring Boot version? Its Flyway tables are still in your Docker volume. Run
 > `docker compose down -v` once so Prisma can create the schema from scratch.
+
+## Deployment
+
+Staging and production deploy automatically on push:
+
+| Environment | Branch    | URL |
+| ----------- | --------- | --- |
+| Staging     | `develop` | <https://furnimi-staging.vercel.app/> |
+| Production  | `main`    | TBD — deploys at the end of the iteration |
+
+A push to `develop` or `main` applies that environment's Prisma migrations against the Supabase
+session pooler, then deploys the new version to Vercel. Vercel's own Git integration is not used
+because installing its GitHub App requires org-owner rights; the pipeline lives in
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). See
+[docs/deployment.md](docs/deployment.md) for the secrets, the manual fallback and rollback.
+
 ## Structure
 
 - src/app/ Pages and API route handlers
