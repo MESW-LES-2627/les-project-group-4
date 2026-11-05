@@ -5,13 +5,16 @@ import { CreateRoomForm } from '@/components/CreateRoomForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { findCities } from '@/lib/cities'
 
-/** US-15: the city list, or none if it cannot be loaded (rooms can still be created). */
-async function loadCities(): Promise<City[]> {
+/**
+ * US-15: the city list, or null if it cannot be loaded. The form then says so and still
+ * lets the user create the room (with their current location or without one).
+ */
+async function loadCities(): Promise<City[] | null> {
   try {
     return await findCities()
   } catch (error) {
     console.error('Failed to load cities', error)
-    return []
+    return null
   }
 }
 

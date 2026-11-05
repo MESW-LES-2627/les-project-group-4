@@ -59,3 +59,13 @@ export function createRequestGuard() {
     },
   }
 }
+
+/**
+ * US-15: what the location field says when the city list could not be loaded. "Use my
+ * location" is only offered when the browser can actually use it.
+ */
+export function citiesUnavailableMessage(support: GeolocationSupport | null): string {
+  return support === 'available'
+    ? 'Could not load the cities right now. You can still use your location or create the room without one.'
+    : 'Could not load the cities right now. You can create the room without a location.'
+}

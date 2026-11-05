@@ -31,8 +31,12 @@ function getServerRaw(): string | null {
   return null
 }
 
-/** US-01 + US-15: `cities` is loaded on the server by the page. */
-export function CreateRoomForm({ cities }: { cities: City[] }) {
+/**
+ * US-01 + US-15: `cities` is loaded on the server by the page; null when that failed.
+ */
+export function CreateRoomForm({ cities: loadedCities }: { cities: City[] | null }) {
+  const citiesFailed = loadedCities === null
+  const cities = useMemo(() => loadedCities ?? [], [loadedCities])
   const form = useRoomForm()
 
   // US-15 AT-5: until the user picks something, the form uses the last room's location.
@@ -149,6 +153,7 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
         reused={reusedLocation}
         onLocatingChange={setIsLocating}
         serverError={locationError}
+        citiesFailed={citiesFailed}
       />
 
       <Button

@@ -7,6 +7,7 @@ import type { City } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
+  citiesUnavailableMessage,
   createRequestGuard,
   formatAccuracy,
   GEOLOCATION_MESSAGES,
@@ -46,6 +47,8 @@ interface LocationFieldProps {
   onLocatingChange?: (isLocating: boolean) => void
   /** A location the server rejected (e.g. a city that was removed). Cleared by the form. */
   serverError?: string | null
+  /** The city list could not be loaded, so only "Use my location" or no location are left. */
+  citiesFailed?: boolean
 }
 
 /** US-15: pick a seeded city, or use the browser's coordinates (no reverse geocoding). */
@@ -57,6 +60,7 @@ export function LocationField({
   reused = false,
   onLocatingChange,
   serverError = null,
+  citiesFailed = false,
 }: LocationFieldProps) {
   const support = useSyncExternalStore(subscribe, getBrowserSupport, getServerSupport)
   const [isLocating, setIsLocatingState] = useState(false)
@@ -127,6 +131,8 @@ export function LocationField({
   let hint: string | null = null
   if (shownError !== null) {
     hint = shownError
+  } else if (citiesFailed) {
+    hint = citiesUnavailableMessage(support)
   } else if (support === 'insecure' || support === 'unsupported') {
     hint = GEOLOCATION_MESSAGES[support]
   } else if (reused) {
@@ -179,8 +185,8 @@ export function LocationField({
         {hint !== null ? (
           <p
             id={hintId}
-            role={shownError !== null ? 'alert' : undefined}
-            className={`text-[11px] leading-tight ${shownError !== null ? 'text-destructive' : 'text-muted-foreground'}`}
+            role={shownError !== null ? 'alert' : citiesFailed ? 'status' : undefined}
+            className={`text-[11px] leading-tight ${shownError !== null || citiesFailed ? 'text-destructive' : 'text-muted-foreground'}`}
           >
             {hint}
           </p>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  citiesUnavailableMessage,
   createRequestGuard,
   formatAccuracy,
   GEOLOCATION_MESSAGES,
@@ -86,4 +87,21 @@ describe('createRequestGuard (a late position must not overwrite a newer choice)
 
     expect(isCurrent()).toBe(true)
   })
+})
+
+describe('citiesUnavailableMessage', () => {
+  it('offers the current location when the browser can give it', () => {
+    expect(citiesUnavailableMessage('available')).toBe(
+      'Could not load the cities right now. You can still use your location or create the room without one.',
+    )
+  })
+
+  it.each(['insecure', 'unsupported', null] as const)(
+    'only offers no location when support is %s',
+    (support) => {
+      expect(citiesUnavailableMessage(support)).toBe(
+        'Could not load the cities right now. You can create the room without a location.',
+      )
+    },
+  )
 })
