@@ -1,11 +1,11 @@
 import type { Room } from '@/api/types'
-import { formatRoomLocation, getRoomCoordinates } from '@/lib/location'
+import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
 import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 
 /** US-03: one room's details. US-15: with its saved location (AT-5: reused when reopened). */
 export function RoomDetails({ room }: { room: Room }) {
-  const location = formatRoomLocation(room)
-  const coordinates = getRoomCoordinates(room)
+  const label = formatRoomLocation(room)
+  const location = resolveRoomLocation(room)
 
   return (
     <div className="grid gap-6">
@@ -24,11 +24,11 @@ export function RoomDetails({ room }: { room: Room }) {
         <div className="grid gap-1">
           <dt className="text-sm text-muted-foreground">Location</dt>
           <dd className="font-medium text-foreground">
-            {location ?? 'Not set'}
-            {coordinates !== null && room.city === null ? (
+            {label ?? 'Not set'}
+            {location.kind === 'coordinates' ? (
               <span className="block text-sm font-normal text-muted-foreground">
-                {coordinates.latitude.toFixed(COORDINATE_DECIMALS)},{' '}
-                {coordinates.longitude.toFixed(COORDINATE_DECIMALS)}
+                {location.latitude.toFixed(COORDINATE_DECIMALS)},{' '}
+                {location.longitude.toFixed(COORDINATE_DECIMALS)}
               </span>
             ) : null}
           </dd>

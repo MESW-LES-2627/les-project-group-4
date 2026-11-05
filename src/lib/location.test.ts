@@ -6,6 +6,7 @@ import {
   getRoomCoordinates,
   loadLastLocation,
   parseSavedLocation,
+  resolveRoomLocation,
   toLocationInput,
 } from './location'
 
@@ -73,8 +74,43 @@ describe('parseSavedLocation', () => {
     ['only a latitude', '{"latitude":41}'],
     ['a latitude out of range', '{"latitude":91,"longitude":0}'],
     ['a city and coordinates', '{"cityId":1,"latitude":41,"longitude":-8}'],
+    ['a city id too big for the database', '{"cityId":2147483648}'],
+    ['an unknown field', '{"cityId":1,"extra":true}'],
   ])('gives no location for %s', (_label, raw) => {
     expect(parseSavedLocation(raw)).toEqual({})
+  })
+})
+
+describe('parseSavedLocation uses the same rules as POST /api/rooms', () => {
+  it('rounds saved coordinates like the API does', () => {
+    expect(parseSavedLocation('{"latitude":41.157899,"longitude":-8.629101}')).toEqual({
+      latitude: 41.158,
+      longitude: -8.629,
+    })
+  })
+})
+
+describe('resolveRoomLocation', () => {
+  it('prefers the city, then the coordinates, then none', () => {
+    const porto = { id: 1, name: 'Porto', latitude: 41.15, longitude: -8.61 }
+    expect(resolveRoomLocation({ city: porto, latitude: null, longitude: null })).toEqual({
+      kind: 'city',
+      city: porto,
+    })
+    expect(resolveRoomLocation({ city: null, latitude: 41.1, longitude: -8.6 })).toEqual({
+      kind: 'coordinates',
+      latitude: 41.1,
+      longitude: -8.6,
+    })
+    expect(resolveRoomLocation({ city: null, latitude: null, longitude: null })).toEqual({
+      kind: 'none',
+    })
+  })
+
+  it('treats half a pair of coordinates as no location', () => {
+    expect(resolveRoomLocation({ city: null, latitude: 41.1, longitude: null })).toEqual({
+      kind: 'none',
+    })
   })
 })
 

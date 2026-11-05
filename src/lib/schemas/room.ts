@@ -41,9 +41,47 @@ const longitudeSchema = z
   .max(180, { error: 'must be between -180 and 180' })
   .transform(roundCoordinate)
 
+// US-15: the optional location fields, shared by createRoomSchema and roomLocationSchema.
+const locationFields = {
+  cityId: idSchema.optional(),
+  latitude: latitudeSchema.optional(),
+  longitude: longitudeSchema.optional(),
+}
+
+/** US-15: a `cityId`, or `latitude` + `longitude` together, never both (the DB checks it too). */
+function checkLocation(
+  location: { cityId?: number; latitude?: number; longitude?: number },
+  ctx: z.RefinementCtx,
+) {
+  const hasLatitude = location.latitude !== undefined
+  const hasLongitude = location.longitude !== undefined
+  if (hasLatitude && !hasLongitude) {
+    ctx.addIssue({ code: 'custom', path: ['longitude'], message: 'is required with latitude' })
+  }
+  if (hasLongitude && !hasLatitude) {
+    ctx.addIssue({ code: 'custom', path: ['latitude'], message: 'is required with longitude' })
+  }
+  if (location.cityId !== undefined && (hasLatitude || hasLongitude)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['cityId'],
+      message: 'choose a city or your current location, not both',
+    })
+  }
+}
+
+/**
+ * US-15: just the location, with the same rules as POST /api/rooms. The create-room form uses
+ * it for the location it remembers in the browser (AT-5), so both can never drift apart.
+ */
+export const roomLocationSchema = z.object(locationFields).strict().superRefine(checkLocation)
+
+/** US-15: an empty object (no location), a city, or browser coordinates. */
+export type RoomLocationInput = z.input<typeof roomLocationSchema>
+
 /**
  * US-01: the rules for creating a room, shared by POST /api/rooms and the create-room form.
- * US-15: the location is optional: a `cityId`, or `latitude` + `longitude` together, never both.
+ * US-15: plus the optional location (see roomLocationSchema).
  * Whether the city exists is checked by the route (it needs the database).
  */
 export const createRoomSchema = z
@@ -56,29 +94,11 @@ export const createRoomSchema = z
         .max(255, { error: 'must be at most 255 characters' }),
       widthCm: dimensionCm,
       lengthCm: dimensionCm,
-      cityId: idSchema.optional(),
-      latitude: latitudeSchema.optional(),
-      longitude: longitudeSchema.optional(),
+      ...locationFields,
     },
     { error: 'must be a JSON object' },
   )
-  .superRefine((room, ctx) => {
-    const hasLatitude = room.latitude !== undefined
-    const hasLongitude = room.longitude !== undefined
-    if (hasLatitude && !hasLongitude) {
-      ctx.addIssue({ code: 'custom', path: ['longitude'], message: 'is required with latitude' })
-    }
-    if (hasLongitude && !hasLatitude) {
-      ctx.addIssue({ code: 'custom', path: ['latitude'], message: 'is required with longitude' })
-    }
-    if (room.cityId !== undefined && (hasLatitude || hasLongitude)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['cityId'],
-        message: 'choose a city or your current location, not both',
-      })
-    }
-  })
+  .superRefine(checkLocation)
 
 export type CreateRoomInput = z.infer<typeof createRoomSchema>
 

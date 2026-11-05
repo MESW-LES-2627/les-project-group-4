@@ -1,7 +1,6 @@
-import { z } from 'zod'
-
-import type { Room } from '@/api/types'
-import type { RoomLocationInput } from '@/lib/roomValidation'
+import type { City, Room } from '@/api/types'
+import { roomLocationSchema } from '@/lib/schemas/room'
+import type { RoomLocationInput } from '@/lib/schemas/room'
 
 /** What the UI shows for coordinates that have no city (AT-2: no reverse geocoding). */
 export const CURRENT_LOCATION_LABEL = 'Current location'
@@ -13,18 +12,37 @@ export interface Coordinates {
 
 type RoomLocation = Pick<Room, 'city' | 'latitude' | 'longitude'>
 
+/** US-15: a saved room's location, in one place: a city, browser coordinates, or none. */
+export type ResolvedLocation =
+  | { kind: 'city'; city: City }
+  | ({ kind: 'coordinates' } & Coordinates)
+  | { kind: 'none' }
+
+/** The single "city, else coordinates, else none" rule; the helpers below all use it. */
+export function resolveRoomLocation(room: RoomLocation): ResolvedLocation {
+  if (room.city !== null) {
+    return { kind: 'city', city: room.city }
+  }
+  if (room.latitude !== null && room.longitude !== null) {
+    return { kind: 'coordinates', latitude: room.latitude, longitude: room.longitude }
+  }
+  return { kind: 'none' }
+}
+
 /**
  * US-15: the label for a room's saved location: the city name, "Current location" for
  * browser coordinates, or null when the room has no location.
  */
 export function formatRoomLocation(room: RoomLocation): string | null {
-  if (room.city !== null) {
-    return room.city.name
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return location.city.name
+    case 'coordinates':
+      return CURRENT_LOCATION_LABEL
+    case 'none':
+      return null
   }
-  if (room.latitude !== null && room.longitude !== null) {
-    return CURRENT_LOCATION_LABEL
-  }
-  return null
 }
 
 /**
@@ -32,44 +50,44 @@ export function formatRoomLocation(room: RoomLocation): string | null {
  * reuse it without asking again. A city uses its seeded coordinates.
  */
 export function getRoomCoordinates(room: RoomLocation): Coordinates | null {
-  if (room.city !== null) {
-    return { latitude: room.city.latitude, longitude: room.city.longitude }
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return { latitude: location.city.latitude, longitude: location.city.longitude }
+    case 'coordinates':
+      return { latitude: location.latitude, longitude: location.longitude }
+    case 'none':
+      return null
   }
-  if (room.latitude !== null && room.longitude !== null) {
-    return { latitude: room.latitude, longitude: room.longitude }
-  }
-  return null
 }
 
 /** AT-5: the location of a saved room, in the shape the create-room form sends. */
 export function toLocationInput(room: RoomLocation): RoomLocationInput {
-  if (room.city !== null) {
-    return { cityId: room.city.id }
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return { cityId: location.city.id }
+    case 'coordinates':
+      return { latitude: location.latitude, longitude: location.longitude }
+    case 'none':
+      return {}
   }
-  if (room.latitude !== null && room.longitude !== null) {
-    return { latitude: room.latitude, longitude: room.longitude }
-  }
-  return {}
 }
 
 // AT-5: the browser remembers the last room's location so the next room starts with it.
 // It is only a convenience: the room itself (in the database) is the source of truth.
 const LAST_LOCATION_KEY = 'furnimi:last-location'
 
-const savedLocationSchema = z.union([
-  z.object({ cityId: z.int().positive() }).strict(),
-  z
-    .object({ latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180) })
-    .strict(),
-])
-
-/** Parses what was stored; anything missing, old or tampered with gives no location. */
+/**
+ * Parses what was stored with the same schema as POST /api/rooms (roomLocationSchema);
+ * anything missing, old or tampered with gives no location.
+ */
 export function parseSavedLocation(raw: string | null): RoomLocationInput {
   if (raw === null) {
     return {}
   }
   try {
-    const parsed = savedLocationSchema.safeParse(JSON.parse(raw))
+    const parsed = roomLocationSchema.safeParse(JSON.parse(raw))
     return parsed.success ? parsed.data : {}
   } catch {
     return {}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createRoomSchema, roomIdSchema, roundCoordinate } from './room'
+import { createRoomSchema, roomIdSchema, roomLocationSchema, roundCoordinate } from './room'
 
 const validRoom = { name: 'Bedroom', widthCm: 300, lengthCm: 400 }
 
@@ -87,6 +87,25 @@ describe('createRoomSchema location (US-15)', () => {
 
     expect(result.success).toBe(false)
     expect(result.error?.issues[0].path).toEqual([field])
+  })
+})
+
+describe('roomLocationSchema (the location remembered for the next room)', () => {
+  it.each([
+    ['no location', {}],
+    ['a city', { cityId: 1 }],
+    ['coordinates', { latitude: 41.15, longitude: -8.61 }],
+  ])('accepts %s', (_label, location) => {
+    expect(roomLocationSchema.parse(location)).toEqual(location)
+  })
+
+  it.each([
+    ['a city and coordinates', { cityId: 1, latitude: 41, longitude: -8 }],
+    ['only a longitude', { longitude: -8 }],
+    ['a city id above the database limit', { cityId: 2_147_483_648 }],
+    ['an unknown field', { cityId: 1, name: 'Porto' }],
+  ])('rejects %s, like POST /api/rooms', (_label, location) => {
+    expect(roomLocationSchema.safeParse(location).success).toBe(false)
   })
 })
 
