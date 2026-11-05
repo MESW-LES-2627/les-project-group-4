@@ -15,3 +15,13 @@ export const itemCategorySchema = z.enum(ITEM_CATEGORIES, {
 export function isItemCategory(value: unknown): value is ItemCategory {
   return itemCategorySchema.safeParse(value).success
 }
+
+/**
+ * US-07: the query of GET /api/items and the /catalog page. No category means all items.
+ * Shared by the route and the page so both accept exactly the same input.
+ */
+export const listItemsQuerySchema = z.object({
+  category: itemCategorySchema.optional(),
+})
+
+export type ListItemsQuery = z.infer<typeof listItemsQuerySchema>
