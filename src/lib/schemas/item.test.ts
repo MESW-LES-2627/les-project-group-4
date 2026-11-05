@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { ITEM_CATEGORIES } from '@/lib/catalog'
 
-import { isItemCategory, itemCategorySchema } from './item'
+import { isItemCategory, itemCategorySchema, listItemsQuerySchema } from './item'
 import { toFieldErrors } from './room'
 
 describe('itemCategorySchema', () => {
@@ -57,5 +57,22 @@ describe('isItemCategory', () => {
   it('agrees with itemCategorySchema', () => {
     expect(isItemCategory('sofa')).toBe(true)
     expect(isItemCategory('rug')).toBe(false)
+  })
+})
+
+describe('listItemsQuerySchema', () => {
+  it('accepts no category (all items) and a known category', () => {
+    expect(listItemsQuerySchema.safeParse({}).success).toBe(true)
+    expect(listItemsQuerySchema.safeParse({ category: undefined }).success).toBe(true)
+    expect(listItemsQuerySchema.safeParse({ category: 'sofa' }).success).toBe(true)
+  })
+
+  it.each([
+    ['unknown', 'rug'],
+    ['repeated', ['sofa', 'bed']], // ?category=sofa&category=bed on the page
+  ])('rejects a %s category', (_label, category) => {
+    const result = listItemsQuerySchema.safeParse({ category })
+
+    expect(result.success).toBe(false)
   })
 })
