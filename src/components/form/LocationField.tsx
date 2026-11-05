@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { LoaderCircle, LocateFixed } from 'lucide-react'
 
 import type { City } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
+  createRequestGuard,
   formatAccuracy,
   GEOLOCATION_MESSAGES,
   getGeolocationSupport,
@@ -41,15 +42,34 @@ interface LocationFieldProps {
   onChange: (value: RoomLocationInput) => void
   /** AT-5: true while the value is the location reused from the last room. */
   reused?: boolean
+  /** Lets the form block submitting while the browser is still looking up the position. */
+  onLocatingChange?: (isLocating: boolean) => void
 }
 
 /** US-15: pick a seeded city, or use the browser's coordinates (no reverse geocoding). */
-export function LocationField({ id, cities, value, onChange, reused = false }: LocationFieldProps) {
+export function LocationField({
+  id,
+  cities,
+  value,
+  onChange,
+  reused = false,
+  onLocatingChange,
+}: LocationFieldProps) {
   const support = useSyncExternalStore(subscribe, getBrowserSupport, getServerSupport)
-  const [isLocating, setIsLocating] = useState(false)
+  const [isLocating, setIsLocatingState] = useState(false)
+  // Only the latest lookup may change the value (see createRequestGuard).
+  const [guard] = useState(createRequestGuard)
   const [error, setError] = useState<string | null>(null)
   // Accuracy of the last browser position, in metres. Only shown, never saved.
   const [accuracy, setAccuracy] = useState<number | null>(null)
+
+  // A lookup still running when the form goes away (e.g. the room was created) is ignored.
+  useEffect(() => () => guard.cancel(), [guard])
+
+  function setIsLocating(next: boolean) {
+    setIsLocatingState(next)
+    onLocatingChange?.(next)
+  }
 
   const hasCoordinates = value.latitude !== undefined && value.longitude !== undefined
   let selectValue = ''
@@ -60,6 +80,11 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
   }
 
   function handleSelect(next: string) {
+    // Picking from the list wins over a lookup that has not answered yet.
+    guard.cancel()
+    if (isLocating) {
+      setIsLocating(false)
+    }
     setError(null)
     if (next === 'current') {
       return
@@ -69,16 +94,23 @@ export function LocationField({ id, cities, value, onChange, reused = false }: L
   }
 
   function handleUseMyLocation() {
+    const isCurrent = guard.start()
     setIsLocating(true)
     setError(null)
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        if (!isCurrent()) {
+          return
+        }
         setIsLocating(false)
         setAccuracy(position.coords.accuracy)
         // AT-6: only the coordinates are kept; nothing is sent to a geocoding service.
         onChange({ latitude: position.coords.latitude, longitude: position.coords.longitude })
       },
       (positionError) => {
+        if (!isCurrent()) {
+          return
+        }
         setIsLocating(false)
         setError(messageForPositionError(positionError.code))
       },

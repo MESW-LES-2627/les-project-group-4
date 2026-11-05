@@ -62,6 +62,8 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
     onFieldErrors: form.applyServerErrors,
   })
   const [focusNameOnMount, setFocusNameOnMount] = useState(false)
+  // US-15: no submitting while "Use my location" is still waiting for the browser.
+  const [isLocating, setIsLocating] = useState(false)
 
   // Remember the location that was actually saved with the room.
   useEffect(() => {
@@ -97,7 +99,11 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
     <form
       className="grid gap-3"
       noValidate
-      onSubmit={form.handleSubmit((values) => submit(values, location))}
+      onSubmit={form.handleSubmit((values) => {
+        if (!isLocating) {
+          return submit(values, location)
+        }
+      })}
     >
       <TextField
         {...form.getFieldProps('name')}
@@ -138,11 +144,13 @@ export function CreateRoomForm({ cities }: { cities: City[] }) {
         value={location}
         onChange={handleLocationChange}
         reused={reusedLocation}
+        onLocatingChange={setIsLocating}
       />
 
       <Button
         type="submit"
         aria-busy={isSubmitting}
+        disabled={isLocating}
         className="h-11 w-full px-6 text-[15px] sm:w-auto"
       >
         {isSubmitting ? (

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  createRequestGuard,
   formatAccuracy,
   GEOLOCATION_MESSAGES,
   getGeolocationSupport,
@@ -48,5 +49,41 @@ describe('formatAccuracy', () => {
     [2345, 'within ~2.3 km'],
   ])('%f m reads "%s"', (metres, label) => {
     expect(formatAccuracy(metres)).toBe(label)
+  })
+})
+
+describe('createRequestGuard (a late position must not overwrite a newer choice)', () => {
+  it('the latest request is current', () => {
+    const guard = createRequestGuard()
+    const isCurrent = guard.start()
+
+    expect(isCurrent()).toBe(true)
+  })
+
+  it('a new request makes the previous one stale', () => {
+    const guard = createRequestGuard()
+    const first = guard.start()
+    const second = guard.start()
+
+    expect(first()).toBe(false)
+    expect(second()).toBe(true)
+  })
+
+  it('cancel (picking a city, or the form going away) makes the pending request stale', () => {
+    const guard = createRequestGuard()
+    const isCurrent = guard.start()
+
+    guard.cancel()
+
+    expect(isCurrent()).toBe(false)
+  })
+
+  it('a request started after a cancel is current again', () => {
+    const guard = createRequestGuard()
+    guard.start()
+    guard.cancel()
+    const isCurrent = guard.start()
+
+    expect(isCurrent()).toBe(true)
   })
 })

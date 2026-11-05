@@ -40,3 +40,22 @@ export function formatAccuracy(metres: number): string {
   }
   return `within ~${Math.max(1, Math.round(metres))} m`
 }
+
+/**
+ * Keeps only the latest geolocation request. `start()` returns a check that stays true until
+ * another request starts or `cancel()` is called, so a late answer cannot overwrite a city the
+ * user picked meanwhile, or land after the form is gone.
+ */
+export function createRequestGuard() {
+  let current = 0
+  return {
+    start(): () => boolean {
+      current += 1
+      const id = current
+      return () => id === current
+    },
+    cancel(): void {
+      current += 1
+    },
+  }
+}
