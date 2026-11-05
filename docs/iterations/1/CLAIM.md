@@ -8,8 +8,8 @@ visualiser is de-risked early.
 
 ## Documents in this iteration
 
-The scope and process contracts still live in the Iteration 0 folder
-until this iteration's documents are added:
+The scope and process contracts did not change in this iteration, so
+they stay in the Iteration 0 folder:
 
 | Document                      | What it answers                                                  |
 | ----------------------------- | ---------------------------------------------------------------- |
@@ -17,8 +17,8 @@ until this iteration's documents are added:
 | [stories.md](../0/stories.md) | The backlog and the public cut.                                  |
 | [DoD.md](../0/DoD.md)         | The shared bar for "done", per change and per iteration.         |
 | [ci.md](ci.md)                | What CI checks and how staging and production deploy.            |
-
-Iteration-specific documents still to add: `retro.md` and `ai-log.md`.
+| [retro.md](retro.md)          | What went well, what went badly, and what changes in Iteration 2. |
+| [ai-log.md](ai-log.md)        | Which AI tools were used and where the model was wrong.          |
 
 ## Board
 
@@ -33,5 +33,6 @@ iteration.
 
 - Production: TBD (auto-deploys when `develop` is merged into `main` at the end of the iteration)
 - Staging: <https://furnimi-staging.vercel.app/>
+- Pipeline: [CI](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/ci.yml) runs on every PR and on pushes to `develop` and `main`; [Deploy](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/deploy.yml) deploys staging from `develop` and production from `main`
 - Tag: TBD
 - Compare with previous tag: [`iter-0...iter-1`](https://github.com/MESW-LES-2627/les-project-group-4/compare/iter-0...iter-1) (once `iter-1` exists)
