@@ -11,7 +11,7 @@ another team member before it was merged.
 | Tool             | Who       | What we used it for                                                                                                                                               |
 | ---------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Claude           | João      | US-02 (#49), US-03 (#50) and US-15 (#56): first versions of the route handlers and tests. Help reviewing #52, #55 and #57.                                        |
-| _TODO Francisca_ | Francisca | TODO                                                                                                                                                              |
+| OpenCode (DeepSeek V4.1 Flash) | Francisca | CH-01 deployment and CI/CD (#41, #51, #53) and US-06a 2D plan (#52): first versions of the workflows, deploy scripts and Plan2D. Review passes over the iteration's PRs, where she triaged the findings it listed. |
 | Claude           | Nicolas   | US-06b plan geometry (#47), CH-02 seed (#48) and US-07 catalog (#57): first versions of the code and tests and edge-case checks. Help reviewing #50, #52 and #53. |
 
 ### Claude
@@ -22,6 +22,26 @@ another team member before it was merged.
   `@/lib/db`. João reviewed and changed them before opening the PRs.
 - **Reviews.** Help running #52, #55 and #57 locally and spotting where
   they would conflict with #56.
+
+### OpenCode (Francisca)
+
+- **Deployment and CI/CD.** First versions of `.github/workflows/ci.yml`
+  and `deploy.yml` and the supporting scripts (#41, #51, #53): the
+  Postgres 16 job that runs `migrate deploy` and seeds twice on a fresh
+  database, the staging/production deploy to Vercel, migrations and seed
+  against the Supabase session pooler, the `/api/health` smoke test, and
+  the manual migrate/deploy fallbacks. Francisca reviewed the diffs and
+  checked each step on real workflow runs before merging.
+- **three.js and the 2D plan.** First versions of the Plan2D renderer
+  for US-06a (#52): the orthographic camera fitted to the room, floor
+  and outline to scale, items rendered from the shared cm geometry
+  contract, selection and labels, zoom/pan/reset and full-screen, the
+  scale bar and metre grid, with tests for the scene. She reviewed and
+  adapted it afterwards.
+- **Reviews.** In her review passes over the iteration's PRs she asked
+  for every possible finding, then decided which were plausible, in
+  scope and worth acting on. The model widened the list of candidates;
+  she made the calls.
 
 ### Claude (Nicolas)
 
