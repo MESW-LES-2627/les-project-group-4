@@ -5,7 +5,7 @@ push or merge to `main` deploys **production**.
 
 Vercel's own Git integration needs the Vercel GitHub App installed at org level,
 which only org owners can do, so the pipeline lives in
-[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) instead. Repo
+[`.github/workflows/deploy.yml`](../../../.github/workflows/deploy.yml) instead. Repo
 admins can manage Actions secrets and environments, which makes this the
 self-serve path. If the app is ever installed, the existing Vercel projects can
 be connected to Git from **Project Settings → Git**, and the workflow can be
