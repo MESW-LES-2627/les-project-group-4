@@ -8,11 +8,11 @@ another team member before it was merged.
 
 ## Tools used
 
-| Tool | Who | What we used it for |
-| --- | --- | --- |
-| Claude | João | US-02 (#49), US-03 (#50) and US-15 (#56): first versions of the route handlers and tests. Help reviewing #52, #55 and #57. |
-| _TODO Francisca_ | Francisca | TODO |
-| _TODO Nicolas_ | Nicolas | TODO |
+| Tool             | Who       | What we used it for                                                                                                                                               |
+| ---------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude           | João      | US-02 (#49), US-03 (#50) and US-15 (#56): first versions of the route handlers and tests. Help reviewing #52, #55 and #57.                                        |
+| _TODO Francisca_ | Francisca | TODO                                                                                                                                                              |
+| Claude           | Nicolas   | US-06b plan geometry (#47), CH-02 seed (#48) and US-07 catalog (#57): first versions of the code and tests and edge-case checks. Help reviewing #50, #52 and #53. |
 
 ### Claude
 
@@ -22,6 +22,12 @@ another team member before it was merged.
   `@/lib/db`. João reviewed and changed them before opening the PRs.
 - **Reviews.** Help running #52, #55 and #57 locally and spotting where
   they would conflict with #56.
+
+### Claude (Nicolas)
+
+- **Code and tests**. First versions of src/lib/geometry/plan.ts and its tests (#47), the Item/City schema, seedData.ts and the idempotent seed (#48), and GET /api/items + the /catalog page (#57). Nicolas reviewed and ran lint, typecheck, tests and build locally and changed them after review before each PR.
+- **Checking the work**. Edge cases tried against the running app, and tests broken on purpose to see that they fail (mutation checks).
+- **Reviews**. Help running #50, #52 and #53 locally.
 
 ## One place the model was wrong
 
