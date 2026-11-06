@@ -65,11 +65,24 @@ jobs:
       - name: Seed sample data
         run: DATABASE_URL="$DIRECT_DATABASE_URL" npm run db:seed
 
+      # Vercel checks the commit author on CLI deployments that carry git
+      # metadata. That blocks this private repository on the Hobby plan, where
+      # only the account owner's commits may deploy. Point git at a directory
+      # that does not exist so the CLI uploads without commit metadata; the
+      # deployment is then attributed to the token owner. This one step serves
+      # both environments: VERCEL_PROJECT_ID above picks staging or production.
       - name: Deploy to Vercel
         id: deploy
+        env:
+          GIT_DIR: ${{ runner.temp }}/not-a-git-repo
         run: |
-          output=$(npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1)
+          status=0
+          output=$(timeout 15m npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1) || status=$?
           printf '%s\n' "$output"
+          if [ "$status" -ne 0 ]; then
+            echo "::error::vercel deploy failed (exit $status); see the output above."
+            exit "$status"
+          fi
           url=$(printf '%s\n' "$output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app[^[:space:]]*' | tail -n1)
           if [ -z "$url" ]; then
             echo "::error::Could not read the deployment URL from the Vercel CLI output."

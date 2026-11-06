@@ -25,7 +25,10 @@ deleted.
 4. `npm run db:seed` against the same pooler. The seed upserts by slug, so it is
    safe to run on every deploy and keeps item ids stable.
 5. `vercel deploy --prod` with the environment's project ID, and exposes the
-   resulting URL as the GitHub environment URL.
+   resulting URL as the GitHub environment URL. The CLI runs with `GIT_DIR`
+   pointing at a non-existent path so Vercel does not attribute the deployment
+   to the commit author: this private repository is on the Hobby plan, where
+   only the account owner's commits may deploy.
 6. Calls `GET /api/health` on the new deployment and fails the job if it does not
    return 200 within about a minute.
 
