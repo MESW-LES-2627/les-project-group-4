@@ -15,7 +15,7 @@ export function RoomsHeader({ count }: { count?: number }) {
           {count === undefined
             ? 'Loading your saved rooms…'
             : count === 0
-              ? 'Your saved rooms will appear here.'
+              ? 'Your saved rooms will appear here'
               : `${count} saved room${count === 1 ? '' : 's'}, newest first.`}
         </p>
       </div>
