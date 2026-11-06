@@ -74,7 +74,7 @@ environment is updated by every merge to `develop`.
 
 Manual fallbacks exist for an Actions outage or a hotfix:
 `npm run migrate:staging|production` and `npm run deploy:staging|production`,
-documented in [`docs/deployment.md`](../../deployment.md).
+documented in [`deployment.md`](deployment.md).
 
 ## Rolling back
 

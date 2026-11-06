@@ -15,8 +15,8 @@ drag around.
 
 ## Documentation
 
+- [CLAIM iter 1](docs/iterations/1/CLAIM.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
-- [Deployment and migrations](docs/deployment.md)
 
 
 ## Stack
@@ -64,7 +64,7 @@ A push to `develop` or `main` applies that environment's Prisma migrations again
 session pooler, then deploys the new version to Vercel. Vercel's own Git integration is not used
 because installing its GitHub App requires org-owner rights; the pipeline lives in
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). See
-[docs/deployment.md](docs/deployment.md) for the secrets, the manual fallback and rollback.
+[docs/iterations/1/deployment.md](docs/iterations/1/deployment.md) for the secrets, the manual fallback and rollback.
 
 ## Structure
 

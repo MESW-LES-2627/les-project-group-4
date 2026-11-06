@@ -1,37 +1,34 @@
-# CLAIM - Iteration 1
+# CLAIM — Iteration 1
 
-> FurniMi · LES – Team D · FEUP 2026/27
+Team: FurniMi — Team D (LES, FEUP 2026/27)
 
-This is the entry point for Iteration 1 (23 Oct – 6 Nov 2026). The
-iteration completes O1, starts O2, and ships the 2D plan setup so the
-visualiser is de-risked early.
+Tag: `iter-1`
 
-## Documents in this iteration
+Previous tag: [`iter-0`](https://github.com/MESW-LES-2627/les-project-group-4/tree/iter-0)
 
-The scope and process contracts still live in the Iteration 0 folder
-until this iteration's documents are added:
+This file lives on the tagged commit at `docs/iterations/1/CLAIM.md` and is the
+entry point for the Iteration 1 review. Iteration 1 completes O1, starts O2, and
+ships the 2D plan setup so the visualiser is de-risked early.
 
-| Document                      | What it answers                                                  |
-| ----------------------------- | ---------------------------------------------------------------- |
-| [mvp.md](../0/mvp.md)         | The scope contract: MVP outcomes O1–O5 and what is out of scope. |
-| [stories.md](../0/stories.md) | The backlog and the public cut.                                  |
-| [DoD.md](../0/DoD.md)         | The shared bar for "done", per change and per iteration.         |
-| [ci.md](ci.md)                | What CI checks and how staging and production deploy.            |
+---
 
-Iteration-specific documents still to add: `retro.md` and `ai-log.md`.
+## Required permalinks
 
-## Board
+Use links that work on tag `iter-1`. If something does not exist yet, write `none yet` — do not paste a link that 404s.
 
-Screenshots are taken from the same GitHub Project view (grouped by **Status**) at the start and end of the
-iteration.
-
-| Before the iteration                          | After the iteration                         |
-| --------------------------------------------- | ------------------------------------------- |
-| ![Board before Iteration 1](board/before.png) | ![Board after Iteration 1](board/after.png) |
-
-## Permalinks
-
-- Production: TBD (auto-deploys when `develop` is merged into `main` at the end of the iteration)
-- Staging: <https://furnimi-staging.vercel.app/>
-- Tag: TBD
-- Compare with previous tag: [`iter-0...iter-1`](https://github.com/MESW-LES-2627/les-project-group-4/compare/iter-0...iter-1) (once `iter-1` exists)
+| What                      | Link                                                                                                                                                                              |
+| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MVP                       | [mvp.md](../0/mvp.md)                                                                                                                                                             |
+| Vision                    | [vision.md](../0/vision.md)                                                                                                                                                       |
+| Definition of Done        | [DoD.md](../0/DoD.md)                                                                                                                                                             |
+|                           |                                                                                                                                                                                   |
+| This tag (`iter-1`)       | TBD                                                                                                                                                                               |
+|                           |                                                                                                                                                                                   |
+| Production                | TBD                                                                                                                                                                               |
+| Staging                   | [furnimi-staging.vercel.app](https://furnimi-staging.vercel.app/)                                                                                                                 |
+|                           |                                                                                                                                                                                   |
+| CI/CD Pipeline            | [CI](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/ci.yml) · [Deploy](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/deploy.yml) |
+|                           |                                                                                                                                                                                   |
+| Stories in this increment | [Iteration 1 milestone](https://github.com/MESW-LES-2627/les-project-group-4/milestone/2)                                                                                         |
+| Retrospective             | [retro.md](retro.md)                                                                                                                                                              |
+| AI log                    | [ai-log.md](ai-log.md)                                                                                                                                                            |
