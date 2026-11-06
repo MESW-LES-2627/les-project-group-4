@@ -1,0 +1,109 @@
+name: Deploy
+
+# Pushes to develop deploy staging; pushes to main deploy production.
+# Vercel's own Git integration needs the GitHub App installed at org level,
+# which repo admins cannot do, so the deploy is driven from here instead.
+# Migrations run before the new version serves traffic; a failed migration
+# fails the job, so the previous deployment keeps serving.
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two deploys of the same environment overlap: a second push waits
+# for the first to finish instead of migrating the same database twice.
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    env:
+      # Project identifiers, not credentials. They match .vercel/*.json locally.
+      VERCEL_ORG_ID: team_qu1XSy93GReSamvXE9KxwkN6
+      VERCEL_PROJECT_ID: ${{ github.ref_name == 'main' && 'prj_huvPEqTyOB0hSnvW0H0ECo2lXPBk' || 'prj_tx8CplqTUnWuWmjCvyHECdIcxF1B' }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check the migration URL is configured
+        run: |
+          if [ -z "${DIRECT_DATABASE_URL}" ]; then
+            echo "::error::DIRECT_DATABASE_URL is not set for the '${{ github.ref_name }}' environment."
+            echo "Add it as an environment secret: Settings -> Environments -> ${{ github.ref_name == 'main' && 'production' || 'staging' }}."
+            exit 1
+          fi
+
+      # Session pooler (port 5432) only: the transaction pooler cannot run DDL.
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      # CH-02 AT-7: the seed runs from the pipeline, not by hand. It upserts by
+      # slug, so re-running keeps ids stable. Point the app client at the
+      # session pooler, since only DIRECT_DATABASE_URL is available here.
+      - name: Seed sample data
+        run: DATABASE_URL="$DIRECT_DATABASE_URL" npm run db:seed
+
+      # Vercel checks the commit author on CLI deployments that carry git
+      # metadata. That blocks this private repository on the Hobby plan, where
+      # only the account owner's commits may deploy. Point git at a directory
+      # that does not exist so the CLI uploads without commit metadata; the
+      # deployment is then attributed to the token owner. This one step serves
+      # both environments: VERCEL_PROJECT_ID above picks staging or production.
+      - name: Deploy to Vercel
+        id: deploy
+        env:
+          GIT_DIR: ${{ runner.temp }}/not-a-git-repo
+        run: |
+          status=0
+          output=$(timeout 15m npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1) || status=$?
+          printf '%s\n' "$output"
+          if [ "$status" -ne 0 ]; then
+            echo "::error::vercel deploy failed (exit $status); see the output above."
+            exit "$status"
+          fi
+          url=$(printf '%s\n' "$output" | grep -Eo 'https://[^[:space:]]+\.vercel\.app[^[:space:]]*' | tail -n1)
+          if [ -z "$url" ]; then
+            echo "::error::Could not read the deployment URL from the Vercel CLI output."
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      # A deployment that does not serve a working database is not a deployment.
+      # Retry briefly: the alias can lag a few seconds behind the build.
+      - name: Smoke test the deployment
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if body=$(curl --fail --silent --show-error --max-time 10 "$DEPLOYMENT_URL/api/health"); then
+              echo "$body"
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying in 10s"
+            sleep 10
+          done
+          echo "::error::/api/health is not returning 200 on $DEPLOYMENT_URL"
+          exit 1
+

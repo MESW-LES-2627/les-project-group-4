@@ -13,7 +13,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'FurniMi — Create a room',
+  title: 'FurniMi - Create a room',
   description: 'Plan your room before you buy.',
 }
 

@@ -15,6 +15,7 @@ drag around.
 
 ## Documentation
 
+- [CLAIM iter 1](docs/iterations/1/CLAIM.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
 
 
@@ -23,7 +24,7 @@ drag around.
 - App: Next.js (React + TypeScript), with the API as route handlers under `src/app/api`
 - DB: PostgreSQL (dev: Docker) with Prisma
 - UI: Tailwind CSS + shadcn/ui
-- 2D Blueprint: SVG
+- 2D plan view: react-three-fiber (orthographic top-down, pan/zoom)
 - LLM: server side, optional
 
 ## How to run
@@ -44,10 +45,27 @@ No `.env` is needed locally: without `DATABASE_URL`, the app uses the Postgres f
 | `npm run typecheck`  | Type-checks without emitting                         |
 | `npm run build`      | Production build (also type-checks)                  |
 | `npm run db:migrate` | Creates a migration after changing `prisma/schema.prisma` |
+| `npm run db:seed`    | Fills the database with sample cities and catalog items (safe to re-run) |
 | `npm run db:down`    | Stops the database                                   |
 
 > Coming from the Spring Boot version? Its Flyway tables are still in your Docker volume. Run
 > `docker compose down -v` once so Prisma can create the schema from scratch.
+
+## Deployment
+
+Staging and production deploy automatically on push:
+
+| Environment | Branch    | URL |
+| ----------- | --------- | --- |
+| Staging     | `develop` | <https://furnimi-staging.vercel.app/> |
+| Production  | `main`    | TBD — deploys at the end of the iteration |
+
+A push to `develop` or `main` applies that environment's Prisma migrations against the Supabase
+session pooler, then deploys the new version to Vercel. Vercel's own Git integration is not used
+because installing its GitHub App requires org-owner rights; the pipeline lives in
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). See
+[docs/iterations/1/deployment.md](docs/iterations/1/deployment.md) for the secrets, the manual fallback and rollback.
+
 ## Structure
 
 - src/app/ Pages and API route handlers

@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { CircleCheck } from 'lucide-react'
 
 import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
+import { formatRoomLocation } from '@/lib/location'
 
 interface CreateRoomSuccessProps {
   room: Room
@@ -16,6 +18,7 @@ export function CreateRoomSuccess({
   onCreateAnother,
 }: CreateRoomSuccessProps) {
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const location = formatRoomLocation(room)
 
   useEffect(() => {
     headingRef.current?.focus()
@@ -44,17 +47,24 @@ export function CreateRoomSuccess({
             <span className="font-medium text-foreground">{room.name}</span>
             {' · '}
             {room.widthCm} × {room.lengthCm} cm
+            {location !== null ? ` · ${location}` : null}
           </p>
         </div>
       </div>
 
-      <Button
-        type="button"
-        onClick={onCreateAnother}
-        className="h-11 w-full px-6 text-[15px] sm:w-auto"
-      >
-        Create another room
-      </Button>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Button asChild className="h-11 w-full px-6 text-[15px] sm:w-auto">
+          <Link href={`/rooms/${room.id}`}>View room</Link>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCreateAnother}
+          className="h-11 w-full px-6 text-[15px] sm:w-auto"
+        >
+          Create another room
+        </Button>
+      </div>
     </div>
   )
 }
