@@ -18,6 +18,13 @@ model Room {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
+  // US-15: the room's location is either a seeded city or the browser's coordinates
+  // (never both; POST /api/rooms checks that). Both are optional.
+  cityId    Int?   @map("city_id")
+  city      City?  @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  latitude  Float?
+  longitude Float?
+
   @@map("room")
 }
 
@@ -52,6 +59,7 @@ model City {
   country   String @db.Char(2)
   latitude  Float
   longitude Float
+  rooms     Room[]
 
   @@map("city")
 }

@@ -3,19 +3,52 @@
 // Field names must stay identical to the frozen contract in the epic
 // (served by the route handlers under src/app/api).
 
-/** Body sent to POST /api/rooms. */
+/**
+ * Body sent to POST /api/rooms.
+ * US-15: the location is optional: either `cityId`, or `latitude` + `longitude`, never both.
+ */
 export interface CreateRoomRequest {
   name: string
   widthCm: number
   lengthCm: number
+  cityId?: number
+  latitude?: number
+  longitude?: number
 }
 
-/** Body returned by POST /api/rooms with 201 Created. */
+/** US-15: a seeded city, returned by GET /api/cities and inside a Room. */
+export interface City {
+  id: number
+  name: string
+  latitude: number
+  longitude: number
+}
+
+/** Body returned by POST /api/rooms with 201 Created, GET /api/rooms and GET /api/rooms/[id]. */
 export interface Room {
   id: number
   name: string
   widthCm: number
   lengthCm: number
+  /** US-15: the chosen city, or null. */
+  city: City | null
+  /** US-15: the browser's coordinates when the user chose "Use my location", otherwise null. */
+  latitude: number | null
+  longitude: number | null
+}
+
+/** One catalog item, as returned by GET /api/items (US-07). Sizes in cm, price in euro cents. */
+export interface CatalogItem {
+  id: number
+  slug: string
+  name: string
+  category: string
+  widthCm: number
+  depthCm: number
+  heightCm: number | null
+  priceCents: number
+  styleTags: string[]
+  roomTypeTags: string[]
 }
 
 /** Body returned by the API with 400 Bad Request. */

@@ -1,4 +1,5 @@
 import type { CreateRoomRequest } from '@/api/types'
+import type { RoomLocationInput } from '@/lib/schemas/room'
 
 // Client-side rules for the create-room form
 
@@ -13,6 +14,9 @@ export type RoomFormField = 'name' | 'width' | 'length'
 export type RoomFormValues = Record<RoomFormField, string>
 
 export type RoomFormErrors = Partial<Record<RoomFormField, string>>
+
+// US-15: the location type comes from the shared schema (see roomLocationSchema).
+export type { RoomLocationInput } from '@/lib/schemas/room'
 
 const FORM_FIELDS: readonly RoomFormField[] = ['name', 'width', 'length']
 
@@ -103,11 +107,12 @@ export function isFormValid(errors: RoomFormErrors): boolean {
 }
 
 /**
- * Converts validated form values into the API request body
+ * Converts validated form values (and the optional US-15 location) into the API request body
  * Returns null when the values would fail validation
  */
 export function toCreateRoomRequest(
   values: RoomFormValues,
+  location: RoomLocationInput = {},
 ): CreateRoomRequest | null {
   if (!isFormValid(validateForm(values))) {
     return null
@@ -117,6 +122,7 @@ export function toCreateRoomRequest(
     name: values.name.trim(),
     widthCm: Number(values.width.trim()),
     lengthCm: Number(values.length.trim()),
+    ...location,
   }
 }
 
@@ -136,4 +142,23 @@ export function mapServerFieldErrors(
     }
   }
   return errors
+}
+
+/**
+ * US-15: the server's location errors (cityId, latitude, longitude) as one sentence for the
+ * location field, or undefined when there are none. They are not form fields, so
+ * mapServerFieldErrors leaves them out and they would otherwise be lost.
+ */
+export function pickLocationError(fieldErrors: Record<string, string>): string | undefined {
+  const cityError = fieldErrors.cityId?.trim()
+  if (cityError === 'does not exist') {
+    return 'That city is no longer available. Choose another location.'
+  }
+  if (cityError) {
+    return `Location: ${cityError}.`
+  }
+  if (fieldErrors.latitude?.trim() || fieldErrors.longitude?.trim()) {
+    return 'Your current location could not be saved. Try "Use my location" again or choose a city.'
+  }
+  return undefined
 }

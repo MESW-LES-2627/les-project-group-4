@@ -1,4 +1,5 @@
 import type { Room, ValidationErrorBody } from '@/api/types'
+import { cityExists } from '@/lib/cities'
 import { getDb } from '@/lib/db'
 import { findRooms, ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
@@ -21,7 +22,7 @@ export async function GET() {
   }
 }
 
-/** US-01: creates a room. 201 with the room, 400 with field errors, 500 if the database fails. */
+/** US-01, US-15: creates a room, optionally with a location. 201 with the room, 400 with field errors, 500 if the database fails. */
 export async function POST(request: Request) {
   let body: unknown
   try {
@@ -36,6 +37,11 @@ export async function POST(request: Request) {
   }
 
   try {
+    // US-15: an unknown city is the client's mistake (400), not a database failure (500).
+    if (parsed.data.cityId !== undefined && !(await cityExists(parsed.data.cityId))) {
+      return validationError({ cityId: 'does not exist' })
+    }
+
     const room: Room = await getDb().room.create({
       data: parsed.data,
       select: ROOM_SELECT,

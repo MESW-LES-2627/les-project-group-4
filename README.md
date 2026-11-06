@@ -24,7 +24,7 @@ drag around.
 - App: Next.js (React + TypeScript), with the API as route handlers under `src/app/api`
 - DB: PostgreSQL (dev: Docker) with Prisma
 - UI: Tailwind CSS + shadcn/ui
-- 2D plan: react-three-fiber (orthographic top-down view)
+- 2D plan view: react-three-fiber (orthographic top-down, pan/zoom)
 - LLM: server side, optional
 
 ## How to run
