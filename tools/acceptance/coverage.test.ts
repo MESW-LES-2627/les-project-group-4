@@ -1,0 +1,168 @@
+import { describe, expect, it } from "vitest";
+
+import { checkCoverage, scanTags } from "./coverage";
+import type { Overrides } from "./coverage";
+import type { Registry } from "./registry";
+
+const registry: Registry = {
+  repository: "owner/repo",
+  stories: {
+    "US-15": {
+      issue: 37,
+      title: "Set my location",
+      ats: [
+        { id: "AT-1", title: "City" },
+        { id: "AT-2", title: "Geolocation" },
+      ],
+    },
+    "CH-02": {
+      issue: 42,
+      title: "Seed items, stores and cities",
+      ats: [{ id: "AT-1", title: "Idempotent seed" }],
+    },
+  },
+};
+
+describe("scanTags", () => {
+  it("reads one story tag and one AT tag from a test", () => {
+    const source = `it('stores Porto', { tags: ['acceptance', 'US-15', 'AT-1'] }, () => {})`;
+
+    expect(scanTags("AT-1-city.test.ts", source)).toEqual({
+      pairs: [
+        { story: "US-15", at: "AT-1", file: "AT-1-city.test.ts", line: 1 },
+      ],
+      problems: [],
+    });
+  });
+
+  it("handles a tags array spread over several lines", () => {
+    const source = [
+      "it('stores Porto', {",
+      "  tags: [",
+      "    'acceptance',",
+      "    'US-15',",
+      "    'AT-1',",
+      "  ],",
+      "}, () => {})",
+    ].join("\n");
+
+    expect(scanTags("file.test.ts", source).pairs).toEqual([
+      { story: "US-15", at: "AT-1", file: "file.test.ts", line: 2 },
+    ]);
+  });
+
+  it("accepts a chore key such as CH-02", () => {
+    const source = `it('seeds twice', { tags: ['acceptance', 'CH-02', 'AT-1'] }, () => {})`;
+
+    expect(scanTags("file.test.ts", source).pairs[0]?.story).toBe("CH-02");
+  });
+
+  it("ignores tag arrays with no story or AT tag", () => {
+    const source = `it('is fast', { tags: ['acceptance', 'slow'] }, () => {})`;
+
+    expect(scanTags("file.test.ts", source)).toEqual({
+      pairs: [],
+      problems: [],
+    });
+  });
+
+  it("reports a story tag without an AT tag", () => {
+    const source = `it('x', { tags: ['acceptance', 'US-15'] }, () => {})`;
+    const { pairs, problems } = scanTags("file.test.ts", source);
+
+    expect(pairs).toEqual([]);
+    expect(problems).toHaveLength(1);
+    expect(problems[0].message).toMatch(/exactly one story tag and one AT tag/);
+  });
+
+  it("reports two AT tags in one array instead of guessing", () => {
+    const source = `it('x', { tags: ['US-15', 'AT-1', 'AT-2'] }, () => {})`;
+
+    expect(scanTags("file.test.ts", source).problems[0]?.message).toMatch(
+      /AT-1, AT-2/,
+    );
+  });
+});
+
+describe("checkCoverage", () => {
+  const tagged = (story: string, at: string) => ({
+    file: `${story}-${at}.test.ts`,
+    source: `it('x', { tags: ['acceptance', '${story}', '${at}'] }, () => {})`,
+  });
+
+  it("reports only the ATs that have neither a test nor an override", () => {
+    const report = checkCoverage(registry, [tagged("US-15", "AT-1")], {});
+
+    expect(report.pairs).toHaveLength(1);
+    expect(report.uncovered.map((at) => at.key)).toEqual([
+      "CH-02/AT-1",
+      "US-15/AT-2",
+    ]);
+    expect(report.manual).toEqual([]);
+  });
+
+  it("takes manual and deferred overrides out of the uncovered list", () => {
+    const overrides: Overrides = {
+      "US-15/AT-2": { status: "manual", note: "no component harness" },
+      "CH-02/AT-1": { status: "deferred", note: "tracked in #64" },
+    };
+    const report = checkCoverage(
+      registry,
+      [tagged("US-15", "AT-1")],
+      overrides,
+    );
+
+    expect(report.uncovered).toEqual([]);
+    expect(report.manual).toEqual(["CH-02/AT-1", "US-15/AT-2"]);
+  });
+
+  it("flags a tag that is not in the registry", () => {
+    const report = checkCoverage(registry, [tagged("US-99", "AT-1")], {});
+
+    expect(report.unknown).toHaveLength(1);
+    expect(report.problems[0]?.message).toBe("unknown tag US-99/AT-1");
+  });
+
+  it("flags an AT that belongs to a different story", () => {
+    const report = checkCoverage(registry, [tagged("US-15", "AT-9")], {});
+
+    expect(report.unknown).toHaveLength(1);
+    expect(report.problems[0]?.message).toBe("unknown tag US-15/AT-9");
+  });
+
+  it("flags an override with a malformed key", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15": { status: "manual" },
+    });
+
+    expect(report.problems[0]?.message).toMatch(/expected US-15\/AT-3/);
+  });
+
+  it("flags an override that references an AT not in the registry", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-9": { status: "manual" },
+    });
+
+    expect(report.problems[0]?.message).toMatch(/not in the registry/);
+  });
+
+  it("flags an invalid override status", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-1": { status: "skipped" } as never,
+    });
+
+    expect(report.problems[0]?.message).toMatch(
+      /expected "manual" or "deferred"/,
+    );
+  });
+
+  it("sorts the uncovered list so the report is stable", () => {
+    const report = checkCoverage(registry, [], {});
+
+    expect(report.uncovered.map((at) => at.key)).toEqual([
+      "CH-02/AT-1",
+      "US-15/AT-1",
+      "US-15/AT-2",
+    ]);
+  });
+});

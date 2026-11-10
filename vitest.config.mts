@@ -17,7 +17,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          include: ['src/**/*.test.{ts,tsx}'],
+          // App tests stay in src/; repo tooling tests live under tools/.
+          include: ['src/**/*.test.{ts,tsx}', 'tools/**/*.test.{ts,tsx}'],
         },
       },
       {

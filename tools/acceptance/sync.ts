@@ -1,64 +1,26 @@
 // Regenerates tests/registry.json from the GitHub issues.
 //
-//   npm run acceptance:sync              write the registry
-//   npm run acceptance:sync -- --check   fail if the committed file is stale
+//   npm run acceptance:sync            write the registry
+//   npm run acceptance:sync -- --check fail if the committed file is stale
 //
 // The issue body is the source of truth, so editing an AT in an issue means
 // re-running this script. Automation status lives in
 // tests/acceptance/overrides.json and is never written here.
 
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import {
-  buildRegistry,
-  serializeRegistry,
-} from "../src/lib/acceptance/registry";
-import type { IssueInput } from "../src/lib/acceptance/registry";
+import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
+import { buildRegistry, serializeRegistry } from "./registry";
 
 const REGISTRY_PATH = fileURLToPath(
-  new URL("../tests/registry.json", import.meta.url),
-);
-const ISSUE_FIELDS = ["number", "title", "body"];
-
-function gh(args: string[]): string {
-  try {
-    return execFileSync("gh", args, { encoding: "utf8" }).trim();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`gh ${args.join(" ")} failed:\n${message}`);
-  }
-}
-
-function listIssues(): IssueInput[] {
-  const json = gh([
-    "issue",
-    "list",
-    "--state",
-    "all",
-    "--limit",
-    "500",
-    "--json",
-    ISSUE_FIELDS.join(","),
-  ]);
-
-  return JSON.parse(json) as IssueInput[];
-}
-
-function repository(): string {
-  // GITHUB_REPOSITORY is set by Actions; fall back to gh locally.
-  return (
-    process.env.GITHUB_REPOSITORY ??
-    gh(["repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"])
-  );
-}
-
-const issues = listIssues().filter((issue) =>
-  issue.body?.includes("## Acceptance tests"),
+  new URL("../../tests/registry.json", import.meta.url),
 );
 
-const { registry, skipped } = buildRegistry(issues, repository());
+const { registry, skipped } = buildRegistry(
+  listIssuesWithAcceptanceTests(),
+  resolveRepository(),
+);
 const output = serializeRegistry(registry);
 
 const storyCount = Object.keys(registry.stories).length;
