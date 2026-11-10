@@ -17,6 +17,7 @@
     "db:migrate": "prisma migrate dev",
     "postinstall": "prisma generate",
     "test": "vitest run",
+    "acceptance:sync": "tsx scripts/acceptance-sync.ts",
     "db:seed": "prisma db seed"
   },
   "dependencies": {

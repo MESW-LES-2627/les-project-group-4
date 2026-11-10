@@ -1,8 +1,29 @@
 # Acceptance tests
 
-Tests that verify an acceptance test (AT) written in a story issue. They live
-here instead of next to the code so that the suite reads by story, and so CI can
-report which story and which AT broke.
+Tests that verify an acceptance test (AT) from a story issue. They live here
+instead of next to the code so the suite reads by story and CI can report which
+story and which AT broke.
+
+Vitest is split into two projects:
+
+| Project | What it runs | Files |
+| --- | --- | --- |
+| `unit` | tests for a helper, component or route in isolation | `src/**/*.test.ts(x)` |
+| `acceptance` | tests that verify an AT from an issue | `tests/acceptance/**/*.test.ts(x)` |
+
+Only tests that verify an AT belong in this directory; anything else stays next
+to the code it covers.
+
+## Running
+
+```sh
+npm test                            # both projects
+npm test -- --project acceptance    # only the acceptance tests
+npm test -- --project unit          # only the unit tests
+```
+
+The `acceptance` project is empty until the first story is migrated (US-15), so
+`--project acceptance` reports "No test files found" until then.
 
 ## Layout
 
@@ -15,17 +36,13 @@ tests/acceptance/US-15-set-my-location/
   AT-3-permission-denied.test.ts
 ```
 
-Unit tests stay next to the code they cover; only tests that verify an AT belong here.
+## Registry and overrides
 
-## Running
+`tests/registry.json` is generated from the issues by `npm run acceptance:sync`
+and maps each story to its issue number and ATs. Do not edit it by hand.
 
-```sh
-npm test                      # both projects
-npm test -- --project unit
-```
-
-`npm test -- --project acceptance` runs just the story tests once the first
-story is migrated; the project is empty until then.
+Automation status lives in `tests/acceptance/overrides.json`, keyed by
+`US-15/AT-3`, with `manual` or `deferred` for ATs that cannot be automated yet.
 
 ## Tags
 
@@ -33,5 +50,5 @@ Every acceptance test is tagged with `acceptance`, the story id and the AT id
 (`US-15`, `AT-3`). AT ids are only unique inside a story, so the key is always
 `US-15/AT-3` — never `AT-3` alone.
 
-The tags, the registry that maps a story to its issue and the CI report are
-added by the rest of #62 and #63.
+Tags are not enforced yet: they are added with the US-15 migration in #62, and
+the CI report in #63.
