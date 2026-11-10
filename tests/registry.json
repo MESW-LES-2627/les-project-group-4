@@ -133,6 +133,36 @@
         }
       ]
     },
+    "CH-04": {
+      "issue": 65,
+      "title": "Refactor the source tree into feature-based folders",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "One home per feature"
+        },
+        {
+          "id": "AT-2",
+          "title": "No behaviour change"
+        },
+        {
+          "id": "AT-3",
+          "title": "Thin app layer"
+        },
+        {
+          "id": "AT-4",
+          "title": "Boundaries"
+        },
+        {
+          "id": "AT-5",
+          "title": "Small shared layer"
+        },
+        {
+          "id": "AT-6",
+          "title": "Docs match tree"
+        }
+      ]
+    },
     "US-01": {
       "issue": 23,
       "title": "Create a room by name and dimensions",

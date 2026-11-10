@@ -64,7 +64,8 @@ Automation status lives in `tests/acceptance/overrides.json`, keyed by
 
 Every acceptance test is tagged with `acceptance`, the story id and the AT id
 (`US-15`, `AT-3`). AT ids are only unique inside a story, so the key is always
-`US-15/AT-3` — never `AT-3` alone.
+`US-15/AT-3` — never `AT-3` alone. Tag the `describe` when the whole block
+verifies one AT: Vitest inherits the tags down to its tests.
 
 Tags are validated by `npm run acceptance:check`; the US-15 migration adds them
 to the tests, and the CI report follows in #63.

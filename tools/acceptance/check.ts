@@ -50,7 +50,7 @@ if (!offline) {
 }
 
 console.log(
-  `Acceptance tests: ${report.pairs.length} tagged test(s), ` +
+  `Acceptance tests: ${report.pairs.length} tagged group(s), ` +
     `${coveredAts}/${totalAts} ATs covered, ${report.manual.length} manual/deferred.`,
 );
 

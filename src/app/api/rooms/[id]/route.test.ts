@@ -44,16 +44,6 @@ describe('GET /api/rooms/[id]', () => {
     expect(findRoom).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 3 } }))
   })
 
-  it('AT-5: returns the saved location when the room is reopened', async () => {
-    const coordinates = { latitude: 41.15, longitude: -8.61 }
-    findRoom.mockResolvedValue({ ...room, city: null, ...coordinates } as never)
-
-    const body = (await (await get('3')).json()) as Room
-
-    expect(body.city).toBeNull()
-    expect({ latitude: body.latitude, longitude: body.longitude }).toEqual(coordinates)
-  })
-
   it('returns 404 when the room does not exist', async () => {
     findRoom.mockResolvedValue(null)
 

@@ -10,6 +10,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
+    // US-xx / AT-n tags are dynamic (they come from the issues), so Vitest
+    // cannot list them. tools/acceptance/check.ts validates them instead.
+    strictTags: false,
     // Two suites with different jobs: unit tests stay next to the code they
     // cover, acceptance tests are grouped by story under tests/acceptance/.
     projects: [
