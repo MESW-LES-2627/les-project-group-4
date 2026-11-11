@@ -70,6 +70,8 @@ Regressions and new failures are `::error`; pre-existing failures are
 npm run acceptance:check              # fail on any gap (default)
 npm run acceptance:check -- --warn    # report gaps, exit 0
 npm run acceptance:check -- --offline # skip the registry drift check
+npm run acceptance:check -- --issue 63 # also require CH-03b's ATs
+npm run acceptance:check -- --pr 67    # resolve the PR's linked issues via gh
 ```
 
 `--strict` is still accepted for compatibility; strict is the default. The check
@@ -84,8 +86,20 @@ A story is "started" when it has at least one tagged test or an override. The
 ATs of stories nobody has started yet are reported and ignored by the gate, so
 it fails on gaps in current work, not on the whole backlog.
 
-CI runs `npm run acceptance:check -- --strict` on every pull request; `--strict`
-is redundant now, but the command still works.
+CI runs `npm run acceptance:check` on every pull request; `--strict` is
+redundant now, but the command still works.
+
+### The issue the PR closes
+
+On pull requests the check also resolves the issue the PR closes — from
+`closingIssuesReferences`, then a `Closes #n` line, then the
+`type/issue-<n>-slug` branch — and requires that story's ATs even if the story
+has not started yet. Every AT must be covered by a tagged test, `manual`, or
+`covered-by`; a `deferred` AT fails because the PR claims the issue is done.
+
+A PR with no linked issue is reported and skips the rule, so docs-only PRs are
+not blocked. Unknown issue numbers (the legacy issues #1–#7) are reported and
+skipped. This needs `pull-requests: read` in addition to `issues: read`.
 
 ## Layout
 

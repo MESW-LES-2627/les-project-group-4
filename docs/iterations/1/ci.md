@@ -40,6 +40,14 @@ the gate applies to work in flight rather than the whole backlog. A manual or
 deferred AT is exempt when it is listed in
 [`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
 
+On pull requests the check also resolves the issue the PR closes
+(`gh pr view … --json closingIssuesReferences`, then `Closes #n` in the body,
+then the `issue-<n>` branch name) and requires that story's ATs even before the
+story has started. Every AT must be covered, `manual` or `covered-by`; a
+`deferred` AT fails because the PR claims the issue is done. A PR with no
+linked issue is reported and skips the rule. This needs `pull-requests: read`
+in addition to `issues: read`.
+
 ### Acceptance report and regressions
 
 The `Acceptance tests (US/AT)` job runs the acceptance project and turns the

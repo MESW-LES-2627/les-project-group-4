@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { checkCoverage } from "./coverage";
 import type { Overrides } from "./coverage";
 import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
+import { linkedIssuesForPullRequest, storyKeysForIssues } from "./issues";
 import { buildRegistry, isRegistryStale } from "./registry";
 import type { Registry } from "./registry";
 
@@ -25,6 +26,22 @@ const ACCEPTANCE_DIR = join(ROOT, "tests/acceptance");
 const warn = process.argv.includes("--warn");
 const strict = !warn;
 const offline = process.argv.includes("--offline");
+const prNumber = argValue("--pr");
+
+function argValue(name: string): string | undefined {
+  const index = process.argv.indexOf(name);
+  return index === -1 ? undefined : process.argv[index + 1];
+}
+
+function argValues(name: string): string[] {
+  const values: string[] = [];
+  for (let index = 0; index < process.argv.length; index += 1) {
+    if (process.argv[index] === name && process.argv[index + 1]) {
+      values.push(process.argv[index + 1]);
+    }
+  }
+  return values;
+}
 
 const committed = readFileSync(REGISTRY_PATH, "utf8");
 const registry = JSON.parse(committed) as Registry;
@@ -33,8 +50,38 @@ const overrides: Overrides = existsSync(OVERRIDES_PATH)
   ? (JSON.parse(readFileSync(OVERRIDES_PATH, "utf8")) as Overrides)
   : {};
 
+const explicitIssues = argValues("--issue")
+  .map((value) => Number(value))
+  .filter((value) => Number.isInteger(value));
+
+const linked = prNumber
+  ? linkedIssuesForPullRequest(Number(prNumber)).issues
+  : [];
+const issues = [...new Set([...explicitIssues, ...linked])].sort((a, b) => a - b);
+const { stories: requiredStories, unknown: unknownIssues } = storyKeysForIssues(
+  registry,
+  issues,
+);
+
+if (prNumber && issues.length === 0) {
+  console.log(
+    `PR #${prNumber} has no linked issue; skipping the per-issue coverage rule.`,
+  );
+}
+for (const issue of unknownIssues) {
+  console.log(`#${issue} is not a story in the registry; skipped.`);
+}
+if (requiredStories.length > 0) {
+  console.log(
+    `Required by ${issues.map((issue) => `#${issue}`).join(", ")}: ` +
+      `${requiredStories.join(", ")}.`,
+  );
+}
+
 const files = acceptanceFiles();
-const report = checkCoverage(registry, files, overrides);
+const report = checkCoverage(registry, files, overrides, {
+  required: requiredStories,
+});
 
 const totalAts = Object.values(registry.stories).reduce(
   (total, story) => total + story.ats.length,
@@ -104,7 +151,8 @@ if (report.uncovered.length > 0) {
   console.log(`\n${report.uncovered.length} AT(s) without a test:`);
   for (const at of shown) {
     console.log(
-      `  ${at.key.padEnd(12)} ${at.title.padEnd(32)} #${at.issue} (${at.story})`,
+      `  ${at.key.padEnd(12)} ${at.title.padEnd(32)} #${at.issue} (${at.story})` +
+        (at.required ? `  [required by #${at.issue}]` : ""),
     );
   }
   if (report.uncovered.length > shown.length) {

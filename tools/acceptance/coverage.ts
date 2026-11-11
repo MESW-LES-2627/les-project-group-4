@@ -37,6 +37,8 @@ export interface UncoveredAt {
   issue: number;
   at: string;
   title: string;
+  /** True when the story belongs to the issue this PR claims to close. */
+  required: boolean;
 }
 
 export interface CheckReport {
@@ -105,6 +107,7 @@ export function checkCoverage(
   registry: Registry,
   files: ReadonlyArray<{ file: string; source: string }>,
   overrides: Overrides = {},
+  options: { required?: Iterable<string> } = {},
 ): CheckReport {
   const pairs: TagPair[] = [];
   const problems: ScanProblem[] = [];
@@ -192,6 +195,7 @@ export function checkCoverage(
   const manual: string[] = [];
   const coveredBy: string[] = [];
   const notStarted: string[] = [];
+  const required = new Set(options.required ?? []);
 
   // A story counts as started once it has a tagged test or an explicit
   // override. Until then its ATs are backlog, not gaps to fail the gate on.
@@ -205,7 +209,9 @@ export function checkCoverage(
   }
 
   for (const [storyKey, story] of Object.entries(registry.stories)) {
-    if (!started.has(storyKey)) {
+    // A required story is checked even when it has not started: the PR says it
+    // closes that issue, so its ATs must be covered or explicitly manual.
+    if (!started.has(storyKey) && !required.has(storyKey)) {
       notStarted.push(storyKey);
       continue;
     }
@@ -214,6 +220,13 @@ export function checkCoverage(
       if (covered.has(key)) continue;
       const override = overrides[key];
       if (override) {
+        if (override.status === "deferred" && required.has(storyKey)) {
+          problems.push({
+            file: "overrides.json",
+            line: 0,
+            message: `deferred AT ${key} belongs to #${story.issue}, which this PR closes`,
+          });
+        }
         if (override.status === "covered-by") coveredBy.push(key);
         else manual.push(key);
         continue;
@@ -224,6 +237,7 @@ export function checkCoverage(
         issue: story.issue,
         at: entry.id,
         title: entry.title,
+        required: required.has(storyKey),
       });
     }
   }

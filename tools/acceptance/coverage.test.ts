@@ -279,4 +279,55 @@ describe("checkCoverage", () => {
       "US-15/AT-3",
     ]);
   });
+
+  it("checks a required story even when it has not started", () => {
+    const report = checkCoverage(
+      registry,
+      [tagged("US-15", "AT-1"), tagged("US-15", "AT-2")],
+      {},
+      { required: ["CH-02"] },
+    );
+
+    expect(report.notStarted).toEqual([]);
+    expect(report.uncovered.map((at) => at.key)).toEqual(["CH-02/AT-1"]);
+    expect(report.uncovered[0].required).toBe(true);
+  });
+
+  it("does not mark a started story's gaps as required", () => {
+    const report = checkCoverage(
+      registry,
+      [tagged("US-15", "AT-1")],
+      {},
+      { required: ["CH-02"] },
+    );
+
+    const us = report.uncovered.find((at) => at.story === "US-15");
+
+    expect(us?.required).toBe(false);
+  });
+
+  it("accepts a manual override on a required story", () => {
+    const report = checkCoverage(
+      registry,
+      [],
+      { "CH-02/AT-1": { status: "manual" } },
+      { required: ["CH-02"] },
+    );
+
+    expect(report.uncovered).toEqual([]);
+    expect(report.manual).toEqual(["CH-02/AT-1"]);
+  });
+
+  it("fails a deferred AT on a required story", () => {
+    const report = checkCoverage(
+      registry,
+      [],
+      { "CH-02/AT-1": { status: "deferred" } },
+      { required: ["CH-02"] },
+    );
+
+    expect(report.problems.map((problem) => problem.message)).toEqual([
+      "deferred AT CH-02/AT-1 belongs to #42, which this PR closes",
+    ]);
+  });
 });

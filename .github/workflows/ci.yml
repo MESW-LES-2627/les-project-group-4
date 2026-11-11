@@ -7,8 +7,9 @@ on:
 
 permissions:
   contents: read
-  # The acceptance check reads the issues to detect a stale registry.
+  # The acceptance check reads the issues and the PR's closing links.
   issues: read
+  pull-requests: read
 
 # A new push to the same PR/branch cancels the run that is already in progress.
 concurrency:
@@ -80,11 +81,17 @@ jobs:
       - name: Test
         run: npm test -- --project unit
       # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
-      # or tests/registry.json no longer matches the issues.
+      # the issue this PR closes has an uncovered AT, or the registry is stale.
       - name: Acceptance traceability
-        run: npm run acceptance:check -- --strict
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -n "$PR_NUMBER" ]; then
+            npm run acceptance:check -- --pr "$PR_NUMBER"
+          else
+            npm run acceptance:check
+          fi
       - name: Build
         run: npm run build
 
