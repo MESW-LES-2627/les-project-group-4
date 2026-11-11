@@ -38,8 +38,16 @@ const totalAts = Object.values(registry.stories).reduce(
   (total, story) => total + story.ats.length,
   0,
 );
+const notStartedAts = report.notStarted.reduce(
+  (total, story) => total + (registry.stories[story]?.ats.length ?? 0),
+  0,
+);
 const coveredAts =
-  totalAts - report.uncovered.length - report.manual.length - report.coveredBy.length;
+  totalAts -
+  report.uncovered.length -
+  report.manual.length -
+  report.coveredBy.length -
+  notStartedAts;
 
 let drift = false;
 if (!offline) {
@@ -55,6 +63,13 @@ console.log(
     `${coveredAts}/${totalAts} ATs covered, ${report.manual.length} manual/deferred, ` +
     `${report.coveredBy.length} covered by another story.`,
 );
+
+if (report.notStarted.length > 0) {
+  console.log(
+    `${report.notStarted.length} story(ies) not started (${notStartedAts} ATs), ignored by --strict: ` +
+      report.notStarted.join(", "),
+  );
+}
 
 if (report.problems.length > 0) {
   console.error(`\nProblems (${report.problems.length}):`);

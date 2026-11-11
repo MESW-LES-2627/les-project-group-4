@@ -52,6 +52,8 @@ export interface CheckReport {
   manual: string[];
   /** ATs covered by the tests of another story (e.g. a sub-story). */
   coveredBy: string[];
+  /** Stories with no tagged test and no override; --strict ignores them. */
+  notStarted: string[];
 }
 
 /**
@@ -183,8 +185,24 @@ export function checkCoverage(
   const uncovered: UncoveredAt[] = [];
   const manual: string[] = [];
   const coveredBy: string[] = [];
+  const notStarted: string[] = [];
+
+  // A story counts as started once it has a tagged test or an explicit
+  // override. Until then its ATs are backlog, not gaps to fail the gate on.
+  const started = new Set<string>();
+  for (const pair of pairs) {
+    if (covered.has(`${pair.story}/${pair.at}`)) started.add(pair.story);
+  }
+  for (const key of Object.keys(overrides)) {
+    const [story] = key.split("/");
+    if (story && registry.stories[story]) started.add(story);
+  }
 
   for (const [storyKey, story] of Object.entries(registry.stories)) {
+    if (!started.has(storyKey)) {
+      notStarted.push(storyKey);
+      continue;
+    }
     for (const entry of story.ats) {
       const key = `${storyKey}/${entry.id}`;
       if (covered.has(key)) continue;
@@ -207,6 +225,7 @@ export function checkCoverage(
   uncovered.sort((a, b) => a.key.localeCompare(b.key));
   manual.sort((a, b) => a.localeCompare(b));
   coveredBy.sort((a, b) => a.localeCompare(b));
+  notStarted.sort((a, b) => a.localeCompare(b));
 
-  return { pairs, problems, unknown, uncovered, manual, coveredBy };
+  return { pairs, problems, unknown, uncovered, manual, coveredBy, notStarted };
 }

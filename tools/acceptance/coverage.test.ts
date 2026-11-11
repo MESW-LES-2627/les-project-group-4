@@ -90,15 +90,29 @@ describe("checkCoverage", () => {
     source: `it('x', { tags: ['acceptance', '${story}', '${at}'] }, () => {})`,
   });
 
-  it("reports only the ATs that have neither a test nor an override", () => {
+  it("reports only the started story's ATs that have neither a test nor an override", () => {
     const report = checkCoverage(registry, [tagged("US-15", "AT-1")], {});
 
     expect(report.pairs).toHaveLength(1);
-    expect(report.uncovered.map((at) => at.key)).toEqual([
-      "CH-02/AT-1",
-      "US-15/AT-2",
-    ]);
+    expect(report.uncovered.map((at) => at.key)).toEqual(["US-15/AT-2"]);
     expect(report.manual).toEqual([]);
+    expect(report.notStarted).toEqual(["CH-02"]);
+  });
+
+  it("ignores the ATs of stories with no tests and no overrides", () => {
+    const report = checkCoverage(registry, [], {});
+
+    expect(report.uncovered).toEqual([]);
+    expect(report.notStarted).toEqual(["CH-02", "US-15"]);
+  });
+
+  it("counts a story as started once it has an override", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-1": { status: "manual" },
+    });
+
+    expect(report.notStarted).toEqual(["CH-02"]);
+    expect(report.uncovered.map((at) => at.key)).toEqual(["US-15/AT-2"]);
   });
 
   it("takes manual and deferred overrides out of the uncovered list", () => {
@@ -193,12 +207,38 @@ describe("checkCoverage", () => {
   });
 
   it("sorts the uncovered list so the report is stable", () => {
-    const report = checkCoverage(registry, [], {});
+    const sortable: typeof registry = {
+      repository: "owner/repo",
+      stories: {
+        "US-15": {
+          issue: 37,
+          title: "Set my location",
+          ats: [
+            { id: "AT-1", title: "City" },
+            { id: "AT-2", title: "Geolocation" },
+            { id: "AT-3", title: "Permission denied" },
+          ],
+        },
+        "CH-02": {
+          issue: 42,
+          title: "Seed items, stores and cities",
+          ats: [
+            { id: "AT-1", title: "Idempotent seed" },
+            { id: "AT-2", title: "Catalog data" },
+          ],
+        },
+      },
+    };
+    const report = checkCoverage(
+      sortable,
+      [tagged("US-15", "AT-1"), tagged("CH-02", "AT-1")],
+      {},
+    );
 
     expect(report.uncovered.map((at) => at.key)).toEqual([
-      "CH-02/AT-1",
-      "US-15/AT-1",
+      "CH-02/AT-2",
       "US-15/AT-2",
+      "US-15/AT-3",
     ]);
   });
 });

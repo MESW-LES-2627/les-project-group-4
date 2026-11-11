@@ -35,10 +35,13 @@ npm run acceptance:check -- --offline # skip the registry drift check
 
 The check reads the `tags` arrays from the test sources, so the tag list must be
 a literal array in the test call (not built at runtime). It verifies that every
-`US`/`AT` tag exists in the registry, that no automated AT has zero tests, and
-that `tests/registry.json` still matches the issues. ATs listed in
-`overrides.json` are exempt from the coverage rule. `--strict` is what CI will
-use; warn mode exists so the migration can land first.
+`US`/`AT` tag exists in the registry, that no started story has an uncovered
+automated AT, and that `tests/registry.json` still matches the issues. ATs
+listed in `overrides.json` are exempt from the coverage rule.
+
+A story is "started" when it has at least one tagged test or an override. The
+ATs of stories nobody has started yet are reported and ignored by `--strict`,
+so the gate fails on gaps in current work, not on the whole backlog.
 
 ## Layout
 

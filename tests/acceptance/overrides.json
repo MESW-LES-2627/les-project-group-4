@@ -51,6 +51,10 @@
     "status": "manual",
     "note": "code review criterion: the renderer must call the geometry module"
   },
+  "US-06a/AT-6": {
+    "status": "manual",
+    "note": "docs review: stories.md, mvp.md and README say 2D plan view, not SVG"
+  },
   "US-07/AT-1": {
     "status": "manual",
     "note": "catalog list rendering (name and price); no component test harness yet"
