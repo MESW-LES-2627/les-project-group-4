@@ -43,12 +43,13 @@ deferred AT is exempt when it is listed in
 ### Acceptance report and regressions
 
 The `Acceptance tests (US/AT)` job runs the acceptance project and turns the
-JSON report into a summary grouped by story. The summary is collapsible: every
-story in `tests/registry.json` gets a `<details>` block, failing stories are open
-and listed first, and each AT shows its result, test count and issue link.
-Manual, deferred and covered-by ATs are labelled from
-[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json);
-stories with no tests yet appear as "not run".
+JSON report into a summary grouped by story. The summary is collapsible and
+split into **User stories** and **Chores**. Only stories that have started
+appear (at least one AT with a result or an override); the rest are listed on
+one line at the bottom. Failing stories are open and first in their section,
+and each AT shows its result, test count and issue link. Manual, deferred and
+covered-by ATs are labelled from
+[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
 
 On pull requests the job also runs the suite at the base commit in a temporary
 worktree (`npm run acceptance:baseline`). The report then adds a **Change**

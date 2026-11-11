@@ -35,6 +35,14 @@ const registry: Registry = {
       title: "Edit a room",
       ats: [{ id: "AT-1", title: "Edit" }],
     },
+    "CH-01": {
+      issue: 41,
+      title: "Set up staging and production deployment",
+      ats: [
+        { id: "AT-1", title: "Staging deploy" },
+        { id: "AT-2", title: "Production deploy" },
+      ],
+    },
   },
 };
 
@@ -82,19 +90,24 @@ const report = () =>
       result("US-15/AT-1", "passed", 19),
       result("US-15/AT-3", "failed", 2, "expected the denied message"),
       result("US-01/AT-1", "passed", 2),
+      result("CH-01/AT-1", "passed", 5),
     ]),
     registry,
     overrides,
   );
 
 describe("buildGroupedReport", () => {
-  it("includes every story in the registry, even without tests", () => {
+  it("shows started and overridden stories only", () => {
     expect(report().stories.map((story) => story.key)).toEqual([
       "US-15",
+      "CH-01",
       "US-01",
       "US-02",
-      "US-04",
     ]);
+  });
+
+  it("lists the stories with no results and no override separately", () => {
+    expect(report().notStarted).toEqual(["US-04"]);
   });
 
   it("puts the failing story first and marks it failed", () => {
@@ -114,13 +127,6 @@ describe("buildGroupedReport", () => {
     expect(story?.ats[1].coveredBy).toBe("US-01");
   });
 
-  it("marks a story with no tests and no overrides as not started", () => {
-    const story = report().stories.find((s) => s.key === "US-04");
-
-    expect(story?.status).toBe("not-started");
-    expect(story?.ats[0].status).toBe("not-run");
-  });
-
   it("keeps failure details with a file and line", () => {
     const failedAt = report().stories[0].ats.find((at) => at.id === "AT-3");
 
@@ -133,18 +139,37 @@ describe("buildGroupedReport", () => {
 });
 
 describe("formatGroupedMarkdown", () => {
-  it("opens failing stories and collapses the rest", () => {
+  it("puts user stories before chores", () => {
     const markdown = formatGroupedMarkdown(report(), registry.repository);
 
-    expect(markdown).toContain("<details open>");
-    expect(markdown).toContain("❌ US-15 — Set my location");
-    expect(markdown.match(/<details>/g)?.length).toBe(3);
+    expect(markdown.indexOf("### User stories (3)")).toBeGreaterThan(-1);
+    expect(markdown.indexOf("### Chores (1)")).toBeGreaterThan(
+      markdown.indexOf("### User stories (3)"),
+    );
   });
 
-  it("shows the issue link, the AT counts and the test count", () => {
+  it("puts the failing story first inside the user stories section", () => {
     const markdown = formatGroupedMarkdown(report(), registry.repository);
 
-    expect(markdown).toContain("([#37](https://github.com/owner/repo/issues/37))");
+    expect(markdown.indexOf("❌ US-15")).toBeLessThan(
+      markdown.indexOf("✅ US-01"),
+    );
+    expect(markdown).toContain("<details open>");
+  });
+
+  it("renders the issue link as an anchor, since Markdown is not parsed in <summary>", () => {
+    const markdown = formatGroupedMarkdown(report(), registry.repository);
+
+    expect(markdown).toContain(
+      '<a href="https://github.com/owner/repo/issues/37">#37</a>',
+    );
+    expect(markdown).not.toContain("[#37](");
+  });
+
+  it("shows the AT counts and the test count", () => {
+    const markdown = formatGroupedMarkdown(report(), registry.repository);
+
+    expect(markdown).toContain("❌ US-15 · Set my location ·");
     expect(markdown).toContain("· 1/3 ATs · 1 failed");
     expect(markdown).toContain("| AT-1 — City | ✅ passed | 19 |");
   });
@@ -154,7 +179,7 @@ describe("formatGroupedMarkdown", () => {
 
     expect(markdown).toContain("| AT-1 — List | ⚪ manual | — |");
     expect(markdown).toContain("| AT-2 — Empty | 🔗 covered by US-01 | — |");
-    expect(markdown).toContain("| AT-1 — Edit | ⬜ not run | — |");
+    expect(markdown).toContain("| AT-2 — Geolocation | ⬜ not run | — |");
   });
 
   it("prints the failing location and message inside the story block", () => {
@@ -168,17 +193,48 @@ describe("formatGroupedMarkdown", () => {
 
   it("adds the Change column when labels are given", () => {
     const markdown = formatGroupedMarkdown(report(), registry.repository, {
-      "US-15/AT-3": "regression",
+      labels: { "US-15/AT-3": "regression" },
     });
 
     expect(markdown).toContain("| AT | Result | Change | Tests |");
     expect(markdown).toContain("❌ failed | regression | 2 |");
   });
 
-  it("shows the top-level counts", () => {
-    expect(formatGroupedMarkdown(report(), registry.repository)).toContain(
-      "**4 stories** · 2 with tests · 1 failing",
+  it("puts the stats line under the heading", () => {
+    const markdown = formatGroupedMarkdown(report(), registry.repository, {
+      stats: "4 passed · 1 failed · 1 regression",
+    });
+
+    expect(markdown).toContain(
+      "## Acceptance tests by story\n\n4 passed · 1 failed · 1 regression\n",
     );
+  });
+
+  it("lists the stories not started on one line", () => {
+    const markdown = formatGroupedMarkdown(report(), registry.repository);
+
+    expect(markdown).toContain("1 story not started yet (not shown): US-04");
+  });
+
+  it("truncates a long story title", () => {
+    const long: Registry = {
+      repository: "owner/repo",
+      stories: {
+        "US-99": {
+          issue: 99,
+          title:
+            "A very long story title that will definitely need to be truncated in the summary line",
+          ats: [{ id: "AT-1", title: "One" }],
+        },
+      },
+    };
+    const markdown = formatGroupedMarkdown(
+      buildGroupedReport(summary([result("US-99/AT-1", "passed")]), long),
+      long.repository,
+    );
+
+    expect(markdown).toContain("…");
+    expect(markdown).not.toContain("summary line");
   });
 
   it("puts unknown tags in their own group at the end", () => {

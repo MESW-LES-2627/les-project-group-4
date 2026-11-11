@@ -28,9 +28,11 @@ runs only those tests.
 
 ## Report and regressions
 
-CI turns the acceptance run into a job summary grouped by story: one collapsible
-block per story, failing stories open and first, with each AT's result, test
-count and issue link. The same report can be produced locally:
+CI turns the acceptance run into a job summary grouped by story: user stories
+first, chores after, with one collapsible block per started story. Failing
+stories are open and first in their section, and stories with no tests yet are
+listed on one line instead of getting a block. The same report can be produced
+locally:
 
 ```sh
 mkdir -p reports

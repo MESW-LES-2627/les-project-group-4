@@ -1,8 +1,9 @@
 // Builds the collapsible "by story" job summary.
 //
-// Every story in the registry gets a <details> block, including the ones with
-// no tests yet, so the summary shows the whole board rather than only the
-// stories that happened to run. Failing stories are open and first.
+// Only stories that have been started are shown: at least one AT has a result
+// or an override. The rest are listed on one line at the bottom. User stories
+// come first, chores after, and failing stories are open and first in each
+// section.
 
 import { relative } from "node:path";
 
@@ -44,7 +45,15 @@ export interface StoryRow {
 
 export interface GroupedReport {
   stories: StoryRow[];
+  /** Stories with every AT still "not run" and no override. */
+  notStarted: string[];
   unknown: AtResult[];
+}
+
+export interface SummaryOptions {
+  labels?: Record<string, string>;
+  /** Compact line such as "32 passed · 1 failed · 1 regression". */
+  stats?: string;
 }
 
 const STORY_ICON: Record<StoryStatus, string> = {
@@ -75,6 +84,8 @@ const AT_LABEL: Record<AtRowStatus, string> = {
   "not-run": "not run",
 };
 
+const TITLE_LIMIT = 60;
+
 export function buildGroupedReport(
   summary: AtSummary,
   registry: Registry,
@@ -82,6 +93,7 @@ export function buildGroupedReport(
 ): GroupedReport {
   const byKey = new Map(summary.results.map((result) => [result.key, result]));
   const stories: StoryRow[] = [];
+  const notStarted: string[] = [];
 
   for (const [key, story] of Object.entries(registry.stories)) {
     const ats: AtRow[] = story.ats.map((at) => {
@@ -123,6 +135,11 @@ export function buildGroupedReport(
       };
     });
 
+    if (ats.every((at) => at.status === "not-run")) {
+      notStarted.push(key);
+      continue;
+    }
+
     const failed = ats.filter((at) => at.status === "failed").length;
     const passed = ats.filter((at) => at.status === "passed").length;
     const skipped = ats.filter((at) => at.status === "skipped").length;
@@ -144,9 +161,7 @@ export function buildGroupedReport(
       failed > 0
         ? "failed"
         : ran === 0
-          ? manual > 0
-            ? "manual"
-            : "not-started"
+          ? "manual"
           : skipped > 0
             ? "skipped"
             : "passed";
@@ -164,51 +179,105 @@ export function buildGroupedReport(
     });
   }
 
-  // Failing stories first, then the registry order.
-  const ordered = [
-    ...stories.filter((story) => story.status === "failed"),
-    ...stories.filter((story) => story.status !== "failed"),
-  ];
+  // Failing stories first, then by key; the US/CH split happens in the
+  // formatter, so this order is preserved inside each section.
+  stories.sort((a, b) => {
+    const byStatus =
+      Number(b.status === "failed") - Number(a.status === "failed");
+    return byStatus !== 0
+      ? byStatus
+      : a.key.localeCompare(b.key, undefined, { numeric: true });
+  });
+  notStarted.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   const unknown = summary.results.filter((result) => {
     const story = registry.stories[result.story];
     return !story || !story.ats.some((at) => at.id === result.at);
   });
 
-  return { stories: ordered, unknown };
+  return { stories, notStarted, unknown };
 }
 
 export function formatGroupedMarkdown(
   report: GroupedReport,
   repository: string,
-  labels?: Record<string, string>,
+  options: SummaryOptions = {},
 ): string {
   const lines: string[] = [];
-  const withTests = report.stories.filter(
-    (story) => story.passed + story.failed > 0,
+  const userStories = report.stories.filter(
+    (story) => !story.key.startsWith("CH-"),
   );
-  const failing = report.stories.filter((story) => story.status === "failed");
+  const chores = report.stories.filter((story) => story.key.startsWith("CH-"));
 
   lines.push("## Acceptance tests by story");
-  lines.push("");
-  lines.push(
-    `**${report.stories.length} stories** · ${withTests.length} with tests · ` +
-      `${failing.length} failing`,
-  );
+  if (options.stats) {
+    lines.push("");
+    lines.push(options.stats);
+  }
 
-  for (const story of report.stories) {
+  if (userStories.length > 0) {
+    lines.push("");
+    lines.push(`### User stories (${userStories.length})`);
+    lines.push(...renderStories(userStories, repository, options.labels));
+  }
+
+  if (chores.length > 0) {
+    lines.push("");
+    lines.push(`### Chores (${chores.length})`);
+    lines.push(...renderStories(chores, repository, options.labels));
+  }
+
+  if (report.notStarted.length > 0) {
+    lines.push("");
+    lines.push(
+      `${report.notStarted.length} ` +
+        `${report.notStarted.length === 1 ? "story" : "stories"} not started yet ` +
+        `(not shown): ${report.notStarted.join(", ")}`,
+    );
+  }
+
+  if (report.unknown.length > 0) {
+    lines.push("");
+    lines.push("<details open>");
+    lines.push(`<summary>⚠️ Unknown tags (${report.unknown.length})</summary>`);
+    lines.push("");
+    lines.push("| Key | Result | Tests |");
+    lines.push("| --- | --- | --- |");
+
+    for (const result of report.unknown) {
+      lines.push(
+        `| ${result.key} | ${AT_ICON[result.status]} ${AT_LABEL[result.status]} | ` +
+          `${result.tests.length} |`,
+      );
+    }
+
+    lines.push("");
+    lines.push("</details>");
+  }
+
+  return lines.join("\n");
+}
+
+function renderStories(
+  stories: StoryRow[],
+  repository: string,
+  labels?: Record<string, string>,
+): string[] {
+  const lines: string[] = [];
+
+  for (const story of stories) {
     const extras: string[] = [];
     if (story.failed > 0) extras.push(`${story.failed} failed`);
     if (story.manual > 0) extras.push(`${story.manual} manual`);
-    if (story.notRun > 0 && story.notRun < story.ats.length) {
-      extras.push(`${story.notRun} not run`);
-    }
+    if (story.notRun > 0) extras.push(`${story.notRun} not run`);
+
+    const link = `<a href="${issueUrl(repository, story.issue)}">#${story.issue}</a>`;
 
     lines.push("");
     lines.push(`<details${story.status === "failed" ? " open" : ""}>`);
     lines.push(
-      `<summary>${STORY_ICON[story.status]} ${story.key} — ${cell(story.title)} ` +
-        `([#${story.issue}](${issueUrl(repository, story.issue)})) · ` +
+      `<summary>${STORY_ICON[story.status]} ${story.key} · ` +
+        `${escapeHtml(truncate(story.title, TITLE_LIMIT))} · ${link} · ` +
         `${story.passed}/${story.ats.length} ATs` +
         (extras.length > 0 ? ` · ${extras.join(" · ")}` : "") +
         `</summary>`,
@@ -250,26 +319,18 @@ export function formatGroupedMarkdown(
     lines.push("</details>");
   }
 
-  if (report.unknown.length > 0) {
-    lines.push("");
-    lines.push("<details open>");
-    lines.push(`<summary>⚠️ Unknown tags (${report.unknown.length})</summary>`);
-    lines.push("");
-    lines.push("| Key | Result | Tests |");
-    lines.push("| --- | --- | --- |");
+  return lines;
+}
 
-    for (const result of report.unknown) {
-      lines.push(
-        `| ${result.key} | ${AT_ICON[result.status]} ${AT_LABEL[result.status]} | ` +
-          `${result.tests.length} |`,
-      );
-    }
+function truncate(value: string, max: number): string {
+  return value.length <= max ? value : `${value.slice(0, max - 1).trimEnd()}…`;
+}
 
-    lines.push("");
-    lines.push("</details>");
-  }
-
-  return lines.join("\n");
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function cell(value: string): string {

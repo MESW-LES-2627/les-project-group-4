@@ -20,7 +20,7 @@ import {
 } from "./classify";
 import type { Overrides } from "./coverage";
 import { formatText, summariseByAt } from "./report";
-import type { VitestJsonReport } from "./report";
+import type { AtSummary, VitestJsonReport } from "./report";
 import type { Registry } from "./registry";
 import { buildGroupedReport, formatGroupedMarkdown } from "./summary";
 
@@ -64,13 +64,11 @@ if (basePath && existsSync(basePath)) {
 
   text = formatClassifiedText(classification);
   annotations = formatAnnotations(classification);
-  markdown =
-    `${formatCounts(classification)}\n\n` +
-    formatGroupedMarkdown(
-      buildGroupedReport(headSummary, registry, overrides),
-      registry.repository,
-      labels,
-    );
+  markdown = formatGroupedMarkdown(
+    buildGroupedReport(headSummary, registry, overrides),
+    registry.repository,
+    { labels, stats: formatCounts(classification) },
+  );
 } else {
   if (basePath) {
     console.warn(`Baseline not found at ${basePath}; reporting without it.`);
@@ -79,6 +77,7 @@ if (basePath && existsSync(basePath)) {
   markdown = formatGroupedMarkdown(
     buildGroupedReport(headSummary, registry, overrides),
     registry.repository,
+    { stats: headStats(headSummary) },
   );
 }
 
@@ -88,4 +87,15 @@ for (const annotation of annotations) console.log(annotation);
 const summaryPath = process.env.GITHUB_STEP_SUMMARY;
 if (summaryPath) {
   appendFileSync(summaryPath, `${markdown}\n`);
+}
+
+function headStats(summary: AtSummary): string {
+  const passed = summary.results.filter(
+    (result) => result.status === "passed",
+  ).length;
+  const failed = summary.results.filter(
+    (result) => result.status === "failed",
+  ).length;
+
+  return `${passed} passed · ${failed} failed`;
 }

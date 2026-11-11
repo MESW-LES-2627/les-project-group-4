@@ -122,12 +122,28 @@ export function changeLabels(
 }
 
 export function formatCounts(classification: Classification): string {
+  const passed = classification.head.results.filter(
+    (result) => result.status === "passed",
+  ).length;
+  const failed = classification.head.results.filter(
+    (result) => result.status === "failed",
+  ).length;
   const { counts } = classification;
-  return (
-    `Regressions: ${counts.regression} · new failures: ${counts.new} · ` +
-    `pre-existing: ${counts["pre-existing"]} · fixed: ${counts.fixed} · ` +
-    `removed: ${counts.removed}`
-  );
+  const parts = [`${passed} passed`, `${failed} failed`];
+
+  if (counts.regression > 0) {
+    parts.push(
+      `${counts.regression} ${counts.regression === 1 ? "regression" : "regressions"}`,
+    );
+  }
+  if (counts.new > 0) parts.push(`${counts.new} new`);
+  if (counts["pre-existing"] > 0) {
+    parts.push(`${counts["pre-existing"]} pre-existing`);
+  }
+  if (counts.fixed > 0) parts.push(`${counts.fixed} fixed`);
+  if (counts.removed > 0) parts.push(`${counts.removed} removed`);
+
+  return parts.join(" · ");
 }
 
 export function formatClassifiedText(classification: Classification): string {

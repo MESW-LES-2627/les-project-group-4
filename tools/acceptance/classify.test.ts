@@ -210,7 +210,7 @@ describe("classified formatting", () => {
 
     const text = formatClassifiedText(classification);
 
-    expect(text).toContain("Regressions: 1");
+    expect(text).toContain("0 passed · 1 failed · 1 regression");
     expect(text).toContain("[regression]");
   });
 
