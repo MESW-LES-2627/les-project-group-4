@@ -15,7 +15,8 @@ expensive jobs.
 | --- | --- |
 | **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
 | **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test -- --project unit`, `npm run build` on Node 22. |
-| **Acceptance tests (US/AT)** | `npm ci`, then `npm run acceptance:check` (tags, coverage, registry drift, linked issue), the acceptance project with the JSON and JUnit reporters, and the grouped report. On pull requests it also runs the suite at the base commit to label regressions. `reports/` is uploaded as an artifact. |
+| **Acceptance traceability (US/AT)** | `npm ci`, then `npm run acceptance:check` (tags, coverage, registry drift and the issue the PR closes). Runs in parallel with the acceptance tests, so the report is still produced when the mapping fails. |
+| **Acceptance tests (US/AT)** | `npm ci`, the acceptance project with the JSON and JUnit reporters, and the grouped report. On pull requests it also runs the suite at the base commit to label regressions. `reports/` is uploaded as an artifact. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |
 | **CI** | Aggregate check used for branch protection; succeeds only if the jobs above passed or were deliberately skipped. |
 
@@ -23,8 +24,9 @@ The `CI` check is the one to require before merging.
 
 ### Acceptance traceability
 
-`npm run acceptance:check` runs in the `Acceptance tests (US/AT)` job, before
-the suite. It fails when an
+`npm run acceptance:check` runs in its own **Acceptance traceability (US/AT)**
+job, in parallel with the acceptance suite, so a mapping failure does not hide
+the test report. It fails when an
 acceptance test file has no `US`/`AT` tags, when a test carries an unknown tag,
 when a story that has started has an uncovered automated AT, or when
 `tests/registry.json` no longer matches the issues. The last check reads GitHub

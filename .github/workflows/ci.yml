@@ -57,7 +57,7 @@ jobs:
             echo "code=true" >> "$GITHUB_OUTPUT"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Documentation-only change: skipping lint, typecheck, build and database jobs."
+            echo "::notice::Documentation-only change: skipping the code jobs."
           fi
 
   quality:
@@ -83,6 +83,33 @@ jobs:
       - name: Build
         run: npm run build
 
+  traceability:
+    name: Acceptance traceability (US/AT)
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
+      # the issue this PR closes has an uncovered AT, or the registry is stale.
+      - name: Check tags, coverage, registry and linked issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -n "$PR_NUMBER" ]; then
+            npm run acceptance:check -- --pr "$PR_NUMBER"
+          else
+            npm run acceptance:check
+          fi
+
   acceptance:
     name: Acceptance tests (US/AT)
     needs: changes
@@ -100,18 +127,6 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
-      # the issue this PR closes has an uncovered AT, or the registry is stale.
-      - name: Acceptance traceability
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ -n "$PR_NUMBER" ]; then
-            npm run acceptance:check -- --pr "$PR_NUMBER"
-          else
-            npm run acceptance:check
-          fi
       # Best effort: a missing suite or a lockfile change skips it, and the
       # report falls back to head-only results.
       - name: Acceptance baseline (merge-base)
@@ -200,7 +215,7 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [changes, quality, acceptance, database]
+    needs: [changes, quality, traceability, acceptance, database]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -208,11 +223,12 @@ jobs:
         env:
           CHANGES: ${{ needs.changes.result }}
           QUALITY: ${{ needs.quality.result }}
+          TRACEABILITY: ${{ needs.traceability.result }}
           ACCEPTANCE: ${{ needs.acceptance.result }}
           DATABASE: ${{ needs.database.result }}
         run: |
           set -euo pipefail
-          for result in "$CHANGES" "$QUALITY" "$ACCEPTANCE" "$DATABASE"; do
+          for result in "$CHANGES" "$QUALITY" "$TRACEABILITY" "$ACCEPTANCE" "$DATABASE"; do
             case "$result" in
               success|skipped) ;;
               *)
