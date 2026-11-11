@@ -28,12 +28,13 @@ The `acceptance` project is empty until the first story is migrated (US-15), so
 ## Checking the mapping
 
 ```sh
-npm run acceptance:check              # report gaps, exit 0 (warn mode)
-npm run acceptance:check -- --strict  # fail on any gap
+npm run acceptance:check              # fail on any gap (default)
+npm run acceptance:check -- --warn    # report gaps, exit 0
 npm run acceptance:check -- --offline # skip the registry drift check
 ```
 
-The check reads the `tags` arrays from the test sources, so the tag list must be
+`--strict` is still accepted for compatibility; strict is the default. The check
+reads the `tags` arrays from the test sources, so the tag list must be
 a literal array in the test call (not built at runtime). It verifies that every
 acceptance test file carries at least one `US`/`AT` tag, that each tag exists in
 the registry, that no started story has an uncovered automated AT, and that
@@ -41,10 +42,11 @@ the registry, that no started story has an uncovered automated AT, and that
 are exempt from the coverage rule.
 
 A story is "started" when it has at least one tagged test or an override. The
-ATs of stories nobody has started yet are reported and ignored by `--strict`,
-so the gate fails on gaps in current work, not on the whole backlog.
+ATs of stories nobody has started yet are reported and ignored by the gate, so
+it fails on gaps in current work, not on the whole backlog.
 
-CI runs `npm run acceptance:check -- --strict` on every pull request.
+CI runs `npm run acceptance:check -- --strict` on every pull request; `--strict`
+is redundant now, but the command still works.
 
 ## Layout
 

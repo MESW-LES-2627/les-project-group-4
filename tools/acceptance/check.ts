@@ -1,10 +1,11 @@
 // Checks the acceptance tests against the registry.
 //
-//   npm run acceptance:check              report problems, exit 0
-//   npm run acceptance:check -- --strict  exit 1 when anything is wrong
+//   npm run acceptance:check              fail on any gap (default)
+//   npm run acceptance:check -- --warn    report problems, exit 0
 //   npm run acceptance:check -- --offline skip the registry drift check
 //
-// Warn mode exists so the migration can land before every AT has a test.
+// --strict is still accepted for backwards compatibility; it is the default.
+// Warn mode is for local inspection of the gaps.
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -21,7 +22,8 @@ const REGISTRY_PATH = join(ROOT, "tests/registry.json");
 const OVERRIDES_PATH = join(ROOT, "tests/acceptance/overrides.json");
 const ACCEPTANCE_DIR = join(ROOT, "tests/acceptance");
 
-const strict = process.argv.includes("--strict");
+const warn = process.argv.includes("--warn");
+const strict = !warn;
 const offline = process.argv.includes("--offline");
 
 const committed = readFileSync(REGISTRY_PATH, "utf8");
@@ -66,9 +68,19 @@ console.log(
 
 if (report.notStarted.length > 0) {
   console.log(
-    `${report.notStarted.length} story(ies) not started (${notStartedAts} ATs), ignored by --strict: ` +
+    `${report.notStarted.length} story(ies) not started (${notStartedAts} ATs), ignored by the gate: ` +
       report.notStarted.join(", "),
   );
+}
+
+if (report.manual.length > 0) {
+  console.log(`\n${report.manual.length} manual/deferred AT(s):`);
+  for (const key of report.manual) console.log(`  ${key}`);
+}
+
+if (report.coveredBy.length > 0) {
+  console.log(`\n${report.coveredBy.length} AT(s) covered by another story:`);
+  for (const key of report.coveredBy) console.log(`  ${key}`);
 }
 
 if (report.problems.length > 0) {
@@ -117,7 +129,7 @@ if (!failed) {
 } else if (strict) {
   process.exitCode = 1;
 } else {
-  console.log("\nWarn mode: this would fail with --strict.");
+  console.log("\nWarn mode: the gate would fail; rerun without --warn.");
 }
 
 function acceptanceFiles(): Array<{ file: string; source: string }> {

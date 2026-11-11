@@ -31,6 +31,9 @@ through `GH_TOKEN`, which is why the job declares `issues: read`.
 Vitest also declares the registry tags in `vitest.config.mts` with
 `strictTags`, so `npm test` rejects an undefined tag before this step runs.
 
+The check is strict by default. `--warn` reports the same gaps without failing,
+for local inspection; `--strict` remains accepted for compatibility.
+
 The ATs of stories nobody has started are reported but do not fail the job, so
 the gate applies to work in flight rather than the whole backlog. A manual or
 deferred AT is exempt when it is listed in
