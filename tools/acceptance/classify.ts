@@ -10,7 +10,7 @@
 
 import { relative } from "node:path";
 
-import { formatMarkdown, formatText } from "./report";
+import { formatText } from "./report";
 import type { AtResult, AtStatus, AtSummary } from "./report";
 
 export type ChangeKind =
@@ -135,20 +135,6 @@ export function formatClassifiedText(classification: Classification): string {
     classification.head,
     changeLabels(classification),
   )}`;
-}
-
-export function formatClassifiedMarkdown(
-  classification: Classification,
-  repository: string,
-): string {
-  return (
-    `${formatCounts(classification)}\n\n` +
-    formatMarkdown(
-      classification.head,
-      repository,
-      changeLabels(classification),
-    )
-  );
 }
 
 /**

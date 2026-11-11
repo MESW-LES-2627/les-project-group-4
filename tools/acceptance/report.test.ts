@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   collectTests,
-  formatMarkdown,
   formatText,
   issueUrl,
   summariseByAt,
@@ -187,28 +186,6 @@ describe("formatText", () => {
     );
 
     expect(formatText(summary)).toContain("1 test(s) without a US/AT tag");
-  });
-});
-
-describe("formatMarkdown", () => {
-  it("writes a table with a link to the issue", () => {
-    const summary = summariseByAt(
-      {
-        testResults: [
-          {
-            name: "file.test.ts",
-            assertionResults: [assertion("x", "passed", ["US-15", "AT-1"])],
-          },
-        ],
-      },
-      registry,
-    );
-
-    const markdown = formatMarkdown(summary, registry.repository);
-
-    expect(markdown).toContain("| US-15 | AT-1 — City | ✅ passed |");
-    expect(markdown).toContain("[#37](https://github.com/owner/repo/issues/37)");
-    expect(markdown).toContain("1 AT(s) in the report, 0 failing.");
   });
 });
 

@@ -4,7 +4,6 @@ import {
   changeLabels,
   classify,
   formatAnnotations,
-  formatClassifiedMarkdown,
   formatClassifiedText,
 } from "./classify";
 import type { AtResult, AtStatus, AtSummary } from "./report";
@@ -215,13 +214,6 @@ describe("classified formatting", () => {
     expect(text).toContain("[regression]");
   });
 
-  it("adds a Change column to the Markdown table", () => {
-    const classification = classify(summary([]), summary([result("US-15/AT-1", "failed")]));
-    const markdown = formatClassifiedMarkdown(classification, "owner/repo");
-
-    expect(markdown).toContain("| Story | AT | Result | Change | Tests | Issue |");
-    expect(markdown).toContain("| new test |");
-  });
 });
 
 function failingResult(): AtResult {

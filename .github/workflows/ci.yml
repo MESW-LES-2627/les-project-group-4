@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NEXT_TELEMETRY_DISABLED: '1'
+  NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
   # Documentation-only changes (README, docs/, *.md) do not need the expensive jobs.
