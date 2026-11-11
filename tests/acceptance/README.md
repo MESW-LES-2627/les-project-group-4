@@ -88,7 +88,8 @@ it fails on gaps in current work, not on the whole backlog.
 
 CI runs `npm run acceptance:check` in its own `Acceptance traceability` job,
 in parallel with the acceptance tests, so the report is still produced when
-the mapping fails. `--strict` is redundant now, but the command still works.
+the mapping fails. The job summary lists the gaps even when the step is red.
+`--strict` is redundant now, but the command still works.
 
 ### The issue the PR closes
 

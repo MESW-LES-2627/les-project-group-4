@@ -7,7 +7,7 @@
 // --strict is still accepted for backwards compatibility; it is the default.
 // Warn mode is for local inspection of the gaps.
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +17,7 @@ import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
 import { linkedIssuesForPullRequest, storyKeysForIssues } from "./issues";
 import { buildRegistry, isRegistryStale } from "./registry";
 import type { Registry } from "./registry";
+import { formatTraceabilityMarkdown } from "./traceability-summary";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const REGISTRY_PATH = join(ROOT, "tests/registry.json");
@@ -178,6 +179,21 @@ if (!failed) {
   process.exitCode = 1;
 } else {
   console.log("\nWarn mode: the gate would fail; rerun without --warn.");
+}
+
+const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+if (summaryPath) {
+  appendFileSync(
+    summaryPath,
+    `${formatTraceabilityMarkdown({
+      registry,
+      report,
+      issues,
+      requiredStories,
+      unknownIssues,
+      drift,
+    })}\n`,
+  );
 }
 
 function acceptanceFiles(): Array<{ file: string; source: string }> {

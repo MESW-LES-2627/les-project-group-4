@@ -39,6 +39,11 @@ runs.
 The check is strict by default. `--warn` reports the same gaps without failing,
 for local inspection; `--strict` remains accepted for compatibility.
 
+The job summary shows the result even when the step fails: covered/total ATs,
+the uncovered ATs with issue links and a "required" flag, problems, untagged
+files, registry drift, and the stories not started yet. Passing runs get the
+one-line status too.
+
 The ATs of stories nobody has started are reported but do not fail the job, so
 the gate applies to work in flight rather than the whole backlog. A manual or
 deferred AT is exempt when it is listed in
