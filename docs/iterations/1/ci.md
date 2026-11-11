@@ -14,7 +14,8 @@ expensive jobs.
 | Job | What it proves |
 | --- | --- |
 | **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
-| **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run acceptance:check -- --strict`, `npm run build` on Node 22. |
+| **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test -- --project unit`, `npm run acceptance:check -- --strict`, `npm run build` on Node 22. |
+| **Acceptance tests (US/AT)** | `npm ci`, then the acceptance project with the JSON and JUnit reporters. The report groups the result by `US`/`AT` in the job summary; `reports/` is uploaded as an artifact. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |
 | **CI** | Aggregate check used for branch protection; succeeds only if the jobs above passed or were deliberately skipped. |
 
