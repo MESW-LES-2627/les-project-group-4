@@ -22,8 +22,9 @@ npm test -- --project acceptance    # only the acceptance tests
 npm test -- --project unit          # only the unit tests
 ```
 
-The `acceptance` project is empty until the first story is migrated (US-15), so
-`--project acceptance` reports "No test files found" until then.
+The `acceptance` project contains the migrated stories (US-01, US-03,
+US-06/06a/06b, US-07, US-15, CH-01, CH-02 and CH-03a); `--project acceptance`
+runs only those tests.
 
 ## Checking the mapping
 
