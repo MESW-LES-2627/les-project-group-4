@@ -6,5 +6,13 @@
   "US-01/AT-5": {
     "status": "manual",
     "note": "full UI to database flow; no browser E2E runner yet"
+  },
+  "US-03/AT-1": {
+    "status": "manual",
+    "note": "details page rendering; no component test harness yet"
+  },
+  "US-03/AT-4": {
+    "status": "manual",
+    "note": "optional fields rendering; no component test harness yet"
   }
 }
