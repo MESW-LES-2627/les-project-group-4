@@ -60,12 +60,12 @@ jobs:
             echo "::notice::Documentation-only change: skipping the code jobs."
           fi
 
-  quality:
-    name: Lint, typecheck, tests and build
+  static:
+    name: Static checks
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -78,8 +78,38 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
-      - name: Test
+
+  unit:
+    name: Unit tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Unit tests
         run: npm test -- --project unit
+
+  build:
+    name: Build
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Build
         run: npm run build
 
@@ -215,20 +245,22 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [changes, quality, traceability, acceptance, database]
+    needs: [changes, static, unit, build, traceability, acceptance, database]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Check job results
         env:
           CHANGES: ${{ needs.changes.result }}
-          QUALITY: ${{ needs.quality.result }}
+          STATIC: ${{ needs.static.result }}
+          UNIT: ${{ needs.unit.result }}
+          BUILD: ${{ needs.build.result }}
           TRACEABILITY: ${{ needs.traceability.result }}
           ACCEPTANCE: ${{ needs.acceptance.result }}
           DATABASE: ${{ needs.database.result }}
         run: |
           set -euo pipefail
-          for result in "$CHANGES" "$QUALITY" "$TRACEABILITY" "$ACCEPTANCE" "$DATABASE"; do
+          for result in "$CHANGES" "$STATIC" "$UNIT" "$BUILD" "$TRACEABILITY" "$ACCEPTANCE" "$DATABASE"; do
             case "$result" in
               success|skipped) ;;
               *)

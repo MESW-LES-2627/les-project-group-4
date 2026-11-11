@@ -14,7 +14,9 @@ expensive jobs.
 | Job | What it proves |
 | --- | --- |
 | **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
-| **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test -- --project unit`, `npm run build` on Node 22. |
+| **Static checks** | `npm ci`, `npm run lint`, `npm run typecheck` on Node 22. |
+| **Unit tests** | `npm ci`, `npm test -- --project unit`. |
+| **Build** | `npm ci`, `npm run build`. |
 | **Acceptance traceability (US/AT)** | `npm ci`, then `npm run acceptance:check` (tags, coverage, registry drift and the issue the PR closes). Runs in parallel with the acceptance tests, so the report is still produced when the mapping fails. |
 | **Acceptance tests (US/AT)** | `npm ci`, the acceptance project with the JSON and JUnit reporters, and the grouped report. On pull requests it also runs the suite at the base commit to label regressions. `reports/` is uploaded as an artifact. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |

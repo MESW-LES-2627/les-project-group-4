@@ -18,15 +18,18 @@ describe(
 
     it("makes the aggregate CI check wait for both", () => {
       expect(ci).toContain(
-        "needs: [changes, quality, traceability, acceptance, database]",
+        "needs: [changes, static, unit, build, traceability, acceptance, database]",
       );
     });
 
-    it("fails the aggregate when either job fails", () => {
+    it("fails the aggregate when any job fails", () => {
+      expect(ci).toContain("STATIC: ${{ needs.static.result }}");
+      expect(ci).toContain("UNIT: ${{ needs.unit.result }}");
+      expect(ci).toContain("BUILD: ${{ needs.build.result }}");
       expect(ci).toContain("TRACEABILITY: ${{ needs.traceability.result }}");
       expect(ci).toContain("ACCEPTANCE: ${{ needs.acceptance.result }}");
       expect(ci).toContain(
-        'for result in "$CHANGES" "$QUALITY" "$TRACEABILITY" "$ACCEPTANCE" "$DATABASE"; do',
+        'for result in "$CHANGES" "$STATIC" "$UNIT" "$BUILD" "$TRACEABILITY" "$ACCEPTANCE" "$DATABASE"; do',
       );
     });
   },
