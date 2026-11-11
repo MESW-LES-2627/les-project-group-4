@@ -86,8 +86,8 @@ A story is "started" when it has at least one tagged test or an override. The
 ATs of stories nobody has started yet are reported and ignored by the gate, so
 it fails on gaps in current work, not on the whole backlog.
 
-CI runs `npm run acceptance:check` on every pull request; `--strict` is
-redundant now, but the command still works.
+CI runs `npm run acceptance:check` in the acceptance job before the suite;
+`--strict` is redundant now, but the command still works.
 
 ### The issue the PR closes
 

@@ -80,18 +80,6 @@ jobs:
         run: npm run typecheck
       - name: Test
         run: npm test -- --project unit
-      # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
-      # the issue this PR closes has an uncovered AT, or the registry is stale.
-      - name: Acceptance traceability
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ -n "$PR_NUMBER" ]; then
-            npm run acceptance:check -- --pr "$PR_NUMBER"
-          else
-            npm run acceptance:check
-          fi
       - name: Build
         run: npm run build
 
@@ -112,6 +100,18 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
+      # the issue this PR closes has an uncovered AT, or the registry is stale.
+      - name: Acceptance traceability
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -n "$PR_NUMBER" ]; then
+            npm run acceptance:check -- --pr "$PR_NUMBER"
+          else
+            npm run acceptance:check
+          fi
       # Best effort: a missing suite or a lockfile change skips it, and the
       # report falls back to head-only results.
       - name: Acceptance baseline (merge-base)
