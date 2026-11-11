@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: read
+  # The acceptance check reads the issues to detect a stale registry.
+  issues: read
 
 # A new push to the same PR/branch cancels the run that is already in progress.
 concurrency:
@@ -58,7 +60,7 @@ jobs:
           fi
 
   quality:
-    name: Lint, typecheck and build
+    name: Lint, typecheck, tests and build
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
@@ -77,6 +79,12 @@ jobs:
         run: npm run typecheck
       - name: Test
         run: npm test
+      # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
+      # or tests/registry.json no longer matches the issues.
+      - name: Acceptance traceability
+        run: npm run acceptance:check -- --strict
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Build
         run: npm run build
 

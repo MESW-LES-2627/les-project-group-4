@@ -43,6 +43,8 @@ A story is "started" when it has at least one tagged test or an override. The
 ATs of stories nobody has started yet are reported and ignored by `--strict`,
 so the gate fails on gaps in current work, not on the whole backlog.
 
+CI runs `npm run acceptance:check -- --strict` on every pull request.
+
 ## Layout
 
 One directory per story, one file per AT (or a small group of related ATs):

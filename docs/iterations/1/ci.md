@@ -14,11 +14,24 @@ expensive jobs.
 | Job | What it proves |
 | --- | --- |
 | **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
-| **Lint, typecheck and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` on Node 22. |
+| **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run acceptance:check -- --strict`, `npm run build` on Node 22. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |
 | **CI** | Aggregate check used for branch protection; succeeds only if the jobs above passed or were deliberately skipped. |
 
 The `CI` check is the one to require before merging.
+
+### Acceptance traceability
+
+`npm run acceptance:check -- --strict` runs after the tests. It fails when a
+test carries an unknown `US`/`AT` tag, when a story that has started has an
+uncovered automated AT, or when `tests/registry.json` no longer matches the
+issues. The last check reads GitHub through `GH_TOKEN`, which is why the job
+declares `issues: read`.
+
+The ATs of stories nobody has started are reported but do not fail the job, so
+the gate applies to work in flight rather than the whole backlog. A manual or
+deferred AT is exempt when it is listed in
+[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
 
 ## Deployment (`deploy.yml`)
 
