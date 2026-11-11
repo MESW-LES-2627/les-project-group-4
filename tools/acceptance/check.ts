@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { checkCoverage } from "./coverage";
 import type { Overrides } from "./coverage";
 import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
-import { buildRegistry, serializeRegistry } from "./registry";
+import { buildRegistry, isRegistryStale } from "./registry";
 import type { Registry } from "./registry";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -55,7 +55,7 @@ if (!offline) {
     listIssuesWithAcceptanceTests(),
     resolveRepository(),
   );
-  drift = serializeRegistry(generated) !== committed;
+  drift = isRegistryStale(committed, generated);
 }
 
 console.log(
