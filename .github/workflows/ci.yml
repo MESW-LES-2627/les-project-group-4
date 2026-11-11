@@ -96,12 +96,24 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The merge-base SHA must be in the local history for the baseline.
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: Install dependencies
         run: npm ci
+      # Best effort: a missing suite or a lockfile change skips it, and the
+      # report falls back to head-only results.
+      - name: Acceptance baseline (merge-base)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: >-
+          npm run acceptance:baseline --
+          --base "${{ github.event.pull_request.base.sha }}"
+          --out reports/base.json
       - name: Acceptance tests
         id: acceptance
         run: |
@@ -116,10 +128,13 @@ jobs:
       # Runs even when the tests fail, so the summary names the story and AT.
       - name: Report by story and AT
         if: always() && steps.acceptance.outcome != 'skipped'
-        run: npm run acceptance:report -- --head reports/head.json
+        run: >-
+          npm run acceptance:report --
+          --head reports/head.json
+          --base reports/base.json
       - name: Upload the JUnit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: acceptance-junit
           path: reports/
