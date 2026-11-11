@@ -15,7 +15,7 @@ expensive jobs.
 | --- | --- |
 | **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
 | **Lint, typecheck, tests and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test -- --project unit`, `npm run acceptance:check -- --strict`, `npm run build` on Node 22. |
-| **Acceptance tests (US/AT)** | `npm ci`, then the acceptance project with the JSON and JUnit reporters. The report groups the result by `US`/`AT` in the job summary; `reports/` is uploaded as an artifact. |
+| **Acceptance tests (US/AT)** | `npm ci`, then the acceptance project with the JSON and JUnit reporters. The report groups the result by story in the job summary; on pull requests it also runs the suite at the base commit to label regressions. `reports/` is uploaded as an artifact. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |
 | **CI** | Aggregate check used for branch protection; succeeds only if the jobs above passed or were deliberately skipped. |
 
@@ -39,6 +39,41 @@ The ATs of stories nobody has started are reported but do not fail the job, so
 the gate applies to work in flight rather than the whole backlog. A manual or
 deferred AT is exempt when it is listed in
 [`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
+
+### Acceptance report and regressions
+
+The `Acceptance tests (US/AT)` job runs the acceptance project and turns the
+JSON report into a summary grouped by story. The summary is collapsible: every
+story in `tests/registry.json` gets a `<details>` block, failing stories are open
+and listed first, and each AT shows its result, test count and issue link.
+Manual, deferred and covered-by ATs are labelled from
+[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json);
+stories with no tests yet appear as "not run".
+
+On pull requests the job also runs the suite at the base commit in a temporary
+worktree (`npm run acceptance:baseline`). The report then adds a **Change**
+column:
+
+| Change | Meaning |
+| --- | --- |
+| **regression** | passed on the base, fails now |
+| **new test** | did not exist on the base |
+| **pre-existing** | already failed on the base |
+| **fixed** | failed on the base, passes now |
+| **removed** | existed on the base, no longer runs |
+
+Regressions and new failures are `::error` annotations, so they appear on the
+diff; a pre-existing failure is a `::warning` because this PR did not cause it.
+The baseline is best effort: it is skipped when the base has no acceptance suite
+or the lockfile changed, and the report falls back to head-only results.
+
+`reports/head.json` and `reports/acceptance.xml` are uploaded as the
+`acceptance-junit` artifact, so the detailed run stays available after the
+summary is gone.
+
+The aggregate `CI` check depends on this job, so a failing acceptance test fails
+the required check. If the job itself should also be required, add **Acceptance
+tests (US/AT)** to the branch protection rules; the aggregate is enough today.
 
 ## Deployment (`deploy.yml`)
 

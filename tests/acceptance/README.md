@@ -26,6 +26,42 @@ The `acceptance` project contains the migrated stories (US-01, US-03,
 US-06/06a/06b, US-07, US-15, CH-01, CH-02 and CH-03a); `--project acceptance`
 runs only those tests.
 
+## Report and regressions
+
+CI turns the acceptance run into a job summary grouped by story: one collapsible
+block per story, failing stories open and first, with each AT's result, test
+count and issue link. The same report can be produced locally:
+
+```sh
+mkdir -p reports
+npx vitest run --project acceptance \
+  --reporter=json --includeTaskLocation \
+  --outputFile reports/head.json
+
+npm run acceptance:report -- --head reports/head.json
+```
+
+`--includeTaskLocation` is what makes `file:line` appear in the report. To
+compare against a base commit:
+
+```sh
+npm run acceptance:baseline -- --base <sha> --out reports/base.json
+npm run acceptance:report -- --head reports/head.json --base reports/base.json
+```
+
+With `--base` the summary adds a Change column and prints GitHub annotations:
+
+| Change | Meaning |
+| --- | --- |
+| regression | passed on the base, fails now |
+| new test | did not exist on the base |
+| pre-existing | already failed on the base |
+| fixed | failed on the base, passes now |
+| removed | existed on the base, no longer runs |
+
+Regressions and new failures are `::error`; pre-existing failures are
+`::warning`. `GITHUB_STEP_SUMMARY` is written automatically when it is set.
+
 ## Checking the mapping
 
 ```sh
