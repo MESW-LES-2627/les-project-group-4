@@ -35,9 +35,10 @@ npm run acceptance:check -- --offline # skip the registry drift check
 
 The check reads the `tags` arrays from the test sources, so the tag list must be
 a literal array in the test call (not built at runtime). It verifies that every
-`US`/`AT` tag exists in the registry, that no started story has an uncovered
-automated AT, and that `tests/registry.json` still matches the issues. ATs
-listed in `overrides.json` are exempt from the coverage rule.
+acceptance test file carries at least one `US`/`AT` tag, that each tag exists in
+the registry, that no started story has an uncovered automated AT, and that
+`tests/registry.json` still matches the issues. ATs listed in `overrides.json`
+are exempt from the coverage rule.
 
 A story is "started" when it has at least one tagged test or an override. The
 ATs of stories nobody has started yet are reported and ignored by `--strict`,
@@ -74,5 +75,7 @@ Every acceptance test is tagged with `acceptance`, the story id and the AT id
 `US-15/AT-3` — never `AT-3` alone. Tag the `describe` when the whole block
 verifies one AT: Vitest inherits the tags down to its tests.
 
-Tags are validated by `npm run acceptance:check`; the US-15 migration adds them
-to the tests, and the CI report follows in #63.
+The valid tags are generated from `tests/registry.json` and declared in
+`vitest.config.mts`, so Vitest rejects an undefined tag during `npm test` as
+well. `npm run acceptance:check` also fails an acceptance test file that has no
+`US`/`AT` tags at all.

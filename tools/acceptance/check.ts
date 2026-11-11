@@ -80,6 +80,13 @@ if (report.problems.length > 0) {
   }
 }
 
+if (report.untagged.length > 0) {
+  console.error(
+    `\n${report.untagged.length} acceptance test file(s) without US/AT tags:`,
+  );
+  for (const file of report.untagged) console.error(`  ${file}`);
+}
+
 if (report.uncovered.length > 0) {
   const shown = report.uncovered.slice(0, 25);
   console.log(`\n${report.uncovered.length} AT(s) without a test:`);
@@ -100,7 +107,10 @@ if (drift) {
 }
 
 const failed =
-  report.problems.length > 0 || report.uncovered.length > 0 || drift;
+  report.problems.length > 0 ||
+  report.untagged.length > 0 ||
+  report.uncovered.length > 0 ||
+  drift;
 
 if (!failed) {
   console.log("\nAll acceptance ATs are covered.");

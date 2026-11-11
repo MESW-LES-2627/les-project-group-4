@@ -46,6 +46,8 @@ export interface CheckReport {
   problems: ScanProblem[];
   /** Tags that reference a story or AT the registry does not have. */
   unknown: TagPair[];
+  /** Acceptance test files with no `US`/`AT` tags at all. */
+  untagged: string[];
   /** Automated ATs with no test and no override. */
   uncovered: UncoveredAt[];
   /** ATs deliberately left to a manual check. */
@@ -106,11 +108,15 @@ export function checkCoverage(
 ): CheckReport {
   const pairs: TagPair[] = [];
   const problems: ScanProblem[] = [];
+  const untagged: string[] = [];
 
   for (const { file, source } of files) {
     const scan = scanTags(file, source);
     pairs.push(...scan.pairs);
     problems.push(...scan.problems);
+    if (scan.pairs.length === 0 && scan.problems.length === 0) {
+      untagged.push(file);
+    }
   }
 
   for (const [key, override] of Object.entries(overrides)) {
@@ -226,6 +232,16 @@ export function checkCoverage(
   manual.sort((a, b) => a.localeCompare(b));
   coveredBy.sort((a, b) => a.localeCompare(b));
   notStarted.sort((a, b) => a.localeCompare(b));
+  untagged.sort((a, b) => a.localeCompare(b));
 
-  return { pairs, problems, unknown, uncovered, manual, coveredBy, notStarted };
+  return {
+    pairs,
+    problems,
+    unknown,
+    untagged,
+    uncovered,
+    manual,
+    coveredBy,
+    notStarted,
+  };
 }

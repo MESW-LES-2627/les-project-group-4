@@ -22,11 +22,14 @@ The `CI` check is the one to require before merging.
 
 ### Acceptance traceability
 
-`npm run acceptance:check -- --strict` runs after the tests. It fails when a
-test carries an unknown `US`/`AT` tag, when a story that has started has an
-uncovered automated AT, or when `tests/registry.json` no longer matches the
-issues. The last check reads GitHub through `GH_TOKEN`, which is why the job
-declares `issues: read`.
+`npm run acceptance:check -- --strict` runs after the tests. It fails when an
+acceptance test file has no `US`/`AT` tags, when a test carries an unknown tag,
+when a story that has started has an uncovered automated AT, or when
+`tests/registry.json` no longer matches the issues. The last check reads GitHub
+through `GH_TOKEN`, which is why the job declares `issues: read`.
+
+Vitest also declares the registry tags in `vitest.config.mts` with
+`strictTags`, so `npm test` rejects an undefined tag before this step runs.
 
 The ATs of stories nobody has started are reported but do not fail the job, so
 the gate applies to work in flight rather than the whole backlog. A manual or
