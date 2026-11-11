@@ -66,5 +66,45 @@
   "US-07/AT-4": {
     "status": "manual",
     "note": "sample data label rendering; no component test harness yet"
+  },
+  "CH-01/AT-1": {
+    "status": "manual",
+    "note": "deploy workflow; verified on merge to develop"
+  },
+  "CH-01/AT-2": {
+    "status": "manual",
+    "note": "deploy workflow; verified on merge to main"
+  },
+  "CH-01/AT-3": {
+    "status": "manual",
+    "note": "configuration review: separate Supabase projects and secrets"
+  },
+  "CH-01/AT-4": {
+    "status": "manual",
+    "note": "the CI database job runs migrate deploy on a fresh database"
+  },
+  "CH-01/AT-5": {
+    "status": "manual",
+    "note": "post-deploy smoke test on the environment URL"
+  },
+  "CH-01/AT-8": {
+    "status": "manual",
+    "note": "CLAIM.md check at release"
+  },
+  "CH-01/AT-9": {
+    "status": "manual",
+    "note": "clean-clone walkthrough at release"
+  },
+  "CH-02/AT-5": {
+    "status": "deferred",
+    "note": "needs a seeded layout in the CI database job"
+  },
+  "CH-02/AT-6": {
+    "status": "manual",
+    "note": "sample data label in the UI and docs"
+  },
+  "CH-02/AT-7": {
+    "status": "manual",
+    "note": "the deploy workflow runs db:seed"
   }
 }
