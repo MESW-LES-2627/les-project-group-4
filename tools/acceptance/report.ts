@@ -96,10 +96,18 @@ export function collectTests(report: VitestJsonReport): {
 
 function atStatus(tests: TaggedTest[]): AtStatus {
   if (tests.some((test) => test.status === "failed")) return "failed";
-  if (tests.some((test) => test.status === "skipped" || test.status === "pending" || test.status === "todo")) {
+  if (
+    tests.some(
+      (test) =>
+        test.status === "skipped" ||
+        test.status === "pending" ||
+        test.status === "todo",
+    )
+  ) {
     return "skipped";
   }
-  if (tests.length > 0 && tests.every((test) => test.status === "passed")) return "passed";
+  if (tests.length > 0 && tests.every((test) => test.status === "passed"))
+    return "passed";
   return "not-run";
 }
 
@@ -156,11 +164,19 @@ const ICON: Record<AtStatus, string> = {
   "not-run": "➖",
 };
 
-export function formatText(summary: AtSummary): string {
+/** Keep the job summary readable even if the suite grows a lot. */
+const MAX_ROWS = 100;
+
+export function formatText(
+  summary: AtSummary,
+  labels?: Record<string, string>,
+): string {
   const lines: string[] = [];
   const failed = summary.results.filter((result) => result.status === "failed");
   const passed = summary.results.filter((result) => result.status === "passed");
-  const skipped = summary.results.filter((result) => result.status === "skipped");
+  const skipped = summary.results.filter(
+    (result) => result.status === "skipped",
+  );
 
   lines.push(
     `Acceptance report: ${summary.results.length} AT(s), ` +
@@ -168,10 +184,13 @@ export function formatText(summary: AtSummary): string {
       (skipped.length > 0 ? `, ${skipped.length} skipped.` : "."),
   );
 
-  for (const result of summary.results) {
+  const shown = summary.results.slice(0, MAX_ROWS);
+  for (const result of shown) {
+    const label = labels?.[result.key];
     lines.push(
       `  ${ICON[result.status]} ${result.key.padEnd(12)} ` +
-        `${result.title.padEnd(30)} #${result.issue}`,
+        `${result.title.padEnd(30)} #${result.issue}` +
+        (label ? `  [${label}]` : ""),
     );
     if (result.status === "failed") {
       for (const test of result.tests.filter((t) => t.status === "failed")) {
@@ -182,8 +201,14 @@ export function formatText(summary: AtSummary): string {
     }
   }
 
+  if (summary.results.length > shown.length) {
+    lines.push(`  ... and ${summary.results.length - shown.length} more AT(s)`);
+  }
+
   if (summary.untagged > 0) {
-    lines.push(`  ${summary.untagged} test(s) without a US/AT tag were ignored.`);
+    lines.push(
+      `  ${summary.untagged} test(s) without a US/AT tag were ignored.`,
+    );
   }
 
   return lines.join("\n");
@@ -192,23 +217,40 @@ export function formatText(summary: AtSummary): string {
 export function formatMarkdown(
   summary: AtSummary,
   repository: string,
+  labels?: Record<string, string>,
 ): string {
   const lines: string[] = [];
+  const withChange = labels !== undefined;
 
   lines.push("## Acceptance tests by story");
   lines.push("");
-  lines.push("| Story | AT | Result | Tests | Issue |");
-  lines.push("| --- | --- | --- | --- | --- |");
+  lines.push(
+    withChange
+      ? "| Story | AT | Result | Change | Tests | Issue |"
+      : "| Story | AT | Result | Tests | Issue |",
+  );
+  lines.push(
+    withChange
+      ? "| --- | --- | --- | --- | --- | --- |"
+      : "| --- | --- | --- | --- | --- |",
+  );
 
-  for (const result of summary.results) {
+  const shown = summary.results.slice(0, MAX_ROWS);
+  for (const result of shown) {
     const tests = `${result.tests.length} test(s)`;
     const issue = result.issue
       ? `[#${result.issue}](${issueUrl(repository, result.issue)})`
       : "unknown";
+    const change = withChange ? ` ${labels?.[result.key] ?? ""} |` : "";
     lines.push(
       `| ${result.story} | ${result.at} — ${result.title} | ` +
-        `${ICON[result.status]} ${result.status} | ${tests} | ${issue} |`,
+        `${ICON[result.status]} ${result.status} |${change} ${tests} | ${issue} |`,
     );
+  }
+
+  if (summary.results.length > shown.length) {
+    lines.push("");
+    lines.push(`... and ${summary.results.length - shown.length} more AT(s).`);
   }
 
   const failed = summary.results.filter((result) => result.status === "failed");
