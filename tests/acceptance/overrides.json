@@ -1,2 +1,10 @@
 {
+  "US-01/AT-4": {
+    "status": "manual",
+    "note": "needs a component test for the create form confirmation"
+  },
+  "US-01/AT-5": {
+    "status": "manual",
+    "note": "full UI to database flow; no browser E2E runner yet"
+  }
 }
