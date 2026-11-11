@@ -20,6 +20,7 @@
     "acceptance:sync": "tsx tools/acceptance/sync.ts",
     "acceptance:check": "tsx tools/acceptance/check.ts",
     "acceptance:report": "tsx tools/acceptance/report-cli.ts",
+    "acceptance:baseline": "tsx tools/acceptance/baseline-cli.ts",
     "db:seed": "prisma db seed"
   },
   "dependencies": {
