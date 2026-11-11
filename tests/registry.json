@@ -163,6 +163,36 @@
         }
       ]
     },
+    "CH-05": {
+      "issue": 66,
+      "title": "Add a browser E2E runner for the create-room and location flows",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Create-room journey"
+        },
+        {
+          "id": "AT-2",
+          "title": "Location reuse journey"
+        },
+        {
+          "id": "AT-3",
+          "title": "Local run in both browsers"
+        },
+        {
+          "id": "AT-4",
+          "title": "CI job"
+        },
+        {
+          "id": "AT-5",
+          "title": "Traceability"
+        },
+        {
+          "id": "AT-6",
+          "title": "Non-blocking rollout"
+        }
+      ]
+    },
     "US-01": {
       "issue": 23,
       "title": "Create a room by name and dimensions",

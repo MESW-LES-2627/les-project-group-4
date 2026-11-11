@@ -116,6 +116,42 @@ describe("checkCoverage", () => {
     expect(report.manual).toEqual(["CH-02/AT-1", "US-15/AT-2"]);
   });
 
+  it("takes covered-by overrides out of the uncovered list", () => {
+    const report = checkCoverage(
+      registry,
+      [tagged("US-15", "AT-1"), tagged("CH-02", "AT-1")],
+      { "US-15/AT-2": { status: "covered-by", by: "CH-02" } },
+    );
+
+    expect(report.uncovered).toEqual([]);
+    expect(report.manual).toEqual([]);
+    expect(report.coveredBy).toEqual(["US-15/AT-2"]);
+  });
+
+  it("flags a covered-by override with no target story", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-2": { status: "covered-by" },
+    });
+
+    expect(report.problems[0]?.message).toMatch(/needs a "by" story/);
+  });
+
+  it("flags a covered-by override that points to an unknown story", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-2": { status: "covered-by", by: "US-99" },
+    });
+
+    expect(report.problems[0]?.message).toMatch(/unknown story/);
+  });
+
+  it("flags a covered-by override that points to its own story", () => {
+    const report = checkCoverage(registry, [], {
+      "US-15/AT-2": { status: "covered-by", by: "US-15" },
+    });
+
+    expect(report.problems[0]?.message).toMatch(/its own story/);
+  });
+
   it("flags a tag that is not in the registry", () => {
     const report = checkCoverage(registry, [tagged("US-99", "AT-1")], {});
 
@@ -152,7 +188,7 @@ describe("checkCoverage", () => {
     });
 
     expect(report.problems[0]?.message).toMatch(
-      /expected "manual" or "deferred"/,
+      /expected "manual", "deferred" or "covered-by"/,
     );
   });
 

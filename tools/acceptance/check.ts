@@ -38,7 +38,8 @@ const totalAts = Object.values(registry.stories).reduce(
   (total, story) => total + story.ats.length,
   0,
 );
-const coveredAts = totalAts - report.uncovered.length - report.manual.length;
+const coveredAts =
+  totalAts - report.uncovered.length - report.manual.length - report.coveredBy.length;
 
 let drift = false;
 if (!offline) {
@@ -51,7 +52,8 @@ if (!offline) {
 
 console.log(
   `Acceptance tests: ${report.pairs.length} tagged group(s), ` +
-    `${coveredAts}/${totalAts} ATs covered, ${report.manual.length} manual/deferred.`,
+    `${coveredAts}/${totalAts} ATs covered, ${report.manual.length} manual/deferred, ` +
+    `${report.coveredBy.length} covered by another story.`,
 );
 
 if (report.problems.length > 0) {

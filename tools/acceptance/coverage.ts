@@ -23,8 +23,10 @@ export interface ScanProblem {
 }
 
 export interface Override {
-  status: "manual" | "deferred";
+  status: "manual" | "deferred" | "covered-by";
   note?: string;
+  /** For `covered-by`: the story whose tests cover this AT. */
+  by?: string;
 }
 
 export type Overrides = Record<string, Override>;
@@ -48,6 +50,8 @@ export interface CheckReport {
   uncovered: UncoveredAt[];
   /** ATs deliberately left to a manual check. */
   manual: string[];
+  /** ATs covered by the tests of another story (e.g. a sub-story). */
+  coveredBy: string[];
 }
 
 /**
@@ -125,12 +129,37 @@ export function checkCoverage(
       });
       continue;
     }
-    if (override?.status !== "manual" && override?.status !== "deferred") {
+    if (
+      override?.status !== "manual" &&
+      override?.status !== "deferred" &&
+      override?.status !== "covered-by"
+    ) {
       problems.push({
         file: "overrides.json",
         line: 0,
-        message: `invalid status for ${key}: expected "manual" or "deferred"`,
+        message: `invalid status for ${key}: expected "manual", "deferred" or "covered-by"`,
       });
+    }
+    if (override?.status === "covered-by") {
+      if (!override.by) {
+        problems.push({
+          file: "overrides.json",
+          line: 0,
+          message: `covered-by override for ${key} needs a "by" story`,
+        });
+      } else if (!registry.stories[override.by]) {
+        problems.push({
+          file: "overrides.json",
+          line: 0,
+          message: `covered-by override for ${key} points to an unknown story: ${override.by}`,
+        });
+      } else if (override.by === story) {
+        problems.push({
+          file: "overrides.json",
+          line: 0,
+          message: `covered-by override for ${key} points to its own story`,
+        });
+      }
     }
   }
 
@@ -153,13 +182,16 @@ export function checkCoverage(
 
   const uncovered: UncoveredAt[] = [];
   const manual: string[] = [];
+  const coveredBy: string[] = [];
 
   for (const [storyKey, story] of Object.entries(registry.stories)) {
     for (const entry of story.ats) {
       const key = `${storyKey}/${entry.id}`;
       if (covered.has(key)) continue;
-      if (overrides[key]) {
-        manual.push(key);
+      const override = overrides[key];
+      if (override) {
+        if (override.status === "covered-by") coveredBy.push(key);
+        else manual.push(key);
         continue;
       }
       uncovered.push({
@@ -174,6 +206,7 @@ export function checkCoverage(
 
   uncovered.sort((a, b) => a.key.localeCompare(b.key));
   manual.sort((a, b) => a.localeCompare(b));
+  coveredBy.sort((a, b) => a.localeCompare(b));
 
-  return { pairs, problems, unknown, uncovered, manual };
+  return { pairs, problems, unknown, uncovered, manual, coveredBy };
 }

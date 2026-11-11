@@ -58,7 +58,9 @@ and maps each story to its issue number and ATs. Do not edit it by hand. The
 generator and the check live in `tools/acceptance/`.
 
 Automation status lives in `tests/acceptance/overrides.json`, keyed by
-`US-15/AT-3`, with `manual` or `deferred` for ATs that cannot be automated yet.
+`US-15/AT-3`, with `manual`, `deferred` or `covered-by`. `covered-by` also
+takes `by`, the story whose tests cover the AT (for sub-stories such as
+`US-06a`).
 
 ## Tags
 

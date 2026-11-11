@@ -14,5 +14,41 @@
   "US-03/AT-4": {
     "status": "manual",
     "note": "optional fields rendering; no component test harness yet"
+  },
+  "US-06/AT-1": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-1"
+  },
+  "US-06/AT-2": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-2"
+  },
+  "US-06/AT-4": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-3"
+  },
+  "US-06/AT-5": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-5"
+  },
+  "US-06b/AT-5": {
+    "status": "deferred",
+    "note": "item-vs-item overlap is US-11"
+  },
+  "US-06b/AT-7": {
+    "status": "deferred",
+    "note": "auto-placement is US-09"
+  },
+  "US-06b/AT-8": {
+    "status": "manual",
+    "note": "meta: verified by review that the geometry suite exists and CI runs it"
+  },
+  "US-06b/AT-9": {
+    "status": "manual",
+    "note": "code review criterion: the renderer must call the geometry module"
   }
 }
