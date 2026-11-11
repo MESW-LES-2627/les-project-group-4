@@ -165,31 +165,31 @@
     },
     "CH-05": {
       "issue": 66,
-      "title": "Add a browser E2E runner for the create-room and location flows",
+      "title": "Add a DOM component test harness with jsdom and Testing Library",
       "ats": [
         {
           "id": "AT-1",
-          "title": "Create-room journey"
+          "title": "Harness"
         },
         {
           "id": "AT-2",
-          "title": "Location reuse journey"
+          "title": "Create form confirmation"
         },
         {
           "id": "AT-3",
-          "title": "Local run"
+          "title": "Location errors"
         },
         {
           "id": "AT-4",
-          "title": "CI job"
+          "title": "Location race"
         },
         {
           "id": "AT-5",
-          "title": "Traceability"
+          "title": "Room details"
         },
         {
           "id": "AT-6",
-          "title": "Non-blocking rollout"
+          "title": "Registry and no new CI job"
         }
       ]
     },
@@ -630,6 +630,10 @@
         {
           "id": "AT-5",
           "title": "Failure"
+        },
+        {
+          "id": "AT-6",
+          "title": "Unique name"
         }
       ]
     },

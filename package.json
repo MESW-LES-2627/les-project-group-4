@@ -19,6 +19,7 @@
     "test": "vitest run",
     "acceptance:sync": "tsx tools/acceptance/sync.ts",
     "acceptance:check": "tsx tools/acceptance/check.ts",
+    "acceptance:report": "tsx tools/acceptance/report-cli.ts",
     "db:seed": "prisma db seed"
   },
   "dependencies": {
