@@ -3,7 +3,7 @@ import { roomLocationSchema } from '@/lib/schemas/room'
 import type { RoomLocationInput } from '@/lib/schemas/room'
 
 /** What the UI shows for coordinates that have no city (AT-2: no reverse geocoding). */
-export const CURRENT_LOCATION_LABEL = 'Current location'
+export const CURRENT_LOCATION_LABEL = 'Your location'
 
 export interface Coordinates {
   latitude: number
