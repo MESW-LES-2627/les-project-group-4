@@ -106,6 +106,44 @@ describe("checkCoverage", () => {
     expect(report.notStarted).toEqual(["CH-02", "US-15"]);
   });
 
+  it("reports acceptance files with no US/AT tags", () => {
+    const report = checkCoverage(
+      registry,
+      [
+        {
+          file: "tests/acceptance/US-15/no-tags.test.ts",
+          source: "it('x', () => {})",
+        },
+        {
+          file: "tests/acceptance/US-15/only-acceptance.test.ts",
+          source: "it('x', { tags: ['acceptance'] }, () => {})",
+        },
+      ],
+      {},
+    );
+
+    expect(report.untagged).toEqual([
+      "tests/acceptance/US-15/no-tags.test.ts",
+      "tests/acceptance/US-15/only-acceptance.test.ts",
+    ]);
+  });
+
+  it("does not report a file with a malformed tag as untagged", () => {
+    const report = checkCoverage(
+      registry,
+      [
+        {
+          file: "bad.test.ts",
+          source: "it('x', { tags: ['US-15'] }, () => {})",
+        },
+      ],
+      {},
+    );
+
+    expect(report.problems).toHaveLength(1);
+    expect(report.untagged).toEqual([]);
+  });
+
   it("counts a story as started once it has an override", () => {
     const report = checkCoverage(registry, [], {
       "US-15/AT-1": { status: "manual" },

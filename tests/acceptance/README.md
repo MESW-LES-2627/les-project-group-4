@@ -22,28 +22,32 @@ npm test -- --project acceptance    # only the acceptance tests
 npm test -- --project unit          # only the unit tests
 ```
 
-The `acceptance` project is empty until the first story is migrated (US-15), so
-`--project acceptance` reports "No test files found" until then.
+The `acceptance` project contains the migrated stories (US-01, US-03,
+US-06/06a/06b, US-07, US-15, CH-01, CH-02 and CH-03a); `--project acceptance`
+runs only those tests.
 
 ## Checking the mapping
 
 ```sh
-npm run acceptance:check              # report gaps, exit 0 (warn mode)
-npm run acceptance:check -- --strict  # fail on any gap
+npm run acceptance:check              # fail on any gap (default)
+npm run acceptance:check -- --warn    # report gaps, exit 0
 npm run acceptance:check -- --offline # skip the registry drift check
 ```
 
-The check reads the `tags` arrays from the test sources, so the tag list must be
+`--strict` is still accepted for compatibility; strict is the default. The check
+reads the `tags` arrays from the test sources, so the tag list must be
 a literal array in the test call (not built at runtime). It verifies that every
-`US`/`AT` tag exists in the registry, that no started story has an uncovered
-automated AT, and that `tests/registry.json` still matches the issues. ATs
-listed in `overrides.json` are exempt from the coverage rule.
+acceptance test file carries at least one `US`/`AT` tag, that each tag exists in
+the registry, that no started story has an uncovered automated AT, and that
+`tests/registry.json` still matches the issues. ATs listed in `overrides.json`
+are exempt from the coverage rule.
 
 A story is "started" when it has at least one tagged test or an override. The
-ATs of stories nobody has started yet are reported and ignored by `--strict`,
-so the gate fails on gaps in current work, not on the whole backlog.
+ATs of stories nobody has started yet are reported and ignored by the gate, so
+it fails on gaps in current work, not on the whole backlog.
 
-CI runs `npm run acceptance:check -- --strict` on every pull request.
+CI runs `npm run acceptance:check -- --strict` on every pull request; `--strict`
+is redundant now, but the command still works.
 
 ## Layout
 
@@ -74,5 +78,7 @@ Every acceptance test is tagged with `acceptance`, the story id and the AT id
 `US-15/AT-3` — never `AT-3` alone. Tag the `describe` when the whole block
 verifies one AT: Vitest inherits the tags down to its tests.
 
-Tags are validated by `npm run acceptance:check`; the US-15 migration adds them
-to the tests, and the CI report follows in #63.
+The valid tags are generated from `tests/registry.json` and declared in
+`vitest.config.mts`, so Vitest rejects an undefined tag during `npm test` as
+well. `npm run acceptance:check` also fails an acceptance test file that has no
+`US`/`AT` tags at all.

@@ -11,7 +11,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
-import { buildRegistry, serializeRegistry } from "./registry";
+import { buildRegistry, isRegistryStale, serializeRegistry } from "./registry";
 
 const REGISTRY_PATH = fileURLToPath(
   new URL("../../tests/registry.json", import.meta.url),
@@ -33,7 +33,7 @@ if (process.argv.includes("--check")) {
   const existing = existsSync(REGISTRY_PATH)
     ? readFileSync(REGISTRY_PATH, "utf8")
     : "";
-  if (existing !== output) {
+  if (isRegistryStale(existing, registry)) {
     console.error(
       "tests/registry.json is out of date. Run `npm run acceptance:sync` and commit the result.",
     );

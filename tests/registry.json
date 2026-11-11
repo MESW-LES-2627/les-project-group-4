@@ -660,6 +660,14 @@
         {
           "id": "AT-5",
           "title": "Missing layout"
+        },
+        {
+          "id": "AT-6",
+          "title": "Delete saved layout"
+        },
+        {
+          "id": "AT-7",
+          "title": "Cancel delete"
         }
       ]
     },

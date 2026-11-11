@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildRegistry,
+  isRegistryStale,
   parseAcceptanceTests,
   serializeRegistry,
   storyKey,
@@ -129,5 +130,42 @@ describe("serializeRegistry", () => {
     expect(first).toBe(second);
     expect(first.indexOf('"US-01"')).toBeLessThan(first.indexOf('"US-15"'));
     expect(first.endsWith("\n")).toBe(true);
+  });
+});
+
+describe("isRegistryStale", () => {
+  const generated = buildRegistry(
+    [issue(37, "US-15: Set my location", body)],
+    "owner/repo",
+  ).registry;
+  const committed = serializeRegistry(generated);
+
+  it("is false when the committed registry matches the issues", () => {
+    expect(isRegistryStale(committed, generated)).toBe(false);
+  });
+
+  it("is true when an issue body changes", () => {
+    const edited = buildRegistry(
+      [
+        issue(
+          37,
+          "US-15: Set my location",
+          body.replace("Permission denied", "Permission blocked"),
+        ),
+      ],
+      "owner/repo",
+    ).registry;
+
+    expect(isRegistryStale(committed, edited)).toBe(true);
+  });
+
+  it("is true when the committed file no longer matches the generated one", () => {
+    expect(
+      isRegistryStale(committed.replace('"US-15"', '"US-99"'), generated),
+    ).toBe(true);
+  });
+
+  it("is true when the committed file is missing", () => {
+    expect(isRegistryStale("", generated)).toBe(true);
   });
 });

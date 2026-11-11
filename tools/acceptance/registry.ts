@@ -121,3 +121,14 @@ export function serializeRegistry(registry: Registry): string {
 
   return `${JSON.stringify({ repository: registry.repository, stories }, null, 2)}\n`;
 }
+
+/**
+ * Compares the committed registry with a freshly generated one. Shared by
+ * `acceptance:sync --check` and the CI drift check so both use the same rule.
+ */
+export function isRegistryStale(
+  committed: string,
+  registry: Registry,
+): boolean {
+  return committed !== serializeRegistry(registry);
+}
