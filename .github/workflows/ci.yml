@@ -26,12 +26,14 @@ jobs:
     timeout-minutes: 5
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      # `fail` or `warn`: whether a stale registry can fail this run.
+      drift: ${{ steps.filter.outputs.drift }}
     steps:
       - uses: actions/checkout@v7
         with:
           # Full history so the diff against the base branch works.
           fetch-depth: 0
-      - name: Decide whether the code jobs are needed
+      - name: Decide what this run needs
         id: filter
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -59,6 +61,16 @@ jobs:
             echo "::notice::Documentation-only change: skipping lint, typecheck, build and database jobs."
           fi
 
+          # A stale registry is only this run's fault when the pull request edits
+          # the tests or the registry itself. Otherwise any issue-body edit would
+          # turn every open PR and every push to develop red, so drift is only a
+          # warning there; see tools/acceptance/check.ts --drift-warn.
+          if [ "$EVENT_NAME" = "pull_request" ] && printf '%s\n' "$changed" | grep -Eq '^tests/'; then
+            echo "drift=fail" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=warn" >> "$GITHUB_OUTPUT"
+          fi
+
   quality:
     name: Lint, typecheck, tests and build
     needs: changes
@@ -80,9 +92,10 @@ jobs:
       - name: Test
         run: npm test
       # Fails when a US/AT tag is unknown, a started story has an uncovered AT,
-      # or tests/registry.json no longer matches the issues.
+      # or tests/registry.json no longer matches the issues. Drift is fatal only
+      # when this pull request edits tests/; otherwise it is reported as advisory.
       - name: Acceptance traceability
-        run: npm run acceptance:check -- --strict
+        run: npm run acceptance:check -- --strict --drift-${{ needs.changes.outputs.drift }}
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Build

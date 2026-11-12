@@ -29,9 +29,10 @@ runs only those tests.
 ## Checking the mapping
 
 ```sh
-npm run acceptance:check              # fail on any gap (default)
-npm run acceptance:check -- --warn    # report gaps, exit 0
-npm run acceptance:check -- --offline # skip the registry drift check
+npm run acceptance:check                  # fail on any gap (default)
+npm run acceptance:check -- --warn        # report gaps, exit 0
+npm run acceptance:check -- --drift-warn  # report a stale registry, exit 0
+npm run acceptance:check -- --offline     # skip the registry drift check
 ```
 
 `--strict` is still accepted for compatibility; strict is the default. The check
@@ -46,8 +47,10 @@ A story is "started" when it has at least one tagged test or an override. The
 ATs of stories nobody has started yet are reported and ignored by the gate, so
 it fails on gaps in current work, not on the whole backlog.
 
-CI runs `npm run acceptance:check -- --strict` on every pull request; `--strict`
-is redundant now, but the command still works.
+CI runs the check on every pull request and every push to `main`/`develop`.
+Drift is fatal only on a pull request that touches `tests/`; on a push, or a PR
+that does not touch the tests, it is reported with `--drift-warn` and does not
+fail, so an unrelated issue edit cannot block the whole repo.
 
 ## Layout
 
