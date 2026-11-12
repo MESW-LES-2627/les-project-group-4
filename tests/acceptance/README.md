@@ -67,11 +67,12 @@ Regressions and new failures are `::error`; pre-existing failures are
 ## Checking the mapping
 
 ```sh
-npm run acceptance:check              # fail on any gap (default)
-npm run acceptance:check -- --warn    # report gaps, exit 0
-npm run acceptance:check -- --offline # skip the registry drift check
-npm run acceptance:check -- --issue 63 # also require CH-03b's ATs
-npm run acceptance:check -- --pr 67    # resolve the PR's linked issues via gh
+npm run acceptance:check                  # fail on any gap (default)
+npm run acceptance:check -- --warn        # report gaps, exit 0
+npm run acceptance:check -- --drift-warn  # report a stale registry, exit 0
+npm run acceptance:check -- --offline     # skip the registry drift check
+npm run acceptance:check -- --issue 63    # also require CH-03b's ATs
+npm run acceptance:check -- --pr 67       # resolve the PR's linked issues via gh
 ```
 
 `--strict` is still accepted for compatibility; strict is the default. The check
@@ -90,6 +91,10 @@ CI runs `npm run acceptance:check` in its own `Acceptance traceability` job,
 in parallel with the acceptance tests, so the report is still produced when
 the mapping fails. The job summary lists the gaps even when the step is red.
 `--strict` is redundant now, but the command still works.
+
+Drift is fatal only on a pull request that touches `tests/`; on a push, or a PR
+that does not touch the tests, CI passes `--drift-warn`, so an unrelated issue
+edit cannot block the repo.
 
 ### The issue the PR closes
 

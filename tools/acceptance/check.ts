@@ -1,11 +1,14 @@
 // Checks the acceptance tests against the registry.
 //
-//   npm run acceptance:check              fail on any gap (default)
-//   npm run acceptance:check -- --warn    report problems, exit 0
-//   npm run acceptance:check -- --offline skip the registry drift check
+//   npm run acceptance:check                fail on any gap (default)
+//   npm run acceptance:check -- --warn      report problems, exit 0
+//   npm run acceptance:check -- --drift-warn report registry drift, do not fail
+//   npm run acceptance:check -- --offline   skip the registry drift check
 //
 // --strict is still accepted for backwards compatibility; it is the default.
-// Warn mode is for local inspection of the gaps.
+// Warn mode is for local inspection of the gaps. Drift is fatal by default;
+// CI relaxes it for runs that cannot be held responsible for the registry.
+// --drift-fail is the explicit default, so CI can pass --drift-<mode>.
 
 import { existsSync, readFileSync, readdirSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
@@ -43,6 +46,10 @@ function argValues(name: string): string[] {
   }
   return values;
 }
+
+// A stale registry is a real gap when the change owns the tests, so `fail` is
+// the default. `warn` is for runs where an unrelated issue edit must not block.
+const driftIsFatal = !process.argv.includes("--drift-warn");
 
 const committed = readFileSync(REGISTRY_PATH, "utf8");
 const registry = JSON.parse(committed) as Registry;
@@ -162,8 +169,11 @@ if (report.uncovered.length > 0) {
 }
 
 if (drift) {
+  const suffix = driftIsFatal
+    ? ""
+    : " (advisory here: this run does not own the tests, so it does not fail)";
   console.error(
-    "\ntests/registry.json is out of date. Run `npm run acceptance:sync` and commit the result.",
+    `\ntests/registry.json is out of date. Run \`npm run acceptance:sync\` and commit the result.${suffix}`,
   );
 }
 
@@ -171,10 +181,14 @@ const failed =
   report.problems.length > 0 ||
   report.untagged.length > 0 ||
   report.uncovered.length > 0 ||
-  drift;
+  (drift && driftIsFatal);
 
 if (!failed) {
-  console.log("\nAll acceptance ATs are covered.");
+  console.log(
+    drift
+      ? "\nCoverage is complete; the registry drift above is advisory here."
+      : "\nAll acceptance ATs are covered.",
+  );
 } else if (strict) {
   process.exitCode = 1;
 } else {
@@ -192,6 +206,7 @@ if (summaryPath) {
       requiredStories,
       unknownIssues,
       drift,
+      driftIsFatal,
     })}\n`,
   );
 }

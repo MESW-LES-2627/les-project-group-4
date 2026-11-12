@@ -27,12 +27,14 @@ jobs:
     timeout-minutes: 5
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      # `fail` or `warn`: whether a stale registry can fail this run.
+      drift: ${{ steps.filter.outputs.drift }}
     steps:
       - uses: actions/checkout@v7
         with:
           # Full history so the diff against the base branch works.
           fetch-depth: 0
-      - name: Decide whether the code jobs are needed
+      - name: Decide what this run needs
         id: filter
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -58,6 +60,16 @@ jobs:
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Documentation-only change: skipping the code jobs."
+          fi
+
+          # A stale registry is only this run's fault when the pull request edits
+          # the tests or the registry itself. Otherwise any issue-body edit would
+          # turn every open PR and every push to develop red, so drift is only a
+          # warning there; see tools/acceptance/check.ts --drift-warn.
+          if [ "$EVENT_NAME" = "pull_request" ] && printf '%s\n' "$changed" | grep -Eq '^tests/'; then
+            echo "drift=fail" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=warn" >> "$GITHUB_OUTPUT"
           fi
 
   static:
@@ -135,9 +147,9 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [ -n "$PR_NUMBER" ]; then
-            npm run acceptance:check -- --pr "$PR_NUMBER"
+            npm run acceptance:check -- --pr "$PR_NUMBER" --drift-${{ needs.changes.outputs.drift }}
           else
-            npm run acceptance:check
+            npm run acceptance:check -- --drift-${{ needs.changes.outputs.drift }}
           fi
 
   acceptance:

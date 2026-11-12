@@ -13,7 +13,7 @@ expensive jobs.
 
 | Job | What it proves |
 | --- | --- |
-| **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
+| **Detect changed files** | Decides whether the code jobs are needed (`*.md` and `docs/` alone skip them) and whether registry drift may fail the run (only a PR that touches `tests/`). |
 | **Static checks** | `npm ci`, `npm run lint`, `npm run typecheck` on Node 22. |
 | **Unit tests** | `npm ci`, `npm test -- --project unit`. |
 | **Build** | `npm ci`, `npm run build`. |
@@ -33,6 +33,13 @@ acceptance test file has no `US`/`AT` tags, when a test carries an unknown tag,
 when a story that has started has an uncovered automated AT, or when
 `tests/registry.json` no longer matches the issues. The last check reads GitHub
 through `GH_TOKEN`, which is why the job declares `issues: read`.
+
+Registry drift is only fatal when the run can be held responsible for it: a pull
+request that touches `tests/` (including `tests/registry.json`) must keep the
+registry in sync, so drift fails there. On pushes to `develop`/`main` and on pull
+requests that do not touch `tests/`, drift is reported but does not fail
+(`--drift-warn`). Without that split, any issue-body edit would turn every open
+PR and every push red until someone ran `acceptance:sync`.
 
 Vitest also declares the registry tags in `vitest.config.mts` with
 `strictTags`, so any `vitest` run rejects an undefined tag before this step

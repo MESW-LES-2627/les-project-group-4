@@ -12,6 +12,8 @@ export interface TraceabilityInput {
   requiredStories: string[];
   unknownIssues: number[];
   drift: boolean;
+  /** False when CI decided this run cannot be blamed for a stale registry. */
+  driftIsFatal?: boolean;
 }
 
 const MAX_ROWS = 50;
@@ -21,7 +23,7 @@ export function isTraceabilityFailure(input: TraceabilityInput): boolean {
     input.report.problems.length > 0 ||
     input.report.untagged.length > 0 ||
     input.report.uncovered.length > 0 ||
-    input.drift
+    (input.drift && input.driftIsFatal !== false)
   );
 }
 
@@ -131,10 +133,17 @@ export function formatTraceabilityMarkdown(input: TraceabilityInput): string {
 
   if (input.drift) {
     lines.push("");
-    lines.push("### Registry");
+    lines.push(
+      input.driftIsFatal === false
+        ? "### Registry (advisory)"
+        : "### Registry",
+    );
     lines.push("");
     lines.push(
-      "`tests/registry.json` is out of date. Run `npm run acceptance:sync` and commit the result.",
+      "`tests/registry.json` is out of date. Run `npm run acceptance:sync` and commit the result." +
+        (input.driftIsFatal === false
+          ? " This run does not touch `tests/`, so it does not fail."
+          : ""),
     );
   }
 

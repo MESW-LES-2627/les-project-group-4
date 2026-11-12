@@ -141,6 +141,16 @@ describe("formatTraceabilityMarkdown", () => {
     expect(markdown).toContain("Run `npm run acceptance:sync`");
   });
 
+  it("treats drift as advisory when the run does not own the tests", () => {
+    const markdown = formatTraceabilityMarkdown(
+      input({ drift: true, driftIsFatal: false }),
+    );
+
+    expect(markdown).toContain("✅ **Passed**");
+    expect(markdown).toContain("### Registry (advisory)");
+    expect(markdown).toContain("This run does not touch `tests/`, so it does not fail.");
+  });
+
   it("says when there is no linked issue", () => {
     const markdown = formatTraceabilityMarkdown(
       input({ issues: [], requiredStories: [] }),
