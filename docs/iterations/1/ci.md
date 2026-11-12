@@ -59,11 +59,13 @@ deferred AT is exempt when it is listed in
 [`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
 
 On pull requests the check also resolves the issue the PR closes
-(`gh pr view … --json closingIssuesReferences`, then `Closes #n` in the body,
-then the `issue-<n>` branch name) and requires that story's ATs even before the
-story has started. Every AT must be covered, `manual` or `covered-by`; a
-`deferred` AT fails because the PR claims the issue is done. A PR with no
-linked issue is reported and skips the rule. This needs `pull-requests: read`
+(`gh pr view … --json closingIssuesReferences`, then an explicit
+`Closes/Fixes/Resolves #n` in the body) and requires that story's ATs even
+before the story has started. A branch name such as `type/issue-<n>-slug` is not
+a closing reference, so a partial PR ("Part of #n") is not held to every AT.
+Every AT must be covered, `manual` or `covered-by`; a `deferred` AT fails unless
+its `note` names the issue it moved to (for example `moved to #35`). A PR with
+no linked issue is reported and skips the rule. This needs `pull-requests: read`
 in addition to `issues: read`.
 
 ### Acceptance report and regressions

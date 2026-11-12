@@ -99,10 +99,13 @@ edit cannot block the repo.
 ### The issue the PR closes
 
 On pull requests the check also resolves the issue the PR closes — from
-`closingIssuesReferences`, then a `Closes #n` line, then the
-`type/issue-<n>-slug` branch — and requires that story's ATs even if the story
-has not started yet. Every AT must be covered by a tagged test, `manual`, or
-`covered-by`; a `deferred` AT fails because the PR claims the issue is done.
+`closingIssuesReferences`, then an explicit `Closes/Fixes/Resolves #n` line in
+the body — and requires that story's ATs even if the story has not started yet.
+A branch name such as `type/issue-<n>-slug` is not a closing reference, so a
+partial PR ("Part of #n") is not held to every AT. Every AT must be covered by a
+tagged test, `manual`, or `covered-by`; a `deferred` AT fails unless its `note`
+names the issue it moved to (for example `moved to #35`), so the deferral stays
+traceable.
 
 A PR with no linked issue is reported and skips the rule, so docs-only PRs are
 not blocked. Unknown issue numbers (the legacy issues #1–#7) are reported and
