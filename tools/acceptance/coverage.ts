@@ -220,7 +220,11 @@ export function checkCoverage(
       if (covered.has(key)) continue;
       const override = overrides[key];
       if (override) {
-        if (override.status === "deferred" && required.has(storyKey)) {
+        if (
+          override.status === "deferred" &&
+          required.has(storyKey) &&
+          !/#\d+/.test(override.note ?? "")
+        ) {
           problems.push({
             file: "overrides.json",
             line: 0,

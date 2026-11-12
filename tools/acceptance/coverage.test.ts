@@ -318,7 +318,7 @@ describe("checkCoverage", () => {
     expect(report.manual).toEqual(["CH-02/AT-1"]);
   });
 
-  it("fails a deferred AT on a required story", () => {
+  it("fails a deferred AT on a required story when the note names no issue", () => {
     const report = checkCoverage(
       registry,
       [],
@@ -329,5 +329,17 @@ describe("checkCoverage", () => {
     expect(report.problems.map((problem) => problem.message)).toEqual([
       "deferred AT CH-02/AT-1 belongs to #42, which this PR closes",
     ]);
+  });
+
+  it("accepts a deferred AT on a required story when the note names the issue it moved to", () => {
+    const report = checkCoverage(
+      registry,
+      [],
+      { "CH-02/AT-1": { status: "deferred", note: "moved to #64" } },
+      { required: ["CH-02"] },
+    );
+
+    expect(report.problems).toEqual([]);
+    expect(report.manual).toEqual(["CH-02/AT-1"]);
   });
 });
