@@ -45,8 +45,9 @@ export interface PullRequestLinks {
 }
 
 /**
- * Closing references first, then a `Closes #n` in the body, then the
- * `type/issue-<n>-slug` branch convention.
+ * Closing references first, then an explicit `Closes/Fixes/Resolves #n` in the
+ * body. A branch name such as `type/issue-<n>-slug` is not a closing reference:
+ * a partial PR can say "Part of #n" and must not be held to every AT.
  */
 export function linkedIssuesForPullRequest(pr: number): PullRequestLinks {
   const raw = gh([
@@ -54,13 +55,12 @@ export function linkedIssuesForPullRequest(pr: number): PullRequestLinks {
     "view",
     String(pr),
     "--json",
-    "closingIssuesReferences,body,headRefName",
+    "closingIssuesReferences,body",
   ]);
 
   const data = JSON.parse(raw) as {
     closingIssuesReferences?: Array<{ number: number }>;
     body?: string;
-    headRefName?: string;
   };
 
   const linked = (data.closingIssuesReferences ?? []).map(
@@ -73,6 +73,7 @@ export function linkedIssuesForPullRequest(pr: number): PullRequestLinks {
   const fromBody = parseClosingIssues(data.body);
   if (fromBody.length > 0) return { issues: fromBody };
 
-  const fromBranch = data.headRefName?.match(/issue-(\d+)/i);
-  return { issues: fromBranch ? [Number(fromBranch[1])] : [] };
+  // A branch name (issue-35) is not a closing reference: partial PRs say
+  // "Part of #35" and must not need every AT of the issue yet.
+  return { issues: [] };
 }
