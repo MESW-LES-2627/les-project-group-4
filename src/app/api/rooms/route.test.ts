@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { City, Room, ValidationErrorBody } from '@/api/types'
+import type { City, Room } from '@/api/types'
 
 import { GET, POST } from './route'
 
@@ -37,34 +37,7 @@ beforeEach(() => {
   vi.restoreAllMocks() // undo any vi.spyOn from the previous test (e.g. console.error)
 })
 
-describe('POST /api/rooms', () => {
-  it('returns 201 with the created room and saves the parsed data', async () => {
-    createRoom.mockResolvedValue({ id: 1, ...validBody, ...noLocation } as never)
-
-    const response = await POST(postRequest(validBody))
-
-    expect(response.status).toBe(201)
-    expect(await response.json()).toEqual({ id: 1, ...validBody, ...noLocation })
-    expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ data: validBody }))
-  })
-
-  it('returns 400 with field errors and does not touch the database', async () => {
-    const response = await POST(postRequest({ ...validBody, widthCm: -5 }))
-    const body = (await response.json()) as ValidationErrorBody
-
-    expect(response.status).toBe(400)
-    expect(body.errors).toHaveProperty('widthCm')
-    expect(typeof body.errors.widthCm).toBe('string')
-    expect(createRoom).not.toHaveBeenCalled()
-  })
-
-  it('returns 400 for malformed JSON', async () => {
-    const response = await POST(postRequest('{ not json'))
-
-    expect(response.status).toBe(400)
-    expect(createRoom).not.toHaveBeenCalled()
-  })
-
+describe('POST /api/rooms error handling', () => {
   it('returns 500 without leaking the error when the database throws', async () => {
     // The route logs the real error on the server; catch that log so it is not
     // printed during the test run (it looks like a failure, but it is expected).
@@ -78,93 +51,6 @@ describe('POST /api/rooms', () => {
     expect(text).not.toContain('connection refused')
     expect(text).not.toMatch(/\bat \S+:\d+:\d+/) // no stack-trace lines
     expect(consoleError).toHaveBeenCalled() // the details were logged on the server
-  })
-})
-
-describe('POST /api/rooms with a location (US-15)', () => {
-  it('AT-1: stores the chosen city', async () => {
-    findCity.mockResolvedValue({ id: porto.id } as never)
-    createRoom.mockResolvedValue({ id: 1, ...validBody, ...noLocation, city: porto } as never)
-
-    const response = await POST(postRequest({ ...validBody, cityId: porto.id }))
-
-    expect(response.status).toBe(201)
-    expect(((await response.json()) as Room).city).toEqual(porto)
-    expect(findCity).toHaveBeenCalledWith(expect.objectContaining({ where: { id: porto.id } }))
-    expect(createRoom).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { ...validBody, cityId: porto.id } }),
-    )
-  })
-
-  it('returns 400 for a city that does not exist and does not create the room', async () => {
-    findCity.mockResolvedValue(null)
-
-    const response = await POST(postRequest({ ...validBody, cityId: 999 }))
-    const body = (await response.json()) as ValidationErrorBody
-
-    expect(response.status).toBe(400)
-    expect(body.errors).toEqual({ cityId: 'does not exist' })
-    expect(createRoom).not.toHaveBeenCalled()
-  })
-
-  it.each([
-    ['a string', '1'],
-    ['zero', 0],
-    ['a decimal', 1.5],
-  ])('returns 400 for a cityId that is %s without touching the database', async (_label, cityId) => {
-    const response = await POST(postRequest({ ...validBody, cityId }))
-    const body = (await response.json()) as ValidationErrorBody
-
-    expect(response.status).toBe(400)
-    expect(body.errors).toHaveProperty('cityId')
-    expect(findCity).not.toHaveBeenCalled()
-    expect(createRoom).not.toHaveBeenCalled()
-  })
-
-  it('AT-2 and AT-6: stores the browser coordinates without any reverse-geocoding request', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch')
-    const coordinates = { latitude: 41.15, longitude: -8.61 }
-    createRoom.mockResolvedValue({ id: 1, ...validBody, city: null, ...coordinates } as never)
-
-    const response = await POST(postRequest({ ...validBody, ...coordinates }))
-
-    expect(response.status).toBe(201)
-    expect(await response.json()).toEqual({ id: 1, ...validBody, city: null, ...coordinates })
-    expect(createRoom).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { ...validBody, ...coordinates } }),
-    )
-    expect(findCity).not.toHaveBeenCalled()
-    expect(fetchSpy).not.toHaveBeenCalled()
-  })
-
-  it('saves the coordinates rounded to 3 decimals', async () => {
-    createRoom.mockResolvedValue({ id: 1, ...validBody, city: null, latitude: 41.178, longitude: -8.596 } as never)
-
-    await POST(postRequest({ ...validBody, latitude: 41.177851, longitude: -8.596074 }))
-
-    expect(createRoom).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { ...validBody, latitude: 41.178, longitude: -8.596 } }),
-    )
-  })
-
-  it('returns 400 when a city and coordinates are both sent', async () => {
-    const response = await POST(
-      postRequest({ ...validBody, cityId: 1, latitude: 41.15, longitude: -8.61 }),
-    )
-    const body = (await response.json()) as ValidationErrorBody
-
-    expect(response.status).toBe(400)
-    expect(body.errors).toHaveProperty('cityId')
-    expect(createRoom).not.toHaveBeenCalled()
-  })
-
-  it('returns 400 for a latitude out of range', async () => {
-    const response = await POST(postRequest({ ...validBody, latitude: 91, longitude: 0 }))
-    const body = (await response.json()) as ValidationErrorBody
-
-    expect(response.status).toBe(400)
-    expect(body.errors).toHaveProperty('latitude')
-    expect(createRoom).not.toHaveBeenCalled()
   })
 })
 
@@ -227,14 +113,6 @@ describe('response shape matches src/api/types.ts', () => {
     longitude: null,
   } satisfies Record<keyof Room, unknown>
 
-  it('201 body has exactly the Room fields with the right types', async () => {
-    createRoom.mockResolvedValue({ id: 7, ...validBody, ...noLocation } as never)
-
-    const body: unknown = await (await POST(postRequest(validBody))).json()
-
-    expect(body).toEqual(roomShape) // toEqual also fails on extra fields
-  })
-
   it('GET items have exactly the Room fields', async () => {
     findRooms.mockResolvedValue([{ id: 7, ...validBody, ...noLocation }] as never)
 
@@ -259,14 +137,5 @@ describe('response shape matches src/api/types.ts', () => {
         } satisfies Record<keyof City, unknown>,
       },
     ])
-  })
-
-  it('400 body is { errors: { field: message } }', async () => {
-    const body = (await (await POST(postRequest({ name: '' }))).json()) as ValidationErrorBody
-
-    expect(Object.keys(body)).toEqual(['errors'])
-    for (const message of Object.values(body.errors)) {
-      expect(typeof message).toBe('string')
-    }
   })
 })

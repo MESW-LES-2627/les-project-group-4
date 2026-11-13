@@ -13,12 +13,96 @@ expensive jobs.
 
 | Job | What it proves |
 | --- | --- |
-| **Detect changed files** | Decides whether the code jobs are needed; `*.md` and `docs/` alone skip them. |
-| **Lint, typecheck and build** | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` on Node 22. |
+| **Detect changed files** | Decides whether the code jobs are needed (`*.md` and `docs/` alone skip them) and whether registry drift may fail the run (only a PR that touches `tests/`). |
+| **Static checks** | `npm ci`, `npm run lint`, `npm run typecheck` on Node 22. |
+| **Unit tests** | `npm ci`, `npm test -- --project unit`. |
+| **Build** | `npm ci`, `npm run build`. |
+| **Acceptance traceability (US/AT)** | `npm ci`, then `npm run acceptance:check` (tags, coverage, registry drift and the issue the PR closes). Runs in parallel with the acceptance tests, so the report is still produced when the mapping fails. |
+| **Acceptance tests (US/AT)** | `npm ci`, the acceptance project with the JSON and JUnit reporters, and the grouped report. On pull requests it also runs the suite at the base commit to label regressions. `reports/` is uploaded as an artifact. |
 | **Migrations and seed on a fresh database** | A Postgres 16 service: `prisma validate`, `migrate deploy` from an empty database, `prisma migrate diff` to prove the schema and migrations agree, then `db:seed` twice to prove seeding is idempotent. |
 | **CI** | Aggregate check used for branch protection; succeeds only if the jobs above passed or were deliberately skipped. |
 
 The `CI` check is the one to require before merging.
+
+### Acceptance traceability
+
+`npm run acceptance:check` runs in its own **Acceptance traceability (US/AT)**
+job, in parallel with the acceptance suite, so a mapping failure does not hide
+the test report. It fails when an
+acceptance test file has no `US`/`AT` tags, when a test carries an unknown tag,
+when a story that has started has an uncovered automated AT, or when
+`tests/registry.json` no longer matches the issues. The last check reads GitHub
+through `GH_TOKEN`, which is why the job declares `issues: read`.
+
+Registry drift is only fatal when the run can be held responsible for it: a pull
+request that touches `tests/` (including `tests/registry.json`) must keep the
+registry in sync, so drift fails there. On pushes to `develop`/`main` and on pull
+requests that do not touch `tests/`, drift is reported but does not fail
+(`--drift-warn`). Without that split, any issue-body edit would turn every open
+PR and every push red until someone ran `acceptance:sync`.
+
+Vitest also declares the registry tags in `vitest.config.mts` with
+`strictTags`, so any `vitest` run rejects an undefined tag before this step
+runs.
+
+The check is strict by default. `--warn` reports the same gaps without failing,
+for local inspection; `--strict` remains accepted for compatibility.
+
+The job summary shows the result even when the step fails: covered/total ATs,
+the uncovered ATs with issue links and a "required" flag, problems, untagged
+files, registry drift, and the stories not started yet. Passing runs get the
+one-line status too.
+
+The ATs of stories nobody has started are reported but do not fail the job, so
+the gate applies to work in flight rather than the whole backlog. A manual or
+deferred AT is exempt when it is listed in
+[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
+
+On pull requests the check also resolves the issue the PR closes
+(`gh pr view … --json closingIssuesReferences`, then an explicit
+`Closes/Fixes/Resolves #n` in the body) and requires that story's ATs even
+before the story has started. A branch name such as `type/issue-<n>-slug` is not
+a closing reference, so a partial PR ("Part of #n") is not held to every AT.
+Every AT must be covered, `manual` or `covered-by`; a `deferred` AT fails unless
+its `note` names the issue it moved to (for example `moved to #35`). A PR with
+no linked issue is reported and skips the rule. This needs `pull-requests: read`
+in addition to `issues: read`.
+
+### Acceptance report and regressions
+
+The `Acceptance tests (US/AT)` job runs the acceptance project and turns the
+JSON report into a summary grouped by story. The summary is collapsible and
+split into **User stories** and **Chores**. Only stories that have started
+appear (at least one AT with a result or an override); the rest are listed on
+one line at the bottom. Failing stories are open and first in their section,
+and each AT shows its result, test count and issue link. Manual, deferred and
+covered-by ATs are labelled from
+[`tests/acceptance/overrides.json`](../../../tests/acceptance/overrides.json).
+
+On pull requests the job also runs the suite at the base commit in a temporary
+worktree (`npm run acceptance:baseline`). The report then adds a **Change**
+column:
+
+| Change | Meaning |
+| --- | --- |
+| **regression** | passed on the base, fails now |
+| **new test** | did not exist on the base |
+| **pre-existing** | already failed on the base |
+| **fixed** | failed on the base, passes now |
+| **removed** | existed on the base, no longer runs |
+
+Regressions and new failures are `::error` annotations, so they appear on the
+diff; a pre-existing failure is a `::warning` because this PR did not cause it.
+The baseline is best effort: it is skipped when the base has no acceptance suite
+or the lockfile changed, and the report falls back to head-only results.
+
+`reports/head.json` and `reports/acceptance.xml` are uploaded as the
+`acceptance-junit` artifact, so the detailed run stays available after the
+summary is gone.
+
+The aggregate `CI` check depends on this job, so a failing acceptance test fails
+the required check. If the job itself should also be required, add **Acceptance
+tests (US/AT)** to the branch protection rules; the aggregate is enough today.
 
 ## Deployment (`deploy.yml`)
 
