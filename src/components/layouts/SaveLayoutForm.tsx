@@ -1,36 +1,43 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import type { FormEvent } from 'react'
 import { CircleCheck, Save, TriangleAlert } from 'lucide-react'
 
 import { saveLayout } from '@/api/client'
+import type { LayoutSummary } from '@/api/types'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import type { PlacedItem } from '@/lib/layout/layout'
 import { describeSaveError, toSaveLayoutRequest } from '@/lib/saveLayout'
+import { formatItemCount, savedConfirmation } from '@/lib/savedLayouts'
 import { LAYOUT_NAME_MAX } from '@/lib/schemas/layout'
 
 interface SaveLayoutFormProps {
   roomId: number
   /** The items currently on the plan. Empty until US-09 (#31) lets the user place items. */
   items: readonly PlacedItem[]
+  /** The room's saved layouts, so the "Saved …" confirmation goes away if that layout is deleted. */
+  savedLayouts: readonly LayoutSummary[]
 }
 
 /** US-13b: saves the current plan as a named layout of this room. */
-export function SaveLayoutForm({ roomId, items }: SaveLayoutFormProps) {
+export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [nameError, setNameError] = useState<string | undefined>()
   const [formError, setFormError] = useState<string | null>(null)
-  const [savedName, setSavedName] = useState<string | null>(null)
+  const [saved, setSaved] = useState<{ id: number; name: string } | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isRefreshing, startRefresh] = useTransition()
   const inFlightRef = useRef(false)
 
   function start() {
     setOpen(true)
-    setSavedName(null)
+    setSaved(null)
   }
 
   function cancel() {
@@ -59,10 +66,12 @@ export function SaveLayoutForm({ roomId, items }: SaveLayoutFormProps) {
       const result = await saveLayout(roomId, prepared.request)
       if (result.ok) {
         // AT-2: the confirmation names the saved layout.
-        setSavedName(result.data.name)
+        setSaved({ id: result.data.id, name: result.data.name })
         setOpen(false)
         setName('')
         setNameError(undefined)
+        // US-14b: reloads the server-side list of saved layouts; local state here is kept.
+        startRefresh(() => router.refresh())
         return
       }
       // AT-3 / AT-4: duplicate name next to the field, anything else for the whole form. The name stays.
@@ -74,6 +83,9 @@ export function SaveLayoutForm({ roomId, items }: SaveLayoutFormProps) {
       setIsSaving(false)
     }
   }
+
+  // Shown once the refreshed list has the new layout, and hidden again if it is deleted.
+  const savedName = isRefreshing ? null : savedConfirmation(saved, savedLayouts)
 
   if (!open) {
     return (
@@ -116,7 +128,7 @@ export function SaveLayoutForm({ roomId, items }: SaveLayoutFormProps) {
         onBlur={() => {}}
       />
       <p className="text-xs text-muted-foreground">
-        {items.length === 1 ? '1 item' : `${items.length} items`} on the plan will be saved.
+        {formatItemCount(items.length)} on the plan will be saved.
       </p>
       {formError !== null ? (
         <Alert variant="destructive">

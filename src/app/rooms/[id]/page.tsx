@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
+import { findLayouts } from '@/lib/layouts'
 import { findRoomById } from '@/lib/rooms'
 import { roomIdSchema } from '@/lib/schemas/room'
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 /**
  * US-03: loads one room on the server. A malformed id and a missing room both show not-found.tsx;
- * loading.tsx and error.tsx cover the other states.
+ * loading.tsx and error.tsx cover the other states. US-14b: also loads the room's saved layouts.
  */
 export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -26,6 +27,7 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
   if (room === null) {
     notFound()
   }
+  const layouts = await findLayouts(room.id)
 
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
@@ -40,7 +42,7 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
           />
           My rooms
         </Link>
-        <RoomDetails room={room} />
+        <RoomDetails room={room} layouts={layouts} />
       </section>
     </main>
   )

@@ -1,11 +1,12 @@
-import type { Room } from '@/api/types'
+import type { LayoutSummary, Room } from '@/api/types'
+import { SavedLayouts } from '@/components/layouts/SavedLayouts'
 import { RoomPlan } from '@/components/plan/RoomPlan'
 import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
 import { formatArea } from '@/lib/roomFormat'
 import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 
-/** US-03: one room's details, including the 2D plan. US-15: with its saved location. */
-export function RoomDetails({ room }: { room: Room }) {
+/** US-03: one room's details, including the 2D plan. US-15: with its saved location. US-14b: and its saved layouts. */
+export function RoomDetails({ room, layouts }: { room: Room; layouts: readonly LayoutSummary[] }) {
   const summary = `${room.widthCm} × ${room.lengthCm} cm · ${formatArea(room)}`
   const label = formatRoomLocation(room)
   const location = resolveRoomLocation(room)
@@ -28,8 +29,10 @@ export function RoomDetails({ room }: { room: Room }) {
       </header>
 
       <section aria-label="2D plan">
-        <RoomPlan room={room} />
+        <RoomPlan room={room} layouts={layouts} />
       </section>
+
+      <SavedLayouts roomId={room.id} layouts={layouts} />
     </div>
   )
 }
