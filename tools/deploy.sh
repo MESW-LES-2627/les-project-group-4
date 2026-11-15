@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Deploy FurniMi to Vercel without a Git integration (see README "Deployment").
 #
-#   bash scripts/deploy.sh staging
-#   source scripts/deploy.sh && furnimi production
+#   bash tools/deploy.sh staging
+#   source tools/deploy.sh && furnimi production
 #
 # Project IDs come from .vercel/<environment>.json, created once with:
 #   npx vercel link   # then cp .vercel/project.json .vercel/staging.json

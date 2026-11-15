@@ -1,0 +1,114 @@
+{
+  "US-01/AT-4": {
+    "status": "manual",
+    "note": "needs a component test for the create form confirmation"
+  },
+  "US-01/AT-5": {
+    "status": "manual",
+    "note": "full UI to database flow; no browser E2E runner yet"
+  },
+  "US-03/AT-1": {
+    "status": "manual",
+    "note": "details page rendering; no component test harness yet"
+  },
+  "US-03/AT-4": {
+    "status": "manual",
+    "note": "optional fields rendering; no component test harness yet"
+  },
+  "US-06/AT-1": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-1"
+  },
+  "US-06/AT-2": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-2"
+  },
+  "US-06/AT-4": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-3"
+  },
+  "US-06/AT-5": {
+    "status": "covered-by",
+    "by": "US-06a",
+    "note": "the renderer AT is US-06a/AT-5"
+  },
+  "US-06b/AT-5": {
+    "status": "deferred",
+    "note": "item-vs-item overlap is US-11"
+  },
+  "US-06b/AT-7": {
+    "status": "deferred",
+    "note": "auto-placement is US-09"
+  },
+  "US-06b/AT-8": {
+    "status": "manual",
+    "note": "meta: verified by review that the geometry suite exists and CI runs it"
+  },
+  "US-06b/AT-9": {
+    "status": "manual",
+    "note": "code review criterion: the renderer must call the geometry module"
+  },
+  "US-06a/AT-6": {
+    "status": "manual",
+    "note": "docs review: stories.md, mvp.md and README say 2D plan view, not SVG"
+  },
+  "US-07/AT-1": {
+    "status": "manual",
+    "note": "catalog list rendering (name and price); no component test harness yet"
+  },
+  "US-07/AT-2": {
+    "status": "manual",
+    "note": "category filter UI; the API half is AT-5"
+  },
+  "US-07/AT-3": {
+    "status": "manual",
+    "note": "empty-state rendering; no component test harness yet"
+  },
+  "US-07/AT-4": {
+    "status": "manual",
+    "note": "sample data label rendering; no component test harness yet"
+  },
+  "CH-01/AT-1": {
+    "status": "manual",
+    "note": "deploy workflow; verified on merge to develop"
+  },
+  "CH-01/AT-2": {
+    "status": "manual",
+    "note": "deploy workflow; verified on merge to main"
+  },
+  "CH-01/AT-3": {
+    "status": "manual",
+    "note": "configuration review: separate Supabase projects and secrets"
+  },
+  "CH-01/AT-4": {
+    "status": "manual",
+    "note": "the CI database job runs migrate deploy on a fresh database"
+  },
+  "CH-01/AT-5": {
+    "status": "manual",
+    "note": "post-deploy smoke test on the environment URL"
+  },
+  "CH-01/AT-8": {
+    "status": "manual",
+    "note": "CLAIM.md check at release"
+  },
+  "CH-01/AT-9": {
+    "status": "manual",
+    "note": "clean-clone walkthrough at release"
+  },
+  "CH-02/AT-5": {
+    "status": "deferred",
+    "note": "needs a seeded layout in the CI database job"
+  },
+  "CH-02/AT-6": {
+    "status": "manual",
+    "note": "sample data label in the UI and docs"
+  },
+  "CH-02/AT-7": {
+    "status": "manual",
+    "note": "the deploy workflow runs db:seed"
+  }
+}
