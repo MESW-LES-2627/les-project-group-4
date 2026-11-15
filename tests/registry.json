@@ -637,6 +637,50 @@
         }
       ]
     },
+    "US-13a": {
+      "issue": 69,
+      "title": "Layouts API — save a layout",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Save"
+        },
+        {
+          "id": "AT-2",
+          "title": "Validation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Unique name"
+        }
+      ]
+    },
+    "US-13b": {
+      "issue": 70,
+      "title": "Save layout form on the room page",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Name required"
+        },
+        {
+          "id": "AT-2",
+          "title": "Confirmation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Duplicate name"
+        },
+        {
+          "id": "AT-4",
+          "title": "Failure"
+        },
+        {
+          "id": "AT-5",
+          "title": "Current items"
+        }
+      ]
+    },
     "US-14": {
       "issue": 36,
       "title": "Reload a previously saved layout",
@@ -668,6 +712,54 @@
         {
           "id": "AT-7",
           "title": "Cancel delete"
+        }
+      ]
+    },
+    "US-14a": {
+      "issue": 71,
+      "title": "Layouts API — list, open and delete",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List"
+        },
+        {
+          "id": "AT-2",
+          "title": "Open"
+        },
+        {
+          "id": "AT-3",
+          "title": "Missing"
+        },
+        {
+          "id": "AT-4",
+          "title": "Delete"
+        }
+      ]
+    },
+    "US-14b": {
+      "issue": 72,
+      "title": "Saved layouts list and reload on the room page",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List"
+        },
+        {
+          "id": "AT-2",
+          "title": "Empty"
+        },
+        {
+          "id": "AT-3",
+          "title": "Restore"
+        },
+        {
+          "id": "AT-4",
+          "title": "Confirm replace"
+        },
+        {
+          "id": "AT-5",
+          "title": "Delete"
         }
       ]
     },
