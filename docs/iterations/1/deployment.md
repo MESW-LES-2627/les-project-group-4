@@ -76,9 +76,9 @@ git switch main && git pull
 npm run deploy:production
 ```
 
-`scripts/migrate.sh` accepts the session pooler URL only, prints the masked
+`tools/migrate.sh` accepts the session pooler URL only, prints the masked
 target, asks for confirmation on production, and takes a `pg_dump` first.
-`scripts/deploy.sh` refuses to deploy production from anything but `main` and
+`tools/deploy.sh` refuses to deploy production from anything but `main` and
 staging from anything but `develop`. Both are documented below for
 troubleshooting.
 
