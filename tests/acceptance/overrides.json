@@ -71,6 +71,79 @@
     "status": "manual",
     "note": "sample data label rendering; no component test harness yet"
   },
+  "US-13/AT-1": {
+    "status": "covered-by",
+    "by": "US-13b",
+    "note": "the form AT is US-13b/AT-1"
+  },
+  "US-13/AT-2": {
+    "status": "covered-by",
+    "by": "US-13a",
+    "note": "the API AT is US-13a/AT-1; the form sends the plan items in US-13b/AT-5"
+  },
+  "US-13/AT-3": {
+    "status": "covered-by",
+    "by": "US-13b",
+    "note": "the form AT is US-13b/AT-2"
+  },
+  "US-13/AT-4": {
+    "status": "covered-by",
+    "by": "US-13b",
+    "note": "the form AT is US-13b/AT-1; the API also rejects a blank name in US-13a/AT-2"
+  },
+  "US-13/AT-5": {
+    "status": "covered-by",
+    "by": "US-13b",
+    "note": "the form AT is US-13b/AT-4"
+  },
+  "US-13/AT-6": {
+    "status": "covered-by",
+    "by": "US-13a",
+    "note": "the API AT is US-13a/AT-3; the form shows the message in US-13b/AT-3"
+  },
+  "US-14/AT-1": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-1; the API side is US-14a/AT-1"
+  },
+  "US-14/AT-2": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-3; the API side is US-14a/AT-2"
+  },
+  "US-14/AT-3": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-4"
+  },
+  "US-14/AT-4": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-2; the API side is US-14a/AT-1"
+  },
+  "US-14/AT-5": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-6; the API side is US-14a/AT-3"
+  },
+  "US-14/AT-6": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-5; removal from storage is US-14a/AT-4"
+  },
+  "US-14/AT-7": {
+    "status": "covered-by",
+    "by": "US-14b",
+    "note": "the list AT is US-14b/AT-5 (cancelling keeps it)"
+  },
+  "US-13b/AT-2": {
+    "status": "manual",
+    "note": "save confirmation rendering; no component test harness yet (#66, CH-05)"
+  },
+  "US-13b/AT-5": {
+    "status": "deferred",
+    "note": "the plan has no items until #31 (US-09, add item to layout); the request mapping is unit-tested in src/lib/saveLayout.test.ts"
+  },
   "CH-01/AT-1": {
     "status": "manual",
     "note": "deploy workflow; verified on merge to develop"
