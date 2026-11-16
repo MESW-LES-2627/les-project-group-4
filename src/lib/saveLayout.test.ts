@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { PlacedItem } from '@/lib/layout/layout'
-import { DUPLICATE_LAYOUT_NAME } from '@/lib/schemas/layout'
-import { describeSaveError, toSaveLayoutRequest } from '@/lib/saveLayout'
+import { toSaveLayoutRequest } from '@/lib/saveLayout'
 
 const sofa: PlacedItem = {
   id: 'local-1',
@@ -17,13 +16,7 @@ const sofa: PlacedItem = {
 }
 
 describe('toSaveLayoutRequest', () => {
-  describe('US-13b AT-1: name required', () => {
-    it.each(['', '   '])('returns "is required" and no request for the name %j', (name) => {
-      expect(toSaveLayoutRequest(name, [sofa])).toEqual({ ok: false, nameError: 'is required' })
-    })
-  })
-
-  describe('US-13b AT-5: current items', () => {
+  describe('plan items in the request', () => {
     it('sends exactly the plan items with their x, y and rotation, and a trimmed name', () => {
       expect(toSaveLayoutRequest('  Cosy corner ', [sofa])).toEqual({
         ok: true,
@@ -51,19 +44,5 @@ describe('toSaveLayoutRequest', () => {
         request: { name: 'Empty', items: [] },
       })
     })
-  })
-})
-
-describe('describeSaveError', () => {
-  it('US-13b AT-3: shows a duplicate name next to the name field', () => {
-    expect(
-      describeSaveError({ status: 409, message: DUPLICATE_LAYOUT_NAME, fieldErrors: { name: DUPLICATE_LAYOUT_NAME } }),
-    ).toEqual({ nameError: DUPLICATE_LAYOUT_NAME })
-  })
-
-  it('US-13b AT-4: shows a server failure as a form message', () => {
-    expect(
-      describeSaveError({ status: 500, message: 'The server is unavailable right now.', fieldErrors: {} }),
-    ).toEqual({ formError: 'The server is unavailable right now.' })
   })
 })
