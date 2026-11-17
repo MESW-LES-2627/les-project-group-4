@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
+import { CurrentRoomBanner } from '@/components/catalog/CurrentRoomBanner'
+import { PlacementError } from '@/components/catalog/PlacementError'
 import { findItems } from '@/lib/items'
 import { listItemsQuerySchema } from '@/lib/schemas/item'
 
@@ -47,7 +49,9 @@ export default async function CatalogPage({
             Retailers and prices are fictional.
           </p>
         </div>
+        <CurrentRoomBanner />
         <CategoryFilter selected={parsed.data.category} />
+        <PlacementError />
         <CatalogList
           items={items}
           category={parsed.data.category}

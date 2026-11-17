@@ -1,5 +1,6 @@
 import type { CatalogItem, Room } from '@/api/types'
 import { RoomCatalog } from '@/components/catalog/RoomCatalog'
+import { RegisterCurrentRoom } from '@/components/layout/RegisterCurrentRoom'
 import { RoomPlan } from '@/components/plan/RoomPlan'
 import type { ItemCategory } from '@/lib/catalog'
 import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
@@ -25,6 +26,7 @@ export function RoomDetails({
 
   return (
     <div className="grid gap-6">
+      <RegisterCurrentRoom room={room} />
       <header className="grid gap-1">
         <h1 className="text-2xl font-bold tracking-tight wrap-break-word text-foreground sm:text-3xl">
           {room.name}
