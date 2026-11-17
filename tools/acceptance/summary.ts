@@ -5,7 +5,7 @@
 // come first, chores after, and failing stories are open and first in each
 // section.
 
-import { relative } from "node:path";
+import { relative, sep } from "node:path";
 
 import type { Overrides } from "./coverage";
 import { issueUrl } from "./report";
@@ -107,7 +107,8 @@ export function buildGroupedReport(
           failures: result.tests
             .filter((test) => test.status === "failed")
             .map((test) => ({
-              file: relative(process.cwd(), test.file),
+              // Separators are normalised to `/` so the report is the same on Windows.
+              file: relative(process.cwd(), test.file).split(sep).join("/"),
               line: test.line,
               message: (test.messages[0] ?? "failed").split("\n")[0],
             })),
