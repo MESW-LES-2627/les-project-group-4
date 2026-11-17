@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 import { AppHeader } from '@/components/layout/AppHeader'
+import { DraftLayoutsProvider } from '@/components/layout/DraftLayoutsProvider'
 
 import './globals.css'
 
@@ -21,10 +22,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body>
-        <div className="flex min-h-screen flex-col bg-background">
-          <AppHeader />
-          {children}
-        </div>
+        <DraftLayoutsProvider>
+          <div className="flex min-h-screen flex-col bg-background">
+            <AppHeader />
+            {children}
+          </div>
+        </DraftLayoutsProvider>
       </body>
     </html>
   )
