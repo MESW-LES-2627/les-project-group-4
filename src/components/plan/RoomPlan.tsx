@@ -7,6 +7,8 @@ import { ScanLine } from 'lucide-react'
 import type { Room } from '@/api/types'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 
+import { PlacedItemsList } from './PlacedItemsList'
+
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),
   {
@@ -38,38 +40,52 @@ export function RoomPlan({ room }: { room: Room }) {
   const selected = items.find((item) => item.id === selectedId) ?? null
 
   return (
-    <figure className="grid gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
-        <p className="text-xs text-muted-foreground">
-          Drag to move around · Scroll to zoom · Double-click to reset
-        </p>
-      </div>
-
-      <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
-        <div className="relative h-full w-full">
-          <Plan2D
-            room={room}
-            items={items}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
+    <div className="grid gap-4">
+      <figure className="grid gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
+          <p className="text-xs text-muted-foreground">
+            Drag to move around · Scroll to zoom · Double-click to reset
+          </p>
         </div>
-      </div>
 
-      <figcaption className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-        <span aria-live="polite">
-          {selected
-            ? `Selected: ${selected.name} · ${selected.widthCm} × ${selected.depthCm} cm`
-            : items.length === 0
-              ? 'No items placed in this room yet.'
-              : 'Click an item to select it.'}
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-xs">
-          <ScanLine className="size-3.5" aria-hidden="true" />
-          Drawn to scale
-        </span>
-      </figcaption>
-    </figure>
+        <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
+          <div className="relative h-full w-full">
+            <Plan2D
+              room={room}
+              items={items}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
+          </div>
+        </div>
+
+        <figcaption className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+          <span aria-live="polite">
+            {selected
+              ? `Selected: ${selected.name} · ${selected.widthCm} × ${selected.depthCm} cm`
+              : items.length === 0
+                ? null
+                : 'Click an item to select it.'}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-xs">
+            <ScanLine className="size-3.5" aria-hidden="true" />
+            Drawn to scale
+          </span>
+        </figcaption>
+      </figure>
+
+      <section aria-labelledby="placed-items-heading" className="grid gap-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="placed-items-heading" className="text-sm font-semibold text-foreground">
+            Placed items
+          </h2>
+          <span className="text-xs text-muted-foreground">
+            {items.length === 1 ? '1 item' : `${items.length} items`}
+          </span>
+        </div>
+        <PlacedItemsList items={items} />
+      </section>
+    </div>
   )
 }
