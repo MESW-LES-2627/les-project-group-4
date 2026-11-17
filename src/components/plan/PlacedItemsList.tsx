@@ -1,8 +1,18 @@
+import { Trash2 } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import { formatPriceCents } from '@/lib/catalog'
 import type { PlacedItem } from '@/lib/layout/layout'
 
 /** US-09: the items in the current layout, with the price each one adds. */
-export function PlacedItemsList({ items }: { items: PlacedItem[] }) {
+export function PlacedItemsList({
+  items,
+  onRemove,
+}: {
+  items: PlacedItem[]
+  /** US-09 AT-4: when given, every row gets a remove button. */
+  onRemove?: (id: string) => void
+}) {
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">No items placed in this room yet.</p>
   }
@@ -12,15 +22,32 @@ export function PlacedItemsList({ items }: { items: PlacedItem[] }) {
       {items.map((item) => (
         <li
           key={item.id}
-          className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 rounded-md border border-border px-3 py-2"
+          className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2"
         >
-          <span className="font-medium break-words text-foreground">{item.name}</span>
-          <span className="text-xs text-muted-foreground">
-            {item.widthCm} × {item.depthCm} cm
-          </span>
-          <span className="text-sm font-semibold text-foreground">
-            {formatPriceCents(item.priceCents)}
-          </span>
+          <div className="grid min-w-0 gap-0.5">
+            <span className="truncate font-medium text-foreground">{item.name}</span>
+            <span className="text-xs text-muted-foreground">
+              {item.widthCm} × {item.depthCm} cm
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-foreground">
+              {formatPriceCents(item.priceCents)}
+            </span>
+            {onRemove ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={`Remove ${item.name}`}
+                title={`Remove ${item.name}`}
+                onClick={() => onRemove(item.id)}
+              >
+                <Trash2 aria-hidden="true" />
+              </Button>
+            ) : null}
+          </div>
         </li>
       ))}
     </ul>

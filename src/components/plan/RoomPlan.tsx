@@ -34,7 +34,7 @@ function PlanLoading() {
  * navigation.
  */
 export function RoomPlan({ room }: { room: Room }) {
-  const { itemsFor } = useDraftLayouts()
+  const { itemsFor, removeItem } = useDraftLayouts()
   const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
@@ -84,7 +84,10 @@ export function RoomPlan({ room }: { room: Room }) {
             {items.length === 1 ? '1 item' : `${items.length} items`}
           </span>
         </div>
-        <PlacedItemsList items={items} />
+        <PlacedItemsList
+          items={items}
+          onRemove={(id) => removeItem(room.id, id)}
+        />
       </section>
     </div>
   )
