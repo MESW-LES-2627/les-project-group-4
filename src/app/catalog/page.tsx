@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
 import { findItems } from '@/lib/items'
@@ -47,7 +48,11 @@ export default async function CatalogPage({
           </p>
         </div>
         <CategoryFilter selected={parsed.data.category} />
-        <CatalogList items={items} category={parsed.data.category} />
+        <CatalogList
+          items={items}
+          category={parsed.data.category}
+          renderAction={(item) => <AddToLayoutButton item={item} />}
+        />
       </section>
     </main>
   )
