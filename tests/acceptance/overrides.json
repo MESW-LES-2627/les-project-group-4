@@ -71,6 +71,10 @@
     "status": "manual",
     "note": "sample data label rendering; no component test harness yet"
   },
+  "US-09/AT-6": {
+    "status": "manual",
+    "note": "open a room, add items, visit /catalog and come back; state is session-only by design, no DOM harness until CH-05 (#66)"
+  },
   "CH-01/AT-1": {
     "status": "manual",
     "note": "deploy workflow; verified on merge to develop"
