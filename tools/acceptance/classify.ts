@@ -8,7 +8,7 @@
 //   removed        existed on the base, no longer runs
 //   failed         fails, with no baseline to compare against
 
-import { relative } from "node:path";
+import { relative, sep } from "node:path";
 
 import { formatText } from "./report";
 import type { AtResult, AtStatus, AtSummary } from "./report";
@@ -176,7 +176,10 @@ export function formatAnnotations(classification: Classification): string[] {
     if (!test) continue;
 
     const level = entry.kind === "pre-existing" ? "warning" : "error";
-    const file = escapeProperty(relative(process.cwd(), test.file));
+    // Separators are normalised to `/` so the annotation is the same on Windows.
+    const file = escapeProperty(
+      relative(process.cwd(), test.file).split(sep).join("/")
+    );
     const line = test.line ? `,line=${test.line}` : "";
     const title = escapeProperty(
       `${entry.result.key} — issue #${entry.result.issue} (${LABELS[entry.kind]})`,
