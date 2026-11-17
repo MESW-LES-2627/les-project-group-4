@@ -6,14 +6,24 @@ import type { ItemCategory } from '@/lib/catalog'
 const LINK_CLASS =
   'rounded-full border border-border px-3 py-1 text-sm transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:border-foreground aria-[current=page]:bg-foreground aria-[current=page]:text-background'
 
-/** US-07: one link per category (plus "All"); the selected one is marked with aria-current. */
-export function CategoryFilter({ selected }: { selected: ItemCategory | undefined }) {
+/**
+ * US-07: one link per category (plus "All"); the selected one is marked with
+ * aria-current. US-09: `basePath` lets the room page reuse the filter for its
+ * own catalog panel.
+ */
+export function CategoryFilter({
+  selected,
+  basePath = '/catalog',
+}: {
+  selected: ItemCategory | undefined
+  basePath?: string
+}) {
   return (
     <nav aria-label="Categories">
       <ul className="flex flex-wrap gap-2">
         <li>
           <Link
-            href="/catalog"
+            href={basePath}
             aria-current={selected === undefined ? 'page' : undefined}
             className={LINK_CLASS}
           >
@@ -23,7 +33,7 @@ export function CategoryFilter({ selected }: { selected: ItemCategory | undefine
         {ITEM_CATEGORIES.map((category) => (
           <li key={category}>
             <Link
-              href={`/catalog?category=${category}`}
+              href={`${basePath}?category=${category}`}
               aria-current={selected === category ? 'page' : undefined}
               className={LINK_CLASS}
             >
