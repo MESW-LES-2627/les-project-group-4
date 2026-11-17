@@ -1,11 +1,11 @@
 'use client'
 
-import { useReducer, useState } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
 import type { Room } from '@/api/types'
-import { layoutReducer } from '@/lib/layout/layout'
+import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),
@@ -27,12 +27,13 @@ function PlanLoading() {
 }
 
 /**
- * US-06a: the room's working layout, kept client-side until save (#31/#35).
- * The reducer is the shared contract; #31 lifts it into a provider so the
- * catalog can add and remove items.
+ * US-06a: the room's working layout. US-09: the items come from the session
+ * draft provider, so the catalog can add to this room and they survive
+ * navigation.
  */
 export function RoomPlan({ room }: { room: Room }) {
-  const [items] = useReducer(layoutReducer, [])
+  const { itemsFor } = useDraftLayouts()
+  const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
 
