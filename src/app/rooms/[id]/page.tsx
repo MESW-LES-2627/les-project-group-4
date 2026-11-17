@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
+import { findItems } from '@/lib/items'
 import { findRoomById } from '@/lib/rooms'
+import { listItemsQuerySchema } from '@/lib/schemas/item'
 import { roomIdSchema } from '@/lib/schemas/room'
 
 export const metadata: Metadata = {
@@ -14,15 +16,31 @@ export const metadata: Metadata = {
 /**
  * US-03: loads one room on the server. A malformed id and a missing room both show not-found.tsx;
  * loading.tsx and error.tsx cover the other states.
+ * US-09: also loads the catalog, filtered by ?category=, for the room's add panel.
  */
-export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function RoomPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { id } = await params
   const parsed = roomIdSchema.safeParse(id)
   if (!parsed.success) {
     notFound()
   }
 
-  const room = await findRoomById(parsed.data)
+  const { category } = await searchParams
+  const catalogQuery = listItemsQuerySchema.safeParse({ category })
+  if (!catalogQuery.success) {
+    notFound()
+  }
+
+  const [room, catalogItems] = await Promise.all([
+    findRoomById(parsed.data),
+    findItems(catalogQuery.data.category),
+  ])
   if (room === null) {
     notFound()
   }
@@ -40,7 +58,11 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
           />
           My rooms
         </Link>
-        <RoomDetails room={room} />
+        <RoomDetails
+          room={room}
+          catalogItems={catalogItems}
+          category={catalogQuery.data.category}
+        />
       </section>
     </main>
   )

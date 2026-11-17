@@ -1,11 +1,24 @@
-import type { Room } from '@/api/types'
+import type { CatalogItem, Room } from '@/api/types'
+import { RoomCatalog } from '@/components/catalog/RoomCatalog'
 import { RoomPlan } from '@/components/plan/RoomPlan'
+import type { ItemCategory } from '@/lib/catalog'
 import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
 import { formatArea } from '@/lib/roomFormat'
 import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 
-/** US-03: one room's details, including the 2D plan. US-15: with its saved location. */
-export function RoomDetails({ room }: { room: Room }) {
+/**
+ * US-03: one room's details, including the 2D plan. US-15: with its saved location.
+ * US-09: and the catalog panel that adds items to it.
+ */
+export function RoomDetails({
+  room,
+  catalogItems,
+  category,
+}: {
+  room: Room
+  catalogItems: CatalogItem[]
+  category: ItemCategory | undefined
+}) {
   const summary = `${room.widthCm} × ${room.lengthCm} cm · ${formatArea(room)}`
   const label = formatRoomLocation(room)
   const location = resolveRoomLocation(room)
@@ -30,6 +43,8 @@ export function RoomDetails({ room }: { room: Room }) {
       <section aria-label="2D plan">
         <RoomPlan room={room} />
       </section>
+
+      <RoomCatalog room={room} items={catalogItems} category={category} />
     </div>
   )
 }
