@@ -2,6 +2,7 @@ import type { CatalogItem, Room } from '@/api/types'
 import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
+import { PlacementError } from '@/components/catalog/PlacementError'
 import type { ItemCategory } from '@/lib/catalog'
 
 /**
@@ -29,6 +30,7 @@ export function RoomCatalog({
       </div>
 
       <CategoryFilter selected={category} basePath={`/rooms/${room.id}`} />
+      <PlacementError roomId={room.id} />
       <CatalogList
         items={items}
         category={category}
