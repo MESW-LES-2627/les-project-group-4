@@ -120,12 +120,53 @@ describe('placeInRoom', () => {
     expect(placement).toEqual({ xCm: 50, yCm: 25, rotationDeg: 0 })
   })
 
-  it('returns null when the item is wider than the room', () => {
-    expect(placeInRoom({ widthCm: 200, depthCm: 50 }, { widthCm: 150, lengthCm: 200 })).toBeNull()
+  it('rotates an item that is too wide to fit upright', () => {
+    // 200 cm along x does not fit a 120 cm wall, but 200 cm along y does.
+    const placement = place({ widthCm: 200, depthCm: 100 }, [], {
+      widthCm: 120,
+      lengthCm: 210,
+    })
+
+    expect(placement).toEqual({ xCm: 50, yCm: 100, rotationDeg: 90 })
   })
 
-  it('returns null when the item is taller than the room', () => {
-    expect(placeInRoom({ widthCm: 50, depthCm: 150 }, { widthCm: 200, lengthCm: 100 })).toBeNull()
+  it('keeps rotation 0 when the item fits upright', () => {
+    const placement = place({ widthCm: 200, depthCm: 100 }, [], {
+      widthCm: 210,
+      lengthCm: 210,
+    })
+
+    expect(placement).toEqual({ xCm: 100, yCm: 50, rotationDeg: 0 })
+  })
+
+  it('rotates into the next row instead of giving up', () => {
+    const placement = place({ widthCm: 200, depthCm: 100 }, [footprint(150, 100, 75, 50)], {
+      widthCm: 150,
+      lengthCm: 300,
+    })
+
+    expect(placement).toEqual({ xCm: 50, yCm: 200, rotationDeg: 90 })
+  })
+
+  it('does not rotate when a later row fits upright', () => {
+    const placement = place({ widthCm: 200, depthCm: 100 }, [footprint(200, 100, 100, 50)], {
+      widthCm: 200,
+      lengthCm: 300,
+    })
+
+    expect(placement).toEqual({ xCm: 100, yCm: 150, rotationDeg: 0 })
+  })
+
+  it('returns null when the item is too wide for the room in either rotation', () => {
+    expect(
+      placeInRoom({ widthCm: 250, depthCm: 60 }, { widthCm: 150, lengthCm: 200 }),
+    ).toBeNull()
+  })
+
+  it('returns null when the item is too long for the room in either rotation', () => {
+    expect(
+      placeInRoom({ widthCm: 60, depthCm: 250 }, { widthCm: 200, lengthCm: 100 }),
+    ).toBeNull()
   })
 
   it('returns null when the room is full', () => {

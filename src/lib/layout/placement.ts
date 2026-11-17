@@ -1,7 +1,7 @@
 /**
  * US-09 — default placement: shelf-pack new items against the top wall, left to
- * right, wrapping to the next row. Coordinates and the centre-based contract
- * are in src/lib/geometry/plan.ts.
+ * right, wrapping to the next row; upright (0°) first, then 90°. Coordinates
+ * and the centre-based contract are in src/lib/geometry/plan.ts.
  *
  * Candidates are the walls plus the bottom/right edges of existing items; the
  * first free spot wins (margin 0, touching allowed). Existing items are never
@@ -17,10 +17,16 @@ export type PlacedFootprint = Size & Placement
 /** How far from each wall new items are placed. Flush for now (AT-2). */
 export const PLACEMENT_MARGIN_CM = 0
 
+/** AT-5: the message the UI shows when no placement exists. */
+export const DOES_NOT_FIT_MESSAGE = "Doesn't fit this room"
+
+/** Upright first; a quarter turn only when nothing upright fits. */
+const ROTATIONS = [0, 90] as const
+
 /**
- * The placement that puts the footprint's bounding box exactly at
- * (leftCm, topCm) with this rotation. The bounding box is centred on the
- * placement point, so for 90° the width and depth swap.
+ * The placement that puts the footprint's bounding box at (leftCm, topCm).
+ * A quarter turn swaps width and depth, and the footprint stays centred on the
+ * placement point, so the centre is the bounding box's half-size from the corner.
  */
 function placementAt(
   size: Size,
@@ -28,10 +34,10 @@ function placementAt(
   topCm: number,
   rotationDeg: number,
 ): Placement {
-  const box = boundingBox(size, { xCm: 0, yCm: 0, rotationDeg })
+  const turned = rotationDeg === 90
   return {
-    xCm: leftCm + (box.maxX - box.minX) / 2,
-    yCm: topCm + (box.maxY - box.minY) / 2,
+    xCm: leftCm + (turned ? size.depthCm : size.widthCm) / 2,
+    yCm: topCm + (turned ? size.widthCm : size.depthCm) / 2,
     rotationDeg,
   }
 }
@@ -52,10 +58,9 @@ function candidates(values: number[]): number[] {
 }
 
 /**
- * The default placement for an item, or null when it fits nowhere.
- *
- * The result is always at rotation 0 (90° fallback is the next US-09 step).
- * The scan is deterministic: top-most row first, left-most free spot first.
+ * The default placement for an item, or null when it fits neither upright nor
+ * rotated. The scan is deterministic: 0° everywhere first, then 90° everywhere,
+ * top-most row first and left-most free spot first.
  */
 export function placeInRoom(
   size: Size,
@@ -69,15 +74,17 @@ export function placeInRoom(
   const rowTops = candidates([0, ...boxes.map((box) => box.maxY)])
   const leftEdges = candidates([0, ...boxes.map((box) => box.maxX)])
 
-  for (const topCm of rowTops) {
-    for (const leftCm of leftEdges) {
-      const placement = placementAt(size, leftCm, topCm, 0)
-      if (!isInsideRoom(size, placement, room, PLACEMENT_MARGIN_CM)) continue
+  for (const rotationDeg of ROTATIONS) {
+    for (const topCm of rowTops) {
+      for (const leftCm of leftEdges) {
+        const placement = placementAt(size, leftCm, topCm, rotationDeg)
+        if (!isInsideRoom(size, placement, room, PLACEMENT_MARGIN_CM)) continue
 
-      const box = boundingBox(size, placement)
-      if (boxes.some((other) => overlaps(box, other))) continue
+        const box = boundingBox(size, placement)
+        if (boxes.some((other) => overlaps(box, other))) continue
 
-      return placement
+        return placement
+      }
     }
   }
 
