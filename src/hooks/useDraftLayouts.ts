@@ -3,7 +3,7 @@
 import { createContext, useContext } from 'react'
 
 import type { CatalogItem, Room } from '@/api/types'
-import type { RoomSize } from '@/lib/geometry/plan'
+import type { Placement, RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem } from '@/lib/layout/layout'
 
 /** The last room opened in this session: where the catalog adds items. */
@@ -16,6 +16,7 @@ export interface DraftLayouts {
   itemsFor: (roomId: number) => PlacedItem[]
   errorFor: (roomId: number) => string | null
   addItem: (roomId: number, room: RoomSize, item: CatalogItem) => void
+  addItemAt: (roomId: number, room: RoomSize, item: CatalogItem, placement: Placement) => void
   removeItem: (roomId: number, id: string) => void
   replaceItems: (roomId: number, items: PlacedItem[]) => void
   dismissError: (roomId: number) => void
