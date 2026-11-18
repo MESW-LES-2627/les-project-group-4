@@ -4,7 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
-import type { Room } from '@/api/types'
+import type { CatalogItem, Room } from '@/api/types'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 
 import { PlacedItemsList } from './PlacedItemsList'
@@ -34,10 +34,14 @@ function PlanLoading() {
  * navigation.
  */
 export function RoomPlan({ room }: { room: Room }) {
-  const { itemsFor, removeItem } = useDraftLayouts()
+  const { itemsFor, removeItem, addItemAt } = useDraftLayouts()
   const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
+
+  function handleDropItem(item: CatalogItem, xCm: number, yCm: number) {
+    addItemAt(room.id, room, item, { xCm, yCm, rotationDeg: 0 })
+  }
 
   return (
     <div className="grid gap-4">
@@ -56,6 +60,7 @@ export function RoomPlan({ room }: { room: Room }) {
               items={items}
               selectedId={selectedId}
               onSelect={setSelectedId}
+              onDropItem={handleDropItem}
             />
           </div>
         </div>
