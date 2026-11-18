@@ -8,14 +8,36 @@ import { isItemCategory } from '@/lib/schemas/item'
 /**
  * US-07: the catalog items as cards (name, category, footprint, price), or an empty state.
  * `category` is the selected filter, so the empty state can say what is empty.
+ * US-08: `filtered` is true when price or tag filters are set; then the empty state says that
+ * nothing matches the filters and offers `onClearFilters`.
  */
 export function CatalogList({
   items,
   category,
+  filtered = false,
+  onClearFilters,
 }: {
   items: CatalogItem[]
   category: ItemCategory | undefined
+  filtered?: boolean
+  onClearFilters?: () => void
 }) {
+  if (items.length === 0 && filtered) {
+    return (
+      <div className="grid justify-items-start gap-3 rounded-lg border border-dashed border-border p-6">
+        <p className="text-sm text-muted-foreground">No items match these filters.</p>
+        {/* A button, not a link: the filters live in client state (see CatalogBrowser). */}
+        <button
+          type="button"
+          onClick={onClearFilters}
+          className="text-sm font-medium text-foreground underline"
+        >
+          Clear filters
+        </button>
+      </div>
+    )
+  }
+
   if (items.length === 0) {
     return (
       <div className="grid justify-items-start gap-3 rounded-lg border border-dashed border-border p-6">
