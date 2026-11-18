@@ -7,8 +7,6 @@ import { ScanLine } from 'lucide-react'
 import type { CatalogItem, Room } from '@/api/types'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 
-import { PlacedItemsList } from './PlacedItemsList'
-
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),
   {
@@ -34,7 +32,7 @@ function PlanLoading() {
  * navigation.
  */
 export function RoomPlan({ room }: { room: Room }) {
-  const { itemsFor, removeItem, addItemAt } = useDraftLayouts()
+  const { itemsFor, addItemAt } = useDraftLayouts()
   const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
@@ -44,15 +42,8 @@ export function RoomPlan({ room }: { room: Room }) {
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       <figure className="grid gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
-          <p className="text-xs text-muted-foreground">
-            Drag to move around · Scroll to zoom · Double-click to reset
-          </p>
-        </div>
-
         <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
           <div className="relative h-full w-full">
             <Plan2D
@@ -80,20 +71,6 @@ export function RoomPlan({ room }: { room: Room }) {
         </figcaption>
       </figure>
 
-      <section aria-labelledby="placed-items-heading" className="grid gap-2">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="placed-items-heading" className="text-sm font-semibold text-foreground">
-            Placed items
-          </h2>
-          <span className="text-xs text-muted-foreground">
-            {items.length === 1 ? '1 item' : `${items.length} items`}
-          </span>
-        </div>
-        <PlacedItemsList
-          items={items}
-          onRemove={(id) => removeItem(room.id, id)}
-        />
-      </section>
     </div>
   )
 }
