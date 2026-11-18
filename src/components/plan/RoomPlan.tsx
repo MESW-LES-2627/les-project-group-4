@@ -4,7 +4,8 @@ import { useReducer, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
-import type { Room } from '@/api/types'
+import type { LayoutSummary, Room } from '@/api/types'
+import { SaveLayoutForm } from '@/components/layouts/SaveLayoutForm'
 import { layoutReducer } from '@/lib/layout/layout'
 
 const Plan2D = dynamic(
@@ -31,7 +32,7 @@ function PlanLoading() {
  * The reducer is the shared contract; #31 lifts it into a provider so the
  * catalog can add and remove items.
  */
-export function RoomPlan({ room }: { room: Room }) {
+export function RoomPlan({ room, layouts }: { room: Room; layouts: readonly LayoutSummary[] }) {
   const [items] = useReducer(layoutReducer, [])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
@@ -69,6 +70,9 @@ export function RoomPlan({ room }: { room: Room }) {
           Drawn to scale
         </span>
       </figcaption>
+
+      {/* US-13b: saves the items above. #31 fills them; until then the layout is empty. */}
+      <SaveLayoutForm roomId={room.id} items={items} savedLayouts={layouts} />
     </figure>
   )
 }
