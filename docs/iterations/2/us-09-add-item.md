@@ -2,6 +2,9 @@
 
 > FurniMi · LES - Team D · FEUP 2026/27
 
+US-09 is split into **US-09a** (this functional slice, #81) and **US-09b**
+(UI polish, #82). The parent #31 closes when both sub-issues are done.
+
 ## Where things live
 
 | Concern | File |
@@ -68,6 +71,7 @@ the session (`RegisterCurrentRoom`), which is why it can say "Adding to …".
 
 ## Acceptance tests
 
-`tests/acceptance/US-09-add-item/` covers AT-1 to AT-5. AT-6 (drafts survive
-navigation) is `manual` in `tests/acceptance/overrides.json` until CH-05 (#66)
-adds a DOM harness.
+`tests/acceptance/US-09-add-item/` covers US-09a AT-1 to AT-5. US-09a AT-6
+(drafts survive navigation) is `manual` in `tests/acceptance/overrides.json`
+until CH-05 (#66) adds a DOM harness. The parent US-09's ATs are marked
+`covered-by` US-09a, matching US-06/06a/06b.

@@ -22,7 +22,7 @@ const wardrobe: CatalogItem = {
 
 describe(
   'AT-5 — Doesn’t fit: an item larger than the room is not added and is reported',
-  { tags: ['acceptance', 'US-09', 'AT-5'] },
+  { tags: ['acceptance', 'US-09a', 'AT-5'] },
   () => {
     it('leaves the layout unchanged and keeps the message for the room', () => {
       // 200×100 in a 100×100 room fits neither upright nor rotated.

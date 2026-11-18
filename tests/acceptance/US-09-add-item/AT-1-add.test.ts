@@ -22,7 +22,7 @@ const sofa: CatalogItem = {
 
 describe(
   'AT-1 — Add item: adding a catalog item puts it in the current layout',
-  { tags: ['acceptance', 'US-09', 'AT-1'] },
+  { tags: ['acceptance', 'US-09a', 'AT-1'] },
   () => {
     it('adds the catalog item to the room draft at a placement inside the room', () => {
       const state = draftReducer(EMPTY_DRAFT_STATE, {

@@ -71,7 +71,37 @@
     "status": "manual",
     "note": "sample data label rendering; no component test harness yet"
   },
+  "US-09/AT-1": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
+  "US-09/AT-2": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
+  "US-09/AT-3": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
+  "US-09/AT-4": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
+  "US-09/AT-5": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
   "US-09/AT-6": {
+    "status": "covered-by",
+    "by": "US-09a",
+    "note": "the functional slice is US-09a"
+  },
+  "US-09a/AT-6": {
     "status": "manual",
     "note": "open a room, add items, visit /catalog and come back; state is session-only by design, no DOM harness until CH-05 (#66)"
   },

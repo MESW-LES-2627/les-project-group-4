@@ -38,7 +38,7 @@ const totalCents = (items: PlacedItem[]) =>
 
 describe(
   'AT-4 — Remove item: removing a placed item drops it from the layout',
-  { tags: ['acceptance', 'US-09', 'AT-4'] },
+  { tags: ['acceptance', 'US-09a', 'AT-4'] },
   () => {
     it('removes only that item and the priced total no longer includes it', () => {
       const withSofa = draftReducer(EMPTY_DRAFT_STATE, {

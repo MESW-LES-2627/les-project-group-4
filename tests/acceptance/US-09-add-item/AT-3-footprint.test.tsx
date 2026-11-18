@@ -36,7 +36,7 @@ const lamp: CatalogItem = {
 
 describe(
   'AT-3 — True-to-scale footprint: an added item renders at its stored position and size',
-  { tags: ['acceptance', 'US-09', 'AT-3'] },
+  { tags: ['acceptance', 'US-09a', 'AT-3'] },
   () => {
     it('renders the added items on the plan at their stored x, y, rotation and size', async () => {
       const withSofa = draftReducer(EMPTY_DRAFT_STATE, {

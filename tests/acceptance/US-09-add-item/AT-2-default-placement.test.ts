@@ -34,7 +34,7 @@ const lamp: CatalogItem = {
 
 describe(
   'AT-2 — Default placement: new items fill the top wall left to right, then the next row',
-  { tags: ['acceptance', 'US-09', 'AT-2'] },
+  { tags: ['acceptance', 'US-09a', 'AT-2'] },
   () => {
     it('places the first item against the top-left corner at rotation 0', () => {
       expect(placeInRoom(sofa, room)).toEqual({ xCm: 100, yCm: 50, rotationDeg: 0 })
