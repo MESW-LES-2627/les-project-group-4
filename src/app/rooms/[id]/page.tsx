@@ -39,7 +39,7 @@ export default async function RoomPage({
 
   const [room, catalogItems] = await Promise.all([
     findRoomById(parsed.data),
-    findItems(catalogQuery.data.category),
+    findItems(catalogQuery.data),
   ])
   if (room === null) {
     notFound()

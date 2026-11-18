@@ -1,6 +1,10 @@
+import { toQueryString } from '@/lib/catalogFilters'
+import type { ListItemsQuery } from '@/lib/schemas/item'
+
 import type {
   ApiError,
   ApiResult,
+  CatalogItem,
   CreateRoomRequest,
   Room,
   ValidationErrorBody,
@@ -82,4 +86,16 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
     method: 'POST',
     body: JSON.stringify(room),
   })
+}
+
+/**
+ * US-08: lists catalog items for a filter query. `signal` lets the caller abort a request
+ * that a newer filter change has replaced (an aborted request resolves as a network error,
+ * which the caller ignores because it is no longer the latest).
+ */
+export function listItems(
+  query: ListItemsQuery,
+  signal?: AbortSignal,
+): Promise<ApiResult<CatalogItem[]>> {
+  return request<CatalogItem[]>(`/api/items${toQueryString(query)}`, { method: 'GET', signal })
 }

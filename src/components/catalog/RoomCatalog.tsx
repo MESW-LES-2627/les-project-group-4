@@ -29,7 +29,7 @@ export function RoomCatalog({
         </p>
       </div>
 
-      <CategoryFilter selected={category} basePath={`/rooms/${room.id}`} />
+      <CategoryFilter query={{ category }} basePath={`/rooms/${room.id}`} />
       <PlacementError roomId={room.id} />
       <CatalogList
         items={items}

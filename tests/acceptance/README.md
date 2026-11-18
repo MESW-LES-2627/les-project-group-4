@@ -23,7 +23,8 @@ npm test -- --project unit          # only the unit tests
 ```
 
 The `acceptance` project contains the migrated stories (US-01, US-03,
-US-06/06a/06b, US-07, US-09a, US-15, CH-01, CH-02 and CH-03a); `--project acceptance`
+US-06/06a/06b, US-07, US-09a, US-15, CH-01, CH-02 and CH-03a) and the stories
+added since (US-08); `--project acceptance`
 runs only those tests.
 
 ## Report and regressions
