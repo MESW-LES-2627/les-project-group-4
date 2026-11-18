@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
 import { findItems } from '@/lib/items'
+import { findLayouts } from '@/lib/layouts'
 import { findRoomById } from '@/lib/rooms'
 import { listItemsQuerySchema } from '@/lib/schemas/item'
 import { roomIdSchema } from '@/lib/schemas/room'
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
  * US-03: loads one room on the server. A malformed id and a missing room both show not-found.tsx;
  * loading.tsx and error.tsx cover the other states.
  * US-09: also loads the catalog, filtered by ?category=, for the room's add panel.
+ * US-14b: also loads the room's saved layouts.
  */
 export default async function RoomPage({
   params,
@@ -44,6 +46,7 @@ export default async function RoomPage({
   if (room === null) {
     notFound()
   }
+  const layouts = await findLayouts(room.id)
 
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
@@ -62,6 +65,7 @@ export default async function RoomPage({
           room={room}
           catalogItems={catalogItems}
           category={catalogQuery.data.category}
+          layouts={layouts}
         />
       </section>
     </main>

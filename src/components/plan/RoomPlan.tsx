@@ -4,7 +4,8 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
-import type { Room } from '@/api/types'
+import type { LayoutSummary, Room } from '@/api/types'
+import { SaveLayoutForm } from '@/components/layouts/SaveLayoutForm'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 
 import { PlacedItemsList } from './PlacedItemsList'
@@ -31,9 +32,9 @@ function PlanLoading() {
 /**
  * US-06a: the room's working layout. US-09: the items come from the session
  * draft provider, so the catalog can add to this room and they survive
- * navigation.
+ * navigation. US-13b: they can be saved as a named layout.
  */
-export function RoomPlan({ room }: { room: Room }) {
+export function RoomPlan({ room, layouts }: { room: Room; layouts: readonly LayoutSummary[] }) {
   const { itemsFor, removeItem } = useDraftLayouts()
   const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -73,6 +74,9 @@ export function RoomPlan({ room }: { room: Room }) {
             Drawn to scale
           </span>
         </figcaption>
+
+        {/* US-13b: saves the items above. */}
+        <SaveLayoutForm roomId={room.id} items={items} savedLayouts={layouts} />
       </figure>
 
       <section aria-labelledby="placed-items-heading" className="grid gap-2">
