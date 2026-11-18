@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
 import type { Room } from '@/api/types'
+import { SaveLayoutForm } from '@/components/layouts/SaveLayoutForm'
 import { layoutReducer } from '@/lib/layout/layout'
 
 const Plan2D = dynamic(
@@ -69,6 +70,9 @@ export function RoomPlan({ room }: { room: Room }) {
           Drawn to scale
         </span>
       </figcaption>
+
+      {/* US-13b: saves the items above. #31 fills them; until then the layout is empty. */}
+      <SaveLayoutForm roomId={room.id} items={items} />
     </figure>
   )
 }
