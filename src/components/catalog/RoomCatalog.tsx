@@ -16,12 +16,13 @@ export function RoomCatalog({
   room,
   items,
   category,
-  headerClassName = '',
+  className = '',
 }: {
   room: Room
   items: CatalogItem[]
   category: ItemCategory | undefined
-  headerClassName?: string
+  /** Extra classes for the panel, e.g. its position in the editor grid. */
+  className?: string
 }) {
   function handleItemDragStart(
     item: CatalogItem,
@@ -34,9 +35,9 @@ export function RoomCatalog({
   return (
     <section
       aria-labelledby="room-catalog-heading"
-      className="grid gap-3 rounded-lg border border-border bg-background p-4 lg:sticky lg:top-6 lg:max-h-[640px] lg:overflow-y-auto"
+      className={`grid content-start gap-3 rounded-lg border border-border bg-background p-4 lg:h-full lg:overflow-y-auto ${className}`.trim()}
     >
-      <div className={`grid gap-1 ${headerClassName}`.trim()}>
+      <div className="grid gap-1">
         <h2 id="room-catalog-heading" className="text-sm font-semibold text-foreground">
           Add items
         </h2>

@@ -89,16 +89,14 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
 
   if (!open) {
     return (
-      <div className="grid gap-2">
-        <div>
-          <Button type="button" variant="outline" size="sm" onClick={start}>
-            <Save aria-hidden="true" />
-            Save layout
-          </Button>
-        </div>
+      <div className="grid justify-items-end gap-1">
+        <Button type="button" onClick={start}>
+          <Save aria-hidden="true" />
+          Save current plan
+        </Button>
         {savedName !== null ? (
-          <p role="status" className="flex items-center gap-1.5 text-sm text-foreground">
-            <CircleCheck className="size-4 text-primary" aria-hidden="true" />
+          <p role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CircleCheck className="size-3.5 text-primary" aria-hidden="true" />
             Saved “{savedName}”.
           </p>
         ) : null}
@@ -111,7 +109,7 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
       onSubmit={submit}
       noValidate
       aria-label="Save layout"
-      className="grid gap-3 rounded-lg border border-border bg-card p-4"
+      className="grid w-full gap-3 rounded-lg border border-border bg-background p-3"
     >
       <TextField
         id="layout-name"
