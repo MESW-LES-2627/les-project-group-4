@@ -174,10 +174,6 @@
     "status": "manual",
     "note": "save confirmation rendering; no component test harness yet (#66, CH-05)"
   },
-  "US-13b/AT-5": {
-    "status": "deferred",
-    "note": "the plan has no items until #31 (US-09, add item to layout); the request mapping is unit-tested in src/lib/saveLayout.test.ts"
-  },
   "US-14b/AT-1": {
     "status": "manual",
     "note": "list rendering by name; no component test harness yet (#66, CH-05)"
@@ -185,18 +181,6 @@
   "US-14b/AT-2": {
     "status": "manual",
     "note": "empty state rendering; no component test harness yet (#66, CH-05)"
-  },
-  "US-14b/AT-3": {
-    "status": "deferred",
-    "note": "Open needs the plan state from #31 (US-09, add item to layout)"
-  },
-  "US-14b/AT-4": {
-    "status": "deferred",
-    "note": "confirm before replacing needs the plan state from #31 (US-09, add item to layout)"
-  },
-  "US-14b/AT-6": {
-    "status": "deferred",
-    "note": "opening a layout onto the plan comes with #31 (US-09, add item to layout); the API 404 is US-14a/AT-3"
   },
   "CH-01/AT-1": {
     "status": "manual",

@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ApiError, LayoutSummary } from '@/api/types'
+import type { ApiError, LayoutDetails, LayoutSummary } from '@/api/types'
 import {
+  describeOpenError,
   formatItemCount,
   isAlreadyDeleted,
+  LAYOUT_NOT_FOUND_MESSAGE,
+  needsReplaceConfirmation,
   savedConfirmation,
+  toDraftItems,
   visibleLayouts,
 } from '@/lib/savedLayouts'
 
@@ -60,5 +64,51 @@ describe('isAlreadyDeleted', () => {
 
   it.each([0, 400, 500])('keeps the layout for status %i', (status) => {
     expect(isAlreadyDeleted(apiError(status))).toBe(false)
+  })
+})
+
+describe('toDraftItems', () => {
+  const empty: LayoutDetails = {
+    id: 7,
+    roomId: 1,
+    name: 'Empty',
+    createdAt: '2026-11-12T10:00:00.000Z',
+    updatedAt: '2026-11-12T10:00:00.000Z',
+    items: [],
+  }
+
+  it('turns an empty layout into an empty plan', () => {
+    expect(toDraftItems(empty)).toEqual([])
+  })
+
+  it('gives each item a different id, even for the same catalog item', () => {
+    const sofa = {
+      catalogItemId: 3,
+      name: 'Sofa',
+      widthCm: 200,
+      depthCm: 90,
+      priceCents: 49900,
+      xCm: 100,
+      yCm: 45,
+      rotationDeg: 0,
+    }
+    const items = toDraftItems({ ...empty, items: [{ id: 1, ...sofa }, { id: 2, ...sofa }] })
+    expect(new Set(items.map((item) => item.id)).size).toBe(2)
+  })
+})
+
+describe('needsReplaceConfirmation', () => {
+  it('does not ask when the plan is empty', () => {
+    expect(needsReplaceConfirmation([])).toBe(false)
+  })
+})
+
+describe('describeOpenError', () => {
+  it('treats a 404 as a missing layout', () => {
+    expect(describeOpenError(apiError(404))).toEqual({ message: LAYOUT_NOT_FOUND_MESSAGE, missing: true })
+  })
+
+  it.each([0, 500])('keeps the API message for status %i', (status) => {
+    expect(describeOpenError(apiError(status))).toEqual({ message: 'message', missing: false })
   })
 })
