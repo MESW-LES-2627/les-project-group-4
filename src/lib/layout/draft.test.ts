@@ -134,6 +134,69 @@ describe('draftReducer', () => {
     expect(next.byRoom[2]).toHaveLength(1)
   })
 
+  it('places an item exactly at the requested drop point', () => {
+    const next = draftReducer(EMPTY_DRAFT_STATE, {
+      type: 'add-at',
+      roomId: 1,
+      room,
+      id: 'sofa-1',
+      item: sofa,
+      placement: { xCm: 150, yCm: 100, rotationDeg: 0 },
+    })
+
+    expect(next.byRoom[1]).toEqual([
+      {
+        id: 'sofa-1',
+        catalogItemId: 12,
+        name: 'Sofa',
+        widthCm: 100,
+        depthCm: 50,
+        priceCents: 49900,
+        xCm: 150,
+        yCm: 100,
+        rotationDeg: 0,
+      },
+    ])
+    expect(next.error).toBeNull()
+  })
+
+  it('falls back to auto-placement when the drop point is outside the room or overlaps', () => {
+    const outside = draftReducer(EMPTY_DRAFT_STATE, {
+      type: 'add-at',
+      roomId: 1,
+      room,
+      id: 'sofa-1',
+      item: sofa,
+      placement: { xCm: 10, yCm: 10, rotationDeg: 0 },
+    })
+    expect(outside.byRoom[1]?.[0]).toMatchObject({ xCm: 50, yCm: 25, rotationDeg: 0 })
+
+    const filled = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
+    const overlapping = draftReducer(filled, {
+      type: 'add-at',
+      roomId: 1,
+      room,
+      id: 'lamp-1',
+      item: lamp,
+      placement: { xCm: 50, yCm: 25, rotationDeg: 0 },
+    })
+    expect(overlapping.byRoom[1]?.[1]).toMatchObject({ xCm: 120, yCm: 20, rotationDeg: 0 })
+  })
+
+  it('reports the error and keeps the layout when the drop has no space', () => {
+    const next = draftReducer(EMPTY_DRAFT_STATE, {
+      type: 'add-at',
+      roomId: 1,
+      room: smallRoom,
+      id: 'wardrobe-1',
+      item: wardrobe,
+      placement: { xCm: 50, yCm: 50, rotationDeg: 0 },
+    })
+
+    expect(next.byRoom[1]).toBeUndefined()
+    expect(next.error).toEqual({ roomId: 1, message: DOES_NOT_FIT_MESSAGE })
+  })
+
   it('removes only the item with the matching id', () => {
     const first = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
     const filled = draftReducer(first, add(1, 'lamp-1', lamp))
