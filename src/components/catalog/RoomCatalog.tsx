@@ -35,26 +35,31 @@ export function RoomCatalog({
   return (
     <section
       aria-labelledby="room-catalog-heading"
-      className={`grid content-start gap-3 rounded-lg border border-border bg-background p-4 lg:h-full lg:overflow-y-auto ${className}`.trim()}
+      className={`grid gap-3 rounded-lg border border-border bg-background p-4 lg:h-full lg:grid-rows-[auto_minmax(0,1fr)] ${className}`.trim()}
     >
-      <div className="grid gap-1">
-        <h2 id="room-catalog-heading" className="text-sm font-semibold text-foreground">
-          Add items
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Drag an item onto the plan, or click Add.
-        </p>
+      <div className="grid gap-3">
+        <div className="grid gap-1">
+          <h2 id="room-catalog-heading" className="text-sm font-semibold text-foreground">
+            Add items
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Drag an item onto the plan, or click Add.
+          </p>
+        </div>
+
+        <CategoryFilter query={{ category }} basePath={`/rooms/${room.id}`} />
+        <PlacementError roomId={room.id} />
       </div>
 
-      <CategoryFilter query={{ category }} basePath={`/rooms/${room.id}`} />
-      <PlacementError roomId={room.id} />
-      <CatalogList
-        items={items}
-        category={category}
-        layout="list"
-        onItemDragStart={handleItemDragStart}
-        renderAction={(item) => <AddToLayoutButton item={item} room={room} />}
-      />
+      <div className="lg:min-h-0 lg:overflow-y-auto">
+        <CatalogList
+          items={items}
+          category={category}
+          layout="list"
+          onItemDragStart={handleItemDragStart}
+          renderAction={(item) => <AddToLayoutButton item={item} room={room} />}
+        />
+      </div>
     </section>
   )
 }

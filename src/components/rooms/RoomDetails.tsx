@@ -59,7 +59,7 @@ export function RoomDetails({
       <div className="grid gap-6 lg:h-[30rem] lg:grid-rows-[minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:h-[34rem] xl:grid-cols-[18rem_minmax(0,1fr)_18rem]">
         <section
           aria-labelledby="placed-items-heading"
-          className="order-3 grid content-start gap-3 rounded-lg border border-border bg-background p-4 lg:order-none lg:h-full lg:overflow-y-auto"
+          className="order-3 grid gap-3 rounded-lg border border-border bg-background p-4 lg:order-none lg:h-full lg:grid-rows-[auto_minmax(0,1fr)]"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 id="placed-items-heading" className="text-sm font-semibold text-foreground">
@@ -69,10 +69,12 @@ export function RoomDetails({
               {placedItems.length === 1 ? '1 item' : `${placedItems.length} items`}
             </span>
           </div>
-          <PlacedItemsList
-            items={placedItems}
-            onRemove={(id) => removeItem(room.id, id)}
-          />
+          <div className="lg:min-h-0 lg:overflow-y-auto">
+            <PlacedItemsList
+              items={placedItems}
+              onRemove={(id) => removeItem(room.id, id)}
+            />
+          </div>
         </section>
 
         <section
