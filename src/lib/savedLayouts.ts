@@ -1,4 +1,5 @@
-import type { ApiError, LayoutSummary } from '@/api/types'
+import type { ApiError, LayoutDetails, LayoutSummary } from '@/api/types'
+import type { PlacedItem } from '@/lib/layout/layout'
 
 /** US-14b AT-1: "1 item", "3 items". */
 export function formatItemCount(count: number): string {
@@ -34,4 +35,44 @@ export function savedConfirmation(
  */
 export function isAlreadyDeleted(error: ApiError): boolean {
   return error.status === 404
+}
+
+/**
+ * US-14b AT-3: a saved layout as items for the plan, with the same positions and rotations.
+ * The draft id is derived from the saved row, so it stays unique within the layout.
+ */
+export function toDraftItems(layout: LayoutDetails): PlacedItem[] {
+  return layout.items.map((item) => ({
+    id: `saved-${layout.id}-${item.id}`,
+    catalogItemId: item.catalogItemId,
+    name: item.name,
+    widthCm: item.widthCm,
+    depthCm: item.depthCm,
+    priceCents: item.priceCents,
+    xCm: item.xCm,
+    yCm: item.yCm,
+    rotationDeg: item.rotationDeg,
+  }))
+}
+
+/**
+ * US-14b AT-4: opening a layout replaces the plan, so ask first when the plan has items.
+ * The draft does not track what was saved, so any item counts as work to keep.
+ */
+export function needsReplaceConfirmation(currentItems: readonly PlacedItem[]): boolean {
+  return currentItems.length > 0
+}
+
+/** US-14b AT-6: the message for the not-found state. */
+export const LAYOUT_NOT_FOUND_MESSAGE = 'This layout no longer exists. The plan was not changed.'
+
+/**
+ * US-14b AT-6: what to show when opening fails. A 404 means the layout is gone, so it also
+ * leaves the list; anything else keeps it and shows the API message.
+ */
+export function describeOpenError(error: ApiError): { message: string; missing: boolean } {
+  if (error.status === 404) {
+    return { message: LAYOUT_NOT_FOUND_MESSAGE, missing: true }
+  }
+  return { message: error.message, missing: false }
 }
