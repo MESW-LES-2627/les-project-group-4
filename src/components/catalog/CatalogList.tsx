@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { GripVertical } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { CatalogItem } from '@/api/types'
@@ -19,12 +22,16 @@ export function CatalogList({
   filtered = false,
   onClearFilters,
   renderAction,
+  onItemDragStart,
+  layout = 'grid',
 }: {
   items: CatalogItem[]
   category: ItemCategory | undefined
   filtered?: boolean
   onClearFilters?: () => void
   renderAction?: (item: CatalogItem) => ReactNode
+  onItemDragStart?: (item: CatalogItem, event: React.DragEvent<HTMLLIElement>) => void
+  layout?: 'grid' | 'list'
 }) {
   if (items.length === 0 && filtered) {
     return (
@@ -61,11 +68,29 @@ export function CatalogList({
     )
   }
 
+  const listClass =
+    layout === 'list'
+      ? 'grid gap-3'
+      : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3'
+
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className={listClass}>
       {items.map((item) => (
-        <li key={item.id} className="grid gap-1 rounded-lg border border-border p-4">
-          <span className="font-medium break-words text-foreground">{item.name}</span>
+        <li
+          key={item.id}
+          draggable={onItemDragStart !== undefined}
+          onDragStart={(event) => onItemDragStart?.(item, event)}
+          className="grid gap-1 rounded-lg border border-border p-3 transition-colors hover:border-muted-foreground/50 [&[draggable='true']]:cursor-grab [&[draggable='true']]:active:cursor-grabbing"
+        >
+          <span className="flex items-start justify-between gap-2">
+            <span className="font-medium break-words text-foreground">{item.name}</span>
+            {onItemDragStart ? (
+              <GripVertical
+                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+            ) : null}
+          </span>
           <span className="text-xs text-muted-foreground">
             {isItemCategory(item.category) ? CATEGORY_LABELS[item.category] : item.category}
           </span>

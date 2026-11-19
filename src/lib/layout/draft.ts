@@ -8,10 +8,15 @@
  */
 
 import type { CatalogItem } from '@/api/types'
-import type { RoomSize } from '@/lib/geometry/plan'
+import { boundingBox, isInsideRoom, type Placement, type RoomSize } from '@/lib/geometry/plan'
 import { toPlacedItem } from '@/lib/layout/layout'
 import type { PlacedItem } from '@/lib/layout/layout'
-import { DOES_NOT_FIT_MESSAGE, placeInRoom } from '@/lib/layout/placement'
+import {
+  DOES_NOT_FIT_MESSAGE,
+  PLACEMENT_MARGIN_CM,
+  overlaps,
+  placeInRoom,
+} from '@/lib/layout/placement'
 
 /** A failed placement, scoped to the room it happened in. */
 export interface DraftError {
@@ -30,6 +35,7 @@ export const EMPTY_DRAFT_STATE: DraftState = { byRoom: {}, error: null }
 
 export type DraftAction =
   | { type: 'add'; roomId: number; room: RoomSize; id: string; item: CatalogItem }
+  | { type: 'add-at'; roomId: number; room: RoomSize; id: string; item: CatalogItem; placement: Placement }
   | { type: 'remove'; roomId: number; id: string }
   | { type: 'replace'; roomId: number; items: PlacedItem[] }
   | { type: 'dismiss-error'; roomId: number }
@@ -44,6 +50,34 @@ export function draftReducer(state: DraftState, action: DraftAction): DraftState
     case 'add': {
       const items = state.byRoom[action.roomId] ?? []
       const placement = placeInRoom(action.item, action.room, items)
+      if (placement === null) {
+        return {
+          ...state,
+          error: { roomId: action.roomId, message: DOES_NOT_FIT_MESSAGE },
+        }
+      }
+
+      return {
+        byRoom: {
+          ...state.byRoom,
+          [action.roomId]: [...items, toPlacedItem(action.item, action.id, placement)],
+        },
+        error: withoutError(state, action.roomId),
+      }
+    }
+    case 'add-at': {
+      const items = state.byRoom[action.roomId] ?? []
+      const existingBoxes = items.map((item) => boundingBox(item, item))
+
+      const requestedBox = boundingBox(action.item, action.placement)
+      const fitsRequested =
+        isInsideRoom(action.item, action.placement, action.room, PLACEMENT_MARGIN_CM) &&
+        !existingBoxes.some((other) => overlaps(requestedBox, other))
+
+      const placement = fitsRequested
+        ? action.placement
+        : placeInRoom(action.item, action.room, items)
+
       if (placement === null) {
         return {
           ...state,

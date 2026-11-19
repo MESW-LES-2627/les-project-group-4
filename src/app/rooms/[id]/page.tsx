@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
 import { findItems } from '@/lib/items'
-import { findLayouts } from '@/lib/layouts'
+import { findLayoutsWithItems } from '@/lib/layouts'
 import { findRoomById } from '@/lib/rooms'
 import { listItemsQuerySchema } from '@/lib/schemas/item'
 import { roomIdSchema } from '@/lib/schemas/room'
@@ -46,11 +46,11 @@ export default async function RoomPage({
   if (room === null) {
     notFound()
   }
-  const layouts = await findLayouts(room.id)
+  const layouts = await findLayoutsWithItems(room.id)
 
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
-      <section className="mx-auto grid w-full max-w-4xl content-start gap-6">
+      <section className="mx-auto grid w-full max-w-7xl content-start gap-6">
         <Link
           href="/rooms"
           className="group inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"

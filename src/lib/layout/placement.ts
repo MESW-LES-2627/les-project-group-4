@@ -43,7 +43,7 @@ function placementAt(
 }
 
 /** True when two boxes share area. Touching edges do not count as a conflict. */
-function overlaps(a: Box, b: Box): boolean {
+export function overlaps(a: Box, b: Box): boolean {
   return (
     a.minX < b.maxX - EPSILON_CM &&
     a.maxX > b.minX + EPSILON_CM &&

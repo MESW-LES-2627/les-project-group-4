@@ -105,6 +105,22 @@
     "status": "manual",
     "note": "open a room, add items, visit /catalog and come back; state is session-only by design, no DOM harness until CH-05 (#66)"
   },
+  "US-09b/AT-1": {
+    "status": "manual",
+    "note": "three-panel workspace layout is CSS-only; no browser/component harness until CH-05 (#66)"
+  },
+  "US-09b/AT-2": {
+    "status": "manual",
+    "note": "catalog and placed-item card hierarchy/truncation; no DOM harness until CH-05 (#66)"
+  },
+  "US-09b/AT-4": {
+    "status": "manual",
+    "note": "empty-state copy is rendered by PlacedItemsList; no DOM harness until CH-05 (#66)"
+  },
+  "US-09b/AT-5": {
+    "status": "manual",
+    "note": "keyboard order, focus rings and accessible names need a browser/DOM harness until CH-05 (#66)"
+  },
   "US-13/AT-1": {
     "status": "covered-by",
     "by": "US-13b",
