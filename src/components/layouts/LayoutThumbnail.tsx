@@ -1,4 +1,9 @@
 import type { Room, SavedLayoutItem } from '@/api/types'
+import {
+  ITEM_BORDER_OPACITY,
+  ITEM_COLOR,
+  ITEM_FILL_OPACITY,
+} from '@/components/plan/scene/PlacedItem'
 import { footprintCorners, type Point } from '@/lib/geometry/plan'
 
 /** Same box and padding as RoomThumbnail, so the two card sets look like siblings. */
@@ -86,10 +91,10 @@ export function LayoutThumbnail({
               <polygon
                 key={item.id}
                 points={points}
-                fill="#2a2622"
-                fillOpacity={0.16}
-                stroke="#2a2622"
-                strokeOpacity={0.35}
+                fill={ITEM_COLOR}
+                fillOpacity={ITEM_FILL_OPACITY}
+                stroke={ITEM_COLOR}
+                strokeOpacity={ITEM_BORDER_OPACITY}
                 strokeWidth="1"
                 vectorEffect="non-scaling-stroke"
               />

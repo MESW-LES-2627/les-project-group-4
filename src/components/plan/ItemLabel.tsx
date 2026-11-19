@@ -21,7 +21,7 @@ export function ItemLabel({
   selected: boolean
 }) {
   const tone = selected
-    ? 'border-blue-600 bg-blue-600 text-white'
+    ? 'border-brand bg-brand text-brand-ink'
     : 'border-slate-300 bg-white/95 text-slate-700'
 
   return (
