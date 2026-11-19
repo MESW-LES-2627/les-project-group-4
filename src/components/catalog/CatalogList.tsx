@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 
 import type { CatalogItem } from '@/api/types'
 import { CATEGORY_LABELS, formatPriceCents } from '@/lib/catalog'
@@ -10,17 +11,20 @@ import { isItemCategory } from '@/lib/schemas/item'
  * `category` is the selected filter, so the empty state can say what is empty.
  * US-08: `filtered` is true when price or tag filters are set; then the empty state says that
  * nothing matches the filters and offers `onClearFilters`.
+ * US-09: `renderAction` adds a per-card control such as "Add to layout".
  */
 export function CatalogList({
   items,
   category,
   filtered = false,
   onClearFilters,
+  renderAction,
 }: {
   items: CatalogItem[]
   category: ItemCategory | undefined
   filtered?: boolean
   onClearFilters?: () => void
+  renderAction?: (item: CatalogItem) => ReactNode
 }) {
   if (items.length === 0 && filtered) {
     return (
@@ -73,6 +77,9 @@ export function CatalogList({
               {formatPriceCents(item.priceCents)}
             </span>
           </span>
+          {renderAction ? (
+            <div className="flex justify-end pt-1">{renderAction(item)}</div>
+          ) : null}
         </li>
       ))}
     </ul>

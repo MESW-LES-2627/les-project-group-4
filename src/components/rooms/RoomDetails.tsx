@@ -1,18 +1,35 @@
-import type { LayoutSummary, Room } from '@/api/types'
+import type { CatalogItem, LayoutSummary, Room } from '@/api/types'
+import { RoomCatalog } from '@/components/catalog/RoomCatalog'
+import { RegisterCurrentRoom } from '@/components/layout/RegisterCurrentRoom'
 import { SavedLayouts } from '@/components/layouts/SavedLayouts'
 import { RoomPlan } from '@/components/plan/RoomPlan'
+import type { ItemCategory } from '@/lib/catalog'
 import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
 import { formatArea } from '@/lib/roomFormat'
 import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 
-/** US-03: one room's details, including the 2D plan. US-15: with its saved location. US-14b: and its saved layouts. */
-export function RoomDetails({ room, layouts }: { room: Room; layouts: readonly LayoutSummary[] }) {
+/**
+ * US-03: one room's details, including the 2D plan. US-15: with its saved location.
+ * US-09: and the catalog panel that adds items to it. US-14b: and its saved layouts.
+ */
+export function RoomDetails({
+  room,
+  catalogItems,
+  category,
+  layouts,
+}: {
+  room: Room
+  catalogItems: CatalogItem[]
+  category: ItemCategory | undefined
+  layouts: readonly LayoutSummary[]
+}) {
   const summary = `${room.widthCm} × ${room.lengthCm} cm · ${formatArea(room)}`
   const label = formatRoomLocation(room)
   const location = resolveRoomLocation(room)
 
   return (
     <div className="grid gap-6">
+      <RegisterCurrentRoom room={room} />
       <header className="grid gap-1">
         <h1 className="text-2xl font-bold tracking-tight wrap-break-word text-foreground sm:text-3xl">
           {room.name}
@@ -31,6 +48,8 @@ export function RoomDetails({ room, layouts }: { room: Room; layouts: readonly L
       <section aria-label="2D plan">
         <RoomPlan room={room} layouts={layouts} />
       </section>
+
+      <RoomCatalog room={room} items={catalogItems} category={category} />
 
       <SavedLayouts roomId={room.id} layouts={layouts} />
     </div>

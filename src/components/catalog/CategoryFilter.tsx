@@ -10,15 +10,22 @@ const LINK_CLASS =
 /**
  * US-07: one link per category (plus "All"); the selected one is marked with aria-current.
  * US-08: the links keep the other filters (price, tags), so category combines with them (AT-5).
+ * US-09: `basePath` lets the room page reuse the filter for its own catalog panel.
  */
-export function CategoryFilter({ query }: { query: ListItemsQuery }) {
+export function CategoryFilter({
+  query,
+  basePath = '/catalog',
+}: {
+  query: ListItemsQuery
+  basePath?: string
+}) {
   const selected = query.category
   return (
     <nav aria-label="Categories">
       <ul className="flex flex-wrap gap-2">
         <li>
           <Link
-            href={catalogHref({ ...query, category: undefined })}
+            href={catalogHref({ ...query, category: undefined }, basePath)}
             aria-current={selected === undefined ? 'page' : undefined}
             className={LINK_CLASS}
           >
@@ -28,7 +35,7 @@ export function CategoryFilter({ query }: { query: ListItemsQuery }) {
         {ITEM_CATEGORIES.map((category) => (
           <li key={category}>
             <Link
-              href={catalogHref({ ...query, category })}
+              href={catalogHref({ ...query, category }, basePath)}
               aria-current={selected === category ? 'page' : undefined}
               className={LINK_CLASS}
             >

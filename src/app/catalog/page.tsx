@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { CatalogBrowser } from '@/components/catalog/CatalogBrowser'
+import { CurrentRoomBanner } from '@/components/catalog/CurrentRoomBanner'
+import { PlacementError } from '@/components/catalog/PlacementError'
 import { findItems, findTagOptions } from '@/lib/items'
 import { listItemsQuerySchema, readListItemsQuery } from '@/lib/schemas/item'
 
@@ -13,6 +15,7 @@ export const metadata: Metadata = {
  * US-07/US-08: loads the catalog on the server, filtered by ?category=, ?maxPrice=, ?style=
  * and ?room=. An invalid filter shows not-found.tsx; loading.tsx and error.tsx cover the other
  * states. Later filter changes are handled on the client by CatalogBrowser.
+ * US-09: the banner and the per-card add buttons target the last room opened.
  */
 export default async function CatalogPage({
   searchParams,
@@ -51,6 +54,8 @@ export default async function CatalogPage({
             Retailers and prices are fictional.
           </p>
         </div>
+        <CurrentRoomBanner />
+        <PlacementError />
         {/*
           key: a new id on every server render, so any server navigation (a category link, the
           header link) remounts CatalogBrowser with the new data. A key built from the URL would

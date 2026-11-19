@@ -525,6 +525,62 @@
         }
       ]
     },
+    "US-09a": {
+      "issue": 81,
+      "title": "Add a selected item to the layout — functional slice",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Add item"
+        },
+        {
+          "id": "AT-2",
+          "title": "Default placement"
+        },
+        {
+          "id": "AT-3",
+          "title": "True-to-scale footprint"
+        },
+        {
+          "id": "AT-4",
+          "title": "Remove item"
+        },
+        {
+          "id": "AT-5",
+          "title": "Doesn't fit"
+        },
+        {
+          "id": "AT-6",
+          "title": "Survives navigation"
+        }
+      ]
+    },
+    "US-09b": {
+      "issue": 82,
+      "title": "Add a selected item to the layout — UI polish",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Workspace layout"
+        },
+        {
+          "id": "AT-2",
+          "title": "Item presentation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Add and remove feedback"
+        },
+        {
+          "id": "AT-4",
+          "title": "Empty state"
+        },
+        {
+          "id": "AT-5",
+          "title": "Keyboard and focus"
+        }
+      ]
+    },
     "US-10": {
       "issue": 32,
       "title": "Drag and rotate items on the floor plan",

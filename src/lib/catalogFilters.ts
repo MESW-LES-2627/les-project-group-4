@@ -19,9 +19,9 @@ export function toQueryString(query: ListItemsQuery): string {
   return text === '' ? '' : `?${text}`
 }
 
-/** The /catalog URL for a query; clearing every filter gives plain "/catalog" (AT-6). */
-export function catalogHref(query: ListItemsQuery): string {
-  return `/catalog${toQueryString(query)}`
+/** The catalog URL for a query on `basePath`; clearing every filter gives the bare path (AT-6). */
+export function catalogHref(query: ListItemsQuery, basePath = '/catalog'): string {
+  return `${basePath}${toQueryString(query)}`
 }
 
 /**

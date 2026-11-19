@@ -1,12 +1,14 @@
 'use client'
 
-import { useReducer, useState } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ScanLine } from 'lucide-react'
 
 import type { LayoutSummary, Room } from '@/api/types'
 import { SaveLayoutForm } from '@/components/layouts/SaveLayoutForm'
-import { layoutReducer } from '@/lib/layout/layout'
+import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+
+import { PlacedItemsList } from './PlacedItemsList'
 
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),
@@ -28,51 +30,69 @@ function PlanLoading() {
 }
 
 /**
- * US-06a: the room's working layout, kept client-side until save (#31/#35).
- * The reducer is the shared contract; #31 lifts it into a provider so the
- * catalog can add and remove items.
+ * US-06a: the room's working layout. US-09: the items come from the session
+ * draft provider, so the catalog can add to this room and they survive
+ * navigation. US-13b: they can be saved as a named layout.
  */
 export function RoomPlan({ room, layouts }: { room: Room; layouts: readonly LayoutSummary[] }) {
-  const [items] = useReducer(layoutReducer, [])
+  const { itemsFor, removeItem } = useDraftLayouts()
+  const items = itemsFor(room.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
 
   return (
-    <figure className="grid gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
-        <p className="text-xs text-muted-foreground">
-          Drag to move around · Scroll to zoom · Double-click to reset
-        </p>
-      </div>
-
-      <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
-        <div className="relative h-full w-full">
-          <Plan2D
-            room={room}
-            items={items}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
+    <div className="grid gap-4">
+      <figure className="grid gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-foreground">2D plan</h2>
+          <p className="text-xs text-muted-foreground">
+            Drag to move around · Scroll to zoom · Double-click to reset
+          </p>
         </div>
-      </div>
 
-      <figcaption className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-        <span aria-live="polite">
-          {selected
-            ? `Selected: ${selected.name} · ${selected.widthCm} × ${selected.depthCm} cm`
-            : items.length === 0
-              ? 'No items placed in this room yet.'
-              : 'Click an item to select it.'}
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-xs">
-          <ScanLine className="size-3.5" aria-hidden="true" />
-          Drawn to scale
-        </span>
-      </figcaption>
+        <div className="relative h-80 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105">
+          <div className="relative h-full w-full">
+            <Plan2D
+              room={room}
+              items={items}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
+          </div>
+        </div>
 
-      {/* US-13b: saves the items above. #31 fills them; until then the layout is empty. */}
-      <SaveLayoutForm roomId={room.id} items={items} savedLayouts={layouts} />
-    </figure>
+        <figcaption className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+          <span aria-live="polite">
+            {selected
+              ? `Selected: ${selected.name} · ${selected.widthCm} × ${selected.depthCm} cm`
+              : items.length === 0
+                ? null
+                : 'Click an item to select it.'}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-xs">
+            <ScanLine className="size-3.5" aria-hidden="true" />
+            Drawn to scale
+          </span>
+        </figcaption>
+
+        {/* US-13b: saves the items above. */}
+        <SaveLayoutForm roomId={room.id} items={items} savedLayouts={layouts} />
+      </figure>
+
+      <section aria-labelledby="placed-items-heading" className="grid gap-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="placed-items-heading" className="text-sm font-semibold text-foreground">
+            Placed items
+          </h2>
+          <span className="text-xs text-muted-foreground">
+            {items.length === 1 ? '1 item' : `${items.length} items`}
+          </span>
+        </div>
+        <PlacedItemsList
+          items={items}
+          onRemove={(id) => removeItem(room.id, id)}
+        />
+      </section>
+    </div>
   )
 }

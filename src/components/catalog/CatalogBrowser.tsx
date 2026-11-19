@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import type { CatalogItem } from '@/api/types'
+import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
 import { Button } from '@/components/ui/button'
@@ -118,6 +119,7 @@ export function CatalogBrowser({ initialQuery, initialItems, tagOptions }: Catal
           category={query.category}
           filtered={hasFilters({ ...query, category: undefined })}
           onClearFilters={clear}
+          renderAction={(item) => <AddToLayoutButton item={item} />}
         />
       </div>
     </div>
