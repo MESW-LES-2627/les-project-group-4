@@ -4,11 +4,19 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { FolderOpen, Trash2, TriangleAlert } from 'lucide-react'
 
-import { deleteLayout } from '@/api/client'
+import { deleteLayout, getLayout } from '@/api/client'
 import type { LayoutSummary } from '@/api/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { formatItemCount, isAlreadyDeleted, visibleLayouts } from '@/lib/savedLayouts'
+import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import {
+  describeOpenError,
+  formatItemCount,
+  isAlreadyDeleted,
+  needsReplaceConfirmation,
+  toDraftItems,
+  visibleLayouts,
+} from '@/lib/savedLayouts'
 
 interface SavedLayoutsProps {
   roomId: number
@@ -16,12 +24,16 @@ interface SavedLayoutsProps {
   layouts: readonly LayoutSummary[]
 }
 
-/** US-14b: the room's saved layouts, with delete. Open comes with US-09 (#31). */
+/** US-14b: the room's saved layouts, with open and delete. */
 export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
   const [deletedIds, setDeletedIds] = useState<ReadonlySet<number>>(new Set())
   const [confirmingId, setConfirmingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [error, setError] = useState<{ id: number; message: string } | null>(null)
+  const [replacingId, setReplacingId] = useState<number | null>(null)
+  const [openingId, setOpeningId] = useState<number | null>(null)
+  const [notFound, setNotFound] = useState<string | null>(null)
+  const { itemsFor, replaceItems } = useDraftLayouts()
   const router = useRouter()
   const [, startRefresh] = useTransition()
 
@@ -47,11 +59,58 @@ export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
     }
   }
 
+  const busy = deletingId !== null || openingId !== null
+
+  function startOpen(layout: LayoutSummary) {
+    setError(null)
+    setNotFound(null)
+    setConfirmingId(null)
+    // AT-4: the plan has items, so ask before replacing them.
+    if (needsReplaceConfirmation(itemsFor(roomId))) {
+      setReplacingId(layout.id)
+      return
+    }
+    void openLayout(layout)
+  }
+
+  async function openLayout(layout: LayoutSummary) {
+    if (openingId !== null) return
+    setOpeningId(layout.id)
+    try {
+      const result = await getLayout(roomId, layout.id)
+      if (result.ok) {
+        // AT-3: the saved items, positions and rotations replace the plan.
+        replaceItems(roomId, toDraftItems(result.data))
+        setReplacingId(null)
+        return
+      }
+      const failure = describeOpenError(result.error)
+      setReplacingId(null)
+      if (failure.missing) {
+        // AT-6: the plan is not touched, and the layout leaves the list.
+        setNotFound(failure.message)
+        setDeletedIds((ids) => new Set(ids).add(layout.id))
+        startRefresh(() => router.refresh())
+        return
+      }
+      setError({ id: layout.id, message: failure.message })
+    } finally {
+      setOpeningId(null)
+    }
+  }
+
   return (
     <section aria-labelledby="saved-layouts-heading" className="grid gap-3">
       <h2 id="saved-layouts-heading" className="text-sm font-semibold text-foreground">
         Saved layouts
       </h2>
+
+      {notFound !== null ? (
+        <Alert variant="destructive">
+          <TriangleAlert aria-hidden="true" />
+          <AlertDescription>{notFound}</AlertDescription>
+        </Alert>
+      ) : null}
 
       {shown.length === 0 ? (
         // AT-2
@@ -64,6 +123,8 @@ export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
           {shown.map((layout) => {
             const confirming = confirmingId === layout.id
             const deleting = deletingId === layout.id
+            const replacing = replacingId === layout.id
+            const opening = openingId === layout.id
             return (
               <li
                 key={layout.id}
@@ -101,23 +162,51 @@ export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
                       Cancel
                     </Button>
                   </div>
+                ) : replacing ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm text-foreground">
+                      Replace the current plan with “{layout.name}”?
+                    </span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      disabled={opening}
+                      onClick={() => openLayout(layout)}
+                    >
+                      {opening ? 'Opening…' : 'Replace'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={opening}
+                      onClick={() => setReplacingId(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {/* TODO(#31): open the layout onto the plan (AT-3) and confirm before replacing unsaved changes (AT-4). */}
-                    <span title="Opening a saved layout is not available yet.">
-                      <Button type="button" variant="outline" size="sm" disabled>
-                        <FolderOpen aria-hidden="true" />
-                        Open
-                      </Button>
-                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      aria-label={`Open ${layout.name}`}
+                      disabled={busy}
+                      onClick={() => startOpen(layout)}
+                    >
+                      <FolderOpen aria-hidden="true" />
+                      {opening ? 'Opening…' : 'Open'}
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       aria-label={`Delete ${layout.name}`}
-                      disabled={deletingId !== null}
+                      disabled={busy}
                       onClick={() => {
                         setConfirmingId(layout.id)
+                        setReplacingId(null)
                         setError(null)
                       }}
                     >
