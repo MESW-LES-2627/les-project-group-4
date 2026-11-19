@@ -654,12 +654,22 @@
           "title": "Currency"
         },
         {
-          "id": "AT-5",
-          "title": "Budget"
-        },
-        {
           "id": "AT-6",
           "title": "Stored prices"
+        }
+      ]
+    },
+    "US-12b": {
+      "issue": 85,
+      "title": "Show the running total against a room budget",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Set budget"
+        },
+        {
+          "id": "AT-2",
+          "title": "Budget"
         }
       ]
     },
