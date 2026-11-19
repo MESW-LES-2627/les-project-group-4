@@ -15,6 +15,7 @@ drag around.
 
 ## Documentation
 
+- [CLAIM iter 2](docs/iterations/2/CLAIM.md)
 - [CLAIM iter 1](docs/iterations/1/CLAIM.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
 
