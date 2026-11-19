@@ -1,8 +1,9 @@
 'use client'
 
-import type { CatalogItem, Room } from '@/api/types'
+import type { CatalogItem, LayoutSummary, Room } from '@/api/types'
 import { RoomCatalog } from '@/components/catalog/RoomCatalog'
 import { RegisterCurrentRoom } from '@/components/layout/RegisterCurrentRoom'
+import { SavedLayouts } from '@/components/layouts/SavedLayouts'
 import { PlacedItemsList } from '@/components/plan/PlacedItemsList'
 import { RoomPlan } from '@/components/plan/RoomPlan'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
@@ -14,16 +15,18 @@ import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
 /**
  * US-03: one room's details, including the 2D plan. US-15: with its saved location.
  * US-09: the catalog panel and placed-items list sit on either side of the plan
- * in a three-panel "design tool" layout.
+ * in a three-panel "design tool" layout. US-14b: the room's saved layouts.
  */
 export function RoomDetails({
   room,
   catalogItems,
   category,
+  layouts,
 }: {
   room: Room
   catalogItems: CatalogItem[]
   category: ItemCategory | undefined
+  layouts: readonly LayoutSummary[]
 }) {
   const summary = `${room.widthCm} × ${room.lengthCm} cm · ${formatArea(room)}`
   const label = formatRoomLocation(room)
@@ -93,7 +96,7 @@ export function RoomDetails({
         </section>
 
         <section aria-label="2D plan" className="order-2 lg:order-5">
-          <RoomPlan room={room} />
+          <RoomPlan room={room} layouts={layouts} />
         </section>
 
         <div className="order-4 lg:order-6 lg:max-w-[22rem] lg:justify-self-start lg:sticky lg:top-6 lg:max-h-[640px] lg:overflow-y-auto">
@@ -104,6 +107,10 @@ export function RoomDetails({
             headerClassName="lg:hidden"
           />
         </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-4xl">
+        <SavedLayouts roomId={room.id} layouts={layouts} />
       </div>
     </div>
   )

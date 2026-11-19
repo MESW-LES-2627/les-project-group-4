@@ -5,7 +5,10 @@ import type {
   ApiError,
   ApiResult,
   CatalogItem,
+  CreateLayoutRequest,
   CreateRoomRequest,
+  LayoutDetails,
+  LayoutSummary,
   Room,
   ValidationErrorBody,
 } from './types'
@@ -71,6 +74,11 @@ function toApiError(status: number, body: unknown): ApiError {
   let message: string
   if (status === 400) {
     message = 'Some fields are invalid. Please correct them and try again.'
+  } else if (status === 404) {
+    message = 'It was not found. It may have been deleted.'
+  } else if (status === 409) {
+    // US-13 AT-6: the field message (e.g. the duplicate layout name) is the one to show.
+    message = Object.values(fieldErrors)[0] ?? 'This conflicts with existing data.'
   } else if (status >= 500) {
     message = 'The server is unavailable right now. Please try again later.'
   } else {
@@ -86,6 +94,32 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
     method: 'POST',
     body: JSON.stringify(room),
   })
+}
+
+/** US-13: saves the current layout under a room. Resolves with the saved layout, or an error (409 for a duplicate name). */
+export function saveLayout(
+  roomId: number,
+  layout: CreateLayoutRequest,
+): Promise<ApiResult<LayoutDetails>> {
+  return request<LayoutDetails>(`/api/rooms/${roomId}/layouts`, {
+    method: 'POST',
+    body: JSON.stringify(layout),
+  })
+}
+
+/** US-14: the room's saved layouts, listed by name. */
+export function listLayouts(roomId: number): Promise<ApiResult<LayoutSummary[]>> {
+  return request<LayoutSummary[]>(`/api/rooms/${roomId}/layouts`, { method: 'GET' })
+}
+
+/** US-14: one saved layout with its items (404 if it does not exist in this room). */
+export function getLayout(roomId: number, layoutId: number): Promise<ApiResult<LayoutDetails>> {
+  return request<LayoutDetails>(`/api/rooms/${roomId}/layouts/${layoutId}`, { method: 'GET' })
+}
+
+/** US-14: deletes a saved layout. The server answers 204 with no body, so the data is null. */
+export function deleteLayout(roomId: number, layoutId: number): Promise<ApiResult<null>> {
+  return request<null>(`/api/rooms/${roomId}/layouts/${layoutId}`, { method: 'DELETE' })
 }
 
 /**
