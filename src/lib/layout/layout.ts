@@ -36,3 +36,12 @@ export function toPlacedItem(
     ...placement,
   }
 }
+
+/**
+ * US-12: the running total of the layout, in integer cents. It adds the price
+ * stored on each placed item (AT-6), never the current catalog price, so the
+ * total of a layout does not change when the catalog does.
+ */
+export function totalPriceCents(items: readonly Pick<PlacedItem, 'priceCents'>[]): number {
+  return items.reduce((sum, item) => sum + item.priceCents, 0)
+}
