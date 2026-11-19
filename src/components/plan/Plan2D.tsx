@@ -28,7 +28,7 @@ import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
 import { PlanGrid, PlanGridProjector } from './PlanGrid'
 import { ScaleBar, ScaleBarProjector } from './ScaleBar'
-import { ItemLabel } from './ItemLabel'
+import { ItemLabels, ItemLabelProjector } from './ItemLabels'
 import {
   CAMERA_HEIGHT_M,
   MAX_ZOOM,
@@ -174,6 +174,7 @@ export function Plan2D({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasStateRef = useRef<RootState | null>(null)
   const dragCounterRef = useRef(0)
+  const [labelRefs] = useState(() => new Map<string, HTMLDivElement | null>())
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -307,10 +308,8 @@ export function Plan2D({
           items={items}
           selectedId={selectedId}
           onSelect={onSelect}
-          renderLabel={(item, selected) => (
-            <ItemLabel item={item} selected={selected} />
-          )}
         />
+        <ItemLabelProjector items={items} labelRefs={labelRefs} />
         <PlanControls
           room={room}
           controlsRef={controlsRef}
@@ -324,6 +323,11 @@ export function Plan2D({
         depthRef={depthLabelRef}
       />
       <ScaleBar lineRef={scaleLineRef} textRef={scaleTextRef} />
+      <ItemLabels
+        items={items}
+        selectedId={selectedId}
+        labelRefs={labelRefs}
+      />
 
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
         <Button
