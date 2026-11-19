@@ -48,6 +48,9 @@ Iteration 3, because rooms have no budget field.
 - **The work was back-loaded again.** Only CH-03 (and the #76 Windows path
   fix) landed before 18 Nov. The last three days carried US-08, all four layout
   slices, US-09a, US-09b and US-12.
+- **We divided the issues late.** The stories were only split between us about
+  three days into the sprint rather than at planning, which shortened the time
+  available for the Must work and contributed to the end-of-iteration crunch.
 - **#83 mixed three concerns in one PR.** Drag and drop, the three-panel room
   page and the `/` → `/rooms` redirect are separate changes with separate
   risks. At twelve commits it was not a "small draft PR", and the missing tests
