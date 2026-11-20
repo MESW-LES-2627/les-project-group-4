@@ -78,9 +78,10 @@ right?" but "which AT proves it, and what test would fail if this broke?".
     price, shrinks after removing, is formatted in EUR, and uses the stored
     prices rather than the current catalog. No budget is shown (moved to #85).
   - **US-13 / US-14 layouts (#73, #74, #75, #84):** save with a name, blank
-    name, duplicate name, confirmation; list by name and item count; empty
-    state; open with replace confirmation and cancel; deleted/missing layout
-    message; delete with confirm/cancel; the list survives a reload.
+    name, duplicate name, confirmation; an empty plan disables Save layout
+    (#89); list by name and item count; empty state; open with replace
+    confirmation and cancel; deleted/missing layout message; delete with
+    confirm/cancel; the list survives a reload.
   - **CH-03 (#64, #67):** both Vitest projects run; `acceptance:check` fails
     an uncovered AT and passes a covered one; the grouped report names the
     story; the base comparison labels a regression; the registry is in sync.

@@ -29,8 +29,8 @@ exists:
 
 - **US-09b**: AT-1 (workspace layout), AT-2 (card hierarchy), AT-4 (empty
   state) and AT-5 (keyboard/focus). Only AT-3 has an automated test.
-- **US-13b / US-14b**: save confirmation and the saved-layouts list/empty
-  state.
+- **US-13b / US-14b**: save confirmation, the empty-plan guard (US-13b AT-6)
+  and the saved-layouts list/empty state.
 - **US-01, US-03, US-07**: form confirmation, details rendering and catalog
   rendering.
 - **CH-01 / CH-02**: deploy and seed checks that only a real environment can

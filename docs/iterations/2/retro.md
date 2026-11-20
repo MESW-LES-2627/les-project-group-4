@@ -17,7 +17,7 @@ Iteration 3, because rooms have no budget field.
 
 | Change we promised | What happened |
 | --- | --- |
-| **Open PRs early and small**: open a draft PR as soon as a story has a first working slice, and aim to have each Must story in review by the end of the first week. | **Partly.** CH-03 was split into #62/#63 and opened on 10 Nov, merged on 13 Nov. But the Must stories landed at the end again: #79 (US-09a) merged on 19 Nov, #83 (US-09b) only became ready for review on 19 Nov, and #86 (US-12) was opened on 19 Nov. Seven of the eleven PRs landed on 18-19 Nov; the last two closed the increment at the end. |
+| **Open PRs early and small**: open a draft PR as soon as a story has a first working slice, and aim to have each Must story in review by the end of the first week. | **Partly.** CH-03 was split into #62/#63 and opened on 10 Nov, merged on 13 Nov. But the Must stories landed at the end again: #79 (US-09a) merged on 19 Nov, #83 (US-09b) only became ready for review on 19 Nov, and #86 (US-12) was opened on 19 Nov. Seven of the eleven PRs landed on 18-19 Nov; #83 merged on 19 Nov and #86 on 20 Nov. |
 | **Say which shared files a story touches**: list the shared components in the issue when picking a story. | **Not done.** #79 and the layouts PRs (#73-#75) all changed `RoomPlan.tsx` and `RoomDetails.tsx`. The conflict was found in review of #79 and fixed by merging `develop`, not planned in the issue. |
 | **Add component tests**: add jsdom and Testing Library and test the interactive components. | **Deferred to Iteration 3.** jsdom and Testing Library were not added; CH-05 (#66) stays open and moves to the next iteration. Plan components are tested with `@react-three/test-renderer` (US-06a, US-09 AT-3), but US-09b's layout and accessibility ATs, and the save/list rendering ATs, are `manual`. |
 | **Close issues when the PR is merged**. | **Done.** #30, #69-#72, #81 and the parent #35/#36/#61 closed with their PRs. #31 stayed open until its sub-issue #82 closed; #34 until #86. #72 closed one day after #75 because #84 completed the open flow, which is the honest state. |
@@ -37,9 +37,9 @@ Iteration 3, because rooms have no budget field.
   leave room for the save form and saved layouts. On #79, João listed exactly
   what to keep when merging `develop`. On #84, Nicolas saved, removed and
   reopened a layout, including the deleted-in-another-tab case.
-- **Small changes stayed small.** The Windows path fix (#76) and the Next.js
-  security upgrade (#80) each got their own PR instead of riding along with a
-  feature.
+- **Small changes stayed small.** The Windows path fix (#76), the Next.js
+  security upgrade (#80) and the empty-layout save guard (#89) each got their
+  own PR instead of riding along with a feature.
 - **The suite grew with the product.** By #86 the project reported 98 test
   files / 588 tests, with the acceptance report grouped by story and AT.
 
