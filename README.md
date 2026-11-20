@@ -2,8 +2,9 @@
 
 A 2D room planner that helps people furnish a space before buying.
 
-You enter your room's dimensions and budget. FurniMi shows furniture that fits, where it's from, and how much it costs on a top-down plan you can
-drag around.
+You enter your room's dimensions and see the running total as you furnish it.
+FurniMi shows furniture, where it's from, and how much it costs on a top-down
+plan you can drag around.
 
 **LES - TEAM D** · FEUP - 2026/27
 
@@ -15,6 +16,7 @@ drag around.
 
 ## Documentation
 
+- [CLAIM iter 2](docs/iterations/2/CLAIM.md)
 - [CLAIM iter 1](docs/iterations/1/CLAIM.md)
 - [CLAIM iter 0](docs/iterations/0/CLAIM.md)
 
