@@ -35,7 +35,7 @@ Use links that work on tag `iter-2`. If something does not exist yet, write
 |                           |                                                                                                                                                                                   |
 | CI/CD Pipeline            | [CI](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/ci.yml) · [Deploy](https://github.com/MESW-LES-2627/les-project-group-4/actions/workflows/deploy.yml) |
 |                           |                                                                                                                                                                                   |
-| Stories in this increment | [Iteration 2 milestone](https://github.com/MESW-LES-2627/les-project-group-4/milestone/3)                                                                                         |
+| Stories in this increment | [Iteration 2 user stories (5)](https://github.com/MESW-LES-2627/les-project-group-4/issues?q=is%3Aissue%20milestone%3A%22Iteration%202%22%20label%3AUS%20no%3Aparent-issue)       |
 |                           |                                                                                                                                                                                   |
 | Retrospective             | [retro.md](retro.md)                                                                                                                                                              |
 | AI log                    | [ai-log.md](ai-log.md)                                                                                                                                                            |
