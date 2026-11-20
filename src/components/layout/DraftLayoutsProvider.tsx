@@ -8,7 +8,7 @@ import {
   type CurrentRoom,
   type DraftLayouts,
 } from '@/hooks/useDraftLayouts'
-import type { RoomSize } from '@/lib/geometry/plan'
+import type { Placement, RoomSize } from '@/lib/geometry/plan'
 import { draftReducer, EMPTY_DRAFT_STATE } from '@/lib/layout/draft'
 import type { PlacedItem } from '@/lib/layout/layout'
 
@@ -38,6 +38,13 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'add', roomId, room, id: crypto.randomUUID(), item })
   }, [])
 
+  const addItemAt = useCallback(
+    (roomId: number, room: RoomSize, item: CatalogItem, placement: Placement) => {
+      dispatch({ type: 'add-at', roomId, room, id: crypto.randomUUID(), item, placement })
+    },
+    [],
+  )
+
   const removeItem = useCallback((roomId: number, id: string) => {
     dispatch({ type: 'remove', roomId, id })
   }, [])
@@ -57,11 +64,12 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
       itemsFor,
       errorFor,
       addItem,
+      addItemAt,
       removeItem,
       replaceItems,
       dismissError,
     }),
-    [currentRoom, itemsFor, errorFor, addItem, removeItem, replaceItems, dismissError],
+    [currentRoom, itemsFor, errorFor, addItem, addItemAt, removeItem, replaceItems, dismissError],
   )
 
   return <DraftLayoutsContext.Provider value={value}>{children}</DraftLayoutsContext.Provider>

@@ -99,6 +99,15 @@ export interface LayoutDetails {
   items: SavedLayoutItem[]
 }
 
+/**
+ * US-14b: a saved layout with its items, for the room page's preview cards.
+ * The list API keeps returning the lighter LayoutSummary; the room page loads
+ * the items so each card can draw a miniature of the saved plan.
+ */
+export interface LayoutWithItems extends LayoutSummary {
+  items: SavedLayoutItem[]
+}
+
 /** Body returned by the API with 400 Bad Request (and 409 Conflict for a duplicate layout name). */
 export interface ValidationErrorBody {
   errors: Record<string, string>

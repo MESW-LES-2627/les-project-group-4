@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { FolderOpen, Trash2, TriangleAlert } from 'lucide-react'
+import { ChevronRight, Trash2, TriangleAlert } from 'lucide-react'
 
 import { deleteLayout, getLayout } from '@/api/client'
-import type { LayoutSummary } from '@/api/types'
+import type { LayoutSummary, LayoutWithItems, Room } from '@/api/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { LayoutThumbnail } from '@/components/layouts/LayoutThumbnail'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 import {
   describeOpenError,
@@ -19,13 +20,16 @@ import {
 } from '@/lib/savedLayouts'
 
 interface SavedLayoutsProps {
+  room: Room
   roomId: number
-  /** Loaded on the server, by name. A save refreshes the route, so a new layout shows up here. */
-  layouts: readonly LayoutSummary[]
+  /** Includes each layout's items, so every card can draw a miniature of the plan. */
+  layouts: readonly LayoutWithItems[]
+  /** The save card, shown in the section header. */
+  children?: ReactNode
 }
 
 /** US-14b: the room's saved layouts, with open and delete. */
-export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
+export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsProps) {
   const [deletedIds, setDeletedIds] = useState<ReadonlySet<number>>(new Set())
   const [confirmingId, setConfirmingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -101,9 +105,12 @@ export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
 
   return (
     <section aria-labelledby="saved-layouts-heading" className="grid gap-3">
-      <h2 id="saved-layouts-heading" className="text-sm font-semibold text-foreground">
-        Saved layouts
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="saved-layouts-heading" className="text-sm font-semibold text-foreground">
+          Saved layouts
+        </h2>
+        {children}
+      </div>
 
       {notFound !== null ? (
         <Alert variant="destructive">
@@ -114,118 +121,134 @@ export function SavedLayouts({ roomId, layouts }: SavedLayoutsProps) {
 
       {shown.length === 0 ? (
         // AT-2
-        <p className="rounded-lg border border-dashed border-border p-6 text-sm text-muted-foreground">
-          No saved layouts yet. Use “Save layout” to keep the current plan.
+        <p className="rounded-lg border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
+          Save this plan to compare arrangements later.
         </p>
       ) : (
         // AT-1
-        <ul className="grid gap-2">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {shown.map((layout) => {
             const confirming = confirmingId === layout.id
             const deleting = deletingId === layout.id
             const replacing = replacingId === layout.id
             const opening = openingId === layout.id
             return (
-              <li
+              <div
                 key={layout.id}
-                className="grid gap-2 rounded-lg border border-border p-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between"
+                className="flex h-full flex-col overflow-hidden rounded-lg bg-card ring-1 ring-foreground/10 transition duration-200 hover:shadow-md hover:ring-brand/40"
               >
-                <div className="grid gap-0.5">
-                  <span className="font-medium wrap-break-word text-foreground">{layout.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {formatItemCount(layout.itemCount)}
-                  </span>
-                </div>
-
-                {confirming ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-foreground">Delete “{layout.name}”?</span>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      disabled={deleting}
-                      onClick={() => confirmDelete(layout)}
-                    >
-                      {deleting ? 'Deleting…' : 'Delete'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      disabled={deleting}
-                      onClick={() => {
-                        setConfirmingId(null)
-                        setError(null)
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : replacing ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-foreground">
-                      Replace the current plan with “{layout.name}”?
+                <button
+                  type="button"
+                  onClick={() => startOpen(layout)}
+                  disabled={busy || confirming || replacing}
+                  aria-label={`Open ${layout.name}`}
+                  className="group flex flex-1 flex-col text-left focus-visible:outline-none disabled:cursor-default"
+                >
+                  <LayoutThumbnail room={room} layoutId={layout.id} items={layout.items} />
+                  <span className="flex items-start justify-between gap-2 p-3">
+                    <span className="grid gap-0.5">
+                      <span className="text-sm font-medium wrap-break-word text-foreground">
+                        {layout.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatItemCount(layout.itemCount)}
+                      </span>
                     </span>
-                    <Button
-                      type="button"
-                      size="sm"
-                      disabled={opening}
-                      onClick={() => openLayout(layout)}
-                    >
-                      {opening ? 'Opening…' : 'Replace'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      disabled={opening}
-                      onClick={() => setReplacingId(null)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      aria-label={`Open ${layout.name}`}
-                      disabled={busy}
-                      onClick={() => startOpen(layout)}
-                    >
-                      <FolderOpen aria-hidden="true" />
-                      {opening ? 'Opening…' : 'Open'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      aria-label={`Delete ${layout.name}`}
-                      disabled={busy}
-                      onClick={() => {
-                        setConfirmingId(layout.id)
-                        setReplacingId(null)
-                        setError(null)
-                      }}
-                    >
-                      <Trash2 aria-hidden="true" />
-                      Delete
-                    </Button>
-                  </div>
-                )}
+                    <ChevronRight
+                      className="mt-0.5 size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
 
-                {error?.id === layout.id ? (
-                  <Alert variant="destructive" className="sm:basis-full">
-                    <TriangleAlert aria-hidden="true" />
-                    <AlertDescription>{error.message}</AlertDescription>
-                  </Alert>
-                ) : null}
-              </li>
+                <div className="px-3 pb-3">
+                  {confirming ? (
+                    <div className="grid gap-2">
+                      <span className="text-sm text-foreground">
+                        Delete “{layout.name}”?
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          disabled={deleting}
+                          onClick={() => confirmDelete(layout)}
+                        >
+                          {deleting ? 'Deleting…' : 'Delete'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={deleting}
+                          onClick={() => {
+                            setConfirmingId(null)
+                            setError(null)
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : replacing ? (
+                    <div className="grid gap-2">
+                      <span className="text-sm text-foreground">
+                        Replace the current plan with “{layout.name}”?
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={opening}
+                          onClick={() => openLayout(layout)}
+                        >
+                          {opening ? 'Opening…' : 'Replace'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={opening}
+                          onClick={() => setReplacingId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : opening ? (
+                    <p className="text-sm text-muted-foreground">Opening…</p>
+                  ) : (
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`Delete ${layout.name}`}
+                        disabled={busy}
+                        onClick={() => {
+                          setConfirmingId(layout.id)
+                          setReplacingId(null)
+                          setError(null)
+                        }}
+                      >
+                        <Trash2 aria-hidden="true" />
+                        Delete
+                      </Button>
+                    </div>
+                  )}
+
+                  {error?.id === layout.id ? (
+                    <Alert variant="destructive" className="mt-2">
+                      <TriangleAlert aria-hidden="true" />
+                      <AlertDescription>{error.message}</AlertDescription>
+                    </Alert>
+                  ) : null}
+                </div>
+              </div>
             )
           })}
-        </ul>
+        </div>
       )}
     </section>
   )

@@ -22,7 +22,7 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
           </p>
         </div>
         <Button asChild>
-          <Link href="/">
+          <Link href="/rooms/new">
             <Plus aria-hidden="true" />
             Create your first room
           </Link>

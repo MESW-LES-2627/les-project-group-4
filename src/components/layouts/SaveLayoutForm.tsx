@@ -17,7 +17,7 @@ import { LAYOUT_NAME_MAX } from '@/lib/schemas/layout'
 
 interface SaveLayoutFormProps {
   roomId: number
-  /** The items currently on the plan. Empty until US-09 (#31) lets the user place items. */
+  /** The items currently on the plan. With none, the layout cannot be saved (AT-6). */
   items: readonly PlacedItem[]
   /** The room's saved layouts, so the "Saved …" confirmation goes away if that layout is deleted. */
   savedLayouts: readonly LayoutSummary[]
@@ -49,7 +49,7 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (inFlightRef.current) return
+    if (inFlightRef.current || items.length === 0) return
 
     // AT-1: a blank name is rejected here, so no request is sent.
     const prepared = toSaveLayoutRequest(name, items)
@@ -87,18 +87,30 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
   // Shown once the refreshed list has the new layout, and hidden again if it is deleted.
   const savedName = isRefreshing ? null : savedConfirmation(saved, savedLayouts)
 
+  // AT-6: an empty plan cannot be saved, so both buttons are disabled and a hint says why.
+  const isEmpty = items.length === 0
+  const emptyHint = isEmpty ? (
+    <p id="save-layout-empty-hint" className="text-xs text-muted-foreground">
+      Add at least one item to save a layout.
+    </p>
+  ) : null
+
   if (!open) {
     return (
-      <div className="grid gap-2">
-        <div>
-          <Button type="button" variant="outline" size="sm" onClick={start}>
-            <Save aria-hidden="true" />
-            Save layout
-          </Button>
-        </div>
+      <div className="grid justify-items-end gap-1">
+        <Button
+          type="button"
+          onClick={start}
+          disabled={isEmpty}
+          aria-describedby={isEmpty ? 'save-layout-empty-hint' : undefined}
+        >
+          <Save aria-hidden="true" />
+          Save layout
+        </Button>
+        {emptyHint}
         {savedName !== null ? (
-          <p role="status" className="flex items-center gap-1.5 text-sm text-foreground">
-            <CircleCheck className="size-4 text-primary" aria-hidden="true" />
+          <p role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CircleCheck className="size-3.5 text-primary" aria-hidden="true" />
             Saved “{savedName}”.
           </p>
         ) : null}
@@ -111,7 +123,7 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
       onSubmit={submit}
       noValidate
       aria-label="Save layout"
-      className="grid gap-3 rounded-lg border border-border bg-card p-4"
+      className="grid w-full gap-3 rounded-lg border border-border bg-background p-3"
     >
       <TextField
         id="layout-name"
@@ -127,9 +139,11 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
         }}
         onBlur={() => {}}
       />
-      <p className="text-xs text-muted-foreground">
-        {formatItemCount(items.length)} on the plan will be saved.
-      </p>
+      {emptyHint ?? (
+        <p className="text-xs text-muted-foreground">
+          {formatItemCount(items.length)} on the plan will be saved.
+        </p>
+      )}
       {formError !== null ? (
         <Alert variant="destructive">
           <TriangleAlert aria-hidden="true" />
@@ -137,7 +151,12 @@ export function SaveLayoutForm({ roomId, items, savedLayouts }: SaveLayoutFormPr
         </Alert>
       ) : null}
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" size="sm" disabled={isSaving}>
+        <Button
+          type="submit"
+          size="sm"
+          disabled={isSaving || isEmpty}
+          aria-describedby={isEmpty ? 'save-layout-empty-hint' : undefined}
+        >
           {isSaving ? 'Saving…' : 'Save'}
         </Button>
         <Button type="button" variant="ghost" size="sm" onClick={cancel} disabled={isSaving}>

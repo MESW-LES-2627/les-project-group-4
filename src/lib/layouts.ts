@@ -1,4 +1,4 @@
-import type { LayoutDetails, LayoutSummary } from '@/api/types'
+import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '@/api/types'
 import { getDb } from '@/lib/db'
 import type { CreateLayoutInput } from '@/lib/schemas/layout'
 
@@ -81,6 +81,28 @@ export async function findLayouts(roomId: number): Promise<LayoutSummary[]> {
     itemCount: layout._count.items,
     updatedAt: layout.updatedAt.toISOString(),
   }))
+}
+
+/**
+ * US-14b: the room's saved layouts with their items, for the preview cards on
+ * the room page. The list API keeps returning the lighter LayoutSummary shape.
+ */
+export async function findLayoutsWithItems(roomId: number): Promise<LayoutWithItems[]> {
+  const layouts = await getDb().layout.findMany({
+    where: { roomId },
+    select: LAYOUT_DETAILS_SELECT,
+    orderBy: [{ name: 'asc' }, { id: 'asc' }],
+  })
+  return layouts.map((row) => {
+    const details = toLayoutDetails(row)
+    return {
+      id: details.id,
+      name: details.name,
+      itemCount: details.items.length,
+      updatedAt: details.updatedAt,
+      items: details.items,
+    }
+  })
 }
 
 /** US-14 AT-2 / AT-5: one layout of this room with its items, or null if it does not exist in this room. */

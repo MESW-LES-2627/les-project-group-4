@@ -744,6 +744,10 @@
         {
           "id": "AT-5",
           "title": "Current items"
+        },
+        {
+          "id": "AT-6",
+          "title": "Empty plan cannot be saved"
         }
       ]
     },

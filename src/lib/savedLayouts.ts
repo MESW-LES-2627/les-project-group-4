@@ -10,10 +10,10 @@ export function formatItemCount(count: number): string {
  * US-14b AT-5: the layouts still to show once some were deleted on this page.
  * The list comes from the server, so a refresh after a save keeps the deleted ones hidden.
  */
-export function visibleLayouts(
-  layouts: readonly LayoutSummary[],
+export function visibleLayouts<T extends LayoutSummary>(
+  layouts: readonly T[],
   deletedIds: ReadonlySet<number>,
-): LayoutSummary[] {
+): T[] {
   return layouts.filter((layout) => !deletedIds.has(layout.id))
 }
 
