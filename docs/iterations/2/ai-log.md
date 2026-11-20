@@ -4,8 +4,8 @@
 
 Same rule as Iterations 0 and 1: AI was an assistant, not an author. Every
 suggestion was read, changed where needed, run locally and reviewed by another
-team member before it was merged. This entry covers Francisca's use of AI; each
-member records their own.
+team member before it was merged. Each member records their own; this file
+currently has Francisca's and João's entries.
 
 ## Tool
 
@@ -14,7 +14,9 @@ member records their own.
 | OpenCode (DeepSeek V4.1 Flash) | Francisca | CH-03a/CH-03b (#62, #63), US-09a (#81), US-09b (#82), the Next.js security upgrade (#80) and the Iteration 2 docs. |
 | Claude (Claude Code) | João | US-13/US-14 layouts (#73, #74, #75, #84), help reviewing #79, #80 and #83, and the iteration plan. |
 
-## What I used it for
+## Francisca (OpenCode)
+
+### What I used it for
 
 - **Acceptance structure and reporting (CH-03a, CH-03b).** First versions of
   the `unit`/`acceptance` Vitest projects, the `US`/`AT` tags and `strictTags`,
@@ -33,7 +35,7 @@ member records their own.
   of #83 found the missing AT coverage and drop tests; I added them before the
   PR left draft.
 
-## One place the model was wrong
+### One place the model was wrong
 
 **What the model produced.** In #83 it produced a working drag-and-drop room
 page: the item landed where the cursor was, the three panels looked right, and
@@ -55,7 +57,7 @@ registry was synced.
 matches our Definition of Done. For UI work, the question is not "does it look
 right?" but "which AT proves it, and what test would fail if this broke?".
 
-## What I checked before merging
+### What I checked before merging
 
 - `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`.
 - `npm run acceptance:check -- --issue <n>` for the story the PR closes.
