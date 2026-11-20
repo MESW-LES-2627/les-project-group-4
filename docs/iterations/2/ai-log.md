@@ -12,6 +12,7 @@ member records their own.
 | Tool | Who | What it was used for |
 | --- | --- | --- |
 | OpenCode (DeepSeek V4.1 Flash) | Francisca | CH-03a/CH-03b (#62, #63), US-09a (#81), US-09b (#82), the Next.js security upgrade (#80) and the Iteration 2 docs. |
+| Claude (Claude Code) | João | US-13/US-14 layouts (#73, #74, #75, #84), help reviewing #79, #80 and #83, and the iteration plan. |
 
 ## What I used it for
 
@@ -87,3 +88,54 @@ right?" but "which AT proves it, and what test would fail if this broke?".
     story; the base comparison labels a regression; the registry is in sync.
   - **Security (#78, #80):** `npx next --version` is 16.4.6 and the build no
     longer prints the advisory.
+
+## João (Claude)
+
+### What I used it for
+
+- **Layouts API (US-13a, US-14a).** First versions of the `Layout` and
+  `LayoutItem` models and the route handlers under `/api/rooms/[id]/layouts`,
+  with route tests that mock `@/lib/db`. I reviewed and changed them before
+  opening #73.
+- **Saving and opening layouts (US-13b, US-14b).** First versions of the save
+  form, the saved layouts list with delete, and opening a layout on the plan
+  with a confirmation before replacing it and a message when it no longer
+  exists (#74, #75, #84). I split US-13/US-14 into the a/b sub-issues, moved
+  the tests into `tests/acceptance` with the US/AT tags from #64/#67, and
+  tested every flow by hand, which is where I found the bug below.
+- **Reviews and planning.** It ran the branches and drafted the reviews of
+  #64, #67, #79, #80, #83 (Francisca) and #76, #77 (Nicolas); I read them,
+  asked for changes in tone and content, and decided what to post. Also
+  drafts of the iteration plan and of messages to the group, which I edited
+  before sending.
+
+### One place the model was wrong
+
+**What the model produced.** After a save, the form showed "Saved 'layout 1'".
+The message came from local state set when the request succeeded, and the
+unit tests for the helpers passed.
+
+**What was wrong.** Testing by hand, I deleted that layout from the list and
+the message stayed on screen, confirming a layout that no longer existed. No
+test looked at the form and the list together.
+
+**What we changed.** A `savedConfirmation` helper shows the message only while
+the saved layout is still in the list, and the form hides it while the list
+refreshes. The helper has unit tests.
+
+**Why it matters.** Two components can each be right and still be wrong
+together. When one part of the UI changes shared data, check what the others
+are still showing. Smaller misses, caught before `develop`: a test copy left
+in `notes/` that broke the structure test, and a branch created with
+Francisca's branch as its upstream.
+
+### What I checked before merging
+
+- `npm run lint`, `npm run typecheck` and `npm test`.
+- The acceptance check for the sub-issue each PR closes. It failed on #74 at
+  first because no AT had a test, which is why the tests moved to
+  `tests/acceptance`.
+- By hand: save with a valid, blank and duplicate name; the list with item
+  counts and the empty state; delete with confirm/cancel; open with the
+  replace confirmation and cancel; a deleted layout showing the not found
+  message.
