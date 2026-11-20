@@ -1,11 +1,18 @@
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 
 import { sizeToScene, toScene } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 
-export const ITEM_COLOR = '#cbd5e1'
-export const SELECTED_ITEM_COLOR = '#2563eb'
+/**
+ * Shared with the saved-layout miniatures (LayoutThumbnail), so the plan and
+ * the previews draw items with the same fill, border and opacity.
+ */
+export const ITEM_COLOR = '#2a2622'
+export const SELECTED_ITEM_COLOR = '#b4552d'
+export const SELECTED_ITEM_BORDER_COLOR = '#9e4823'
+export const ITEM_FILL_OPACITY = 0.16
+export const ITEM_BORDER_OPACITY = 0.35
 export const ITEM_HEIGHT_M = 0.02
 
 const CLICK_TOLERANCE_PX = 4
@@ -32,6 +39,26 @@ export function PlacedItem({
   const { x, z, rotationY } = toScene(item)
   const { width, depth } = sizeToScene(item)
 
+  // The footprint outline, in the item's local space. The line loop closes it.
+  const outline = useMemo(
+    () =>
+      new Float32Array([
+        -width / 2,
+        0,
+        -depth / 2,
+        width / 2,
+        0,
+        -depth / 2,
+        width / 2,
+        0,
+        depth / 2,
+        -width / 2,
+        0,
+        depth / 2,
+      ]),
+    [width, depth],
+  )
+
   function handleClick(event: ThreeEvent<MouseEvent>) {
     // a pan that starts on an item must not select it
     event.stopPropagation()
@@ -51,8 +78,27 @@ export function PlacedItem({
         onClick={onSelect ? handleClick : undefined}
       >
         <boxGeometry args={[width, height, depth]} />
-        <meshBasicMaterial color={selected ? SELECTED_ITEM_COLOR : ITEM_COLOR} />
+        <meshBasicMaterial
+          color={selected ? SELECTED_ITEM_COLOR : ITEM_COLOR}
+          transparent={!selected}
+          opacity={selected ? 1 : ITEM_FILL_OPACITY}
+        />
       </mesh>
+
+      {/* Same border as the saved-layout miniatures, on the top face. */}
+      <lineLoop
+        name={`placed-item-outline-${item.id}`}
+        position={[0, height + 0.001, 0]}
+      >
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[outline, 3]} />
+        </bufferGeometry>
+        <lineBasicMaterial
+          color={selected ? SELECTED_ITEM_BORDER_COLOR : ITEM_COLOR}
+          transparent
+          opacity={selected ? 1 : ITEM_BORDER_OPACITY}
+        />
+      </lineLoop>
 
       {label ? (
         <group position={[0, height + 0.05, 0]}>{label}</group>

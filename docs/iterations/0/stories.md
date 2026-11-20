@@ -20,16 +20,16 @@ the boundaries around them are in [mvp.md](mvp.md).
 
 | Outcome | Stories | Iterations |
 | --- | --- | --- |
-| **O1** | US-01, US-02, US-03, US-04, US-05, US-06, US-15 | 0: US-01 · 1: US-02, US-03, US-06, US-15 · 2: US-04, US-05 (Should) |
+| **O1** | US-01, US-02, US-03, US-04, US-05, US-06, US-15 | 0: US-01 · 1: US-02, US-03, US-06, US-15 · 2: US-04, US-05 (Should, moved to 3) |
 | **O2** | US-07, US-08, US-09, US-17 | 1: US-07 · 2: US-08, US-09 · 4: US-17 |
-| **O3** | US-10, US-11, US-12 | 2: US-12 · 3: US-10, US-11 |
-| **O4** | US-13, US-14 | 3 |
+| **O3** | US-10, US-11, US-12 | 2: US-12 · 3: US-10, US-11, US-12b (#85) |
+| **O4** | US-13, US-14 | 2: US-13, US-14 (pulled forward from 3) |
 | **O5** | US-16, US-18 | 4 |
 
 Every story has one primary outcome. An outcome can span iterations: O1
 starts with US-01 in Iteration 0 and completes with location in
-Iteration 1; O3 and O4 complete in Iteration 3; O2 and O5 complete in
-Iteration 4.
+Iteration 1; O3 completes in Iteration 3; O2 and O5 complete in
+Iteration 4. O4 completed in Iteration 2, one iteration early.
 
 ## Iteration 0 - In scope
 
@@ -40,6 +40,9 @@ One story. UI to data, end to end.
 | US-01 | As a user, I can create a room by specifying a name and its  dimensions in cm.  | O1      | Must     |
 
 ## Iteration 0 - Public cut
+
+This is the Iteration 0 plan, kept for history. The Iteration 2 public cut
+below records where the items that slipped actually went.
 
 Explicitly not done in Iter 0, planned for later:
 
@@ -58,6 +61,27 @@ Explicitly not done in Iter 0, planned for later:
 - LLM-based filters                → Iter 4
 - Nearest stores list              → Iter 4
 - Store map / navigation           → Vision
+
+## Iteration 2 - Public cut
+
+Delivered in Iteration 2:
+
+- US-08 (filter by max price and tags), US-09a/US-09b (add an item, functional
+  and UI polish) and US-12 (running total).
+- US-13 and US-14 (save and reload layouts) were planned for Iteration 3 and
+  were pulled forward; O4 is complete.
+- CH-03a/CH-03b (acceptance tests by story/AT, CI report and regression
+  labels) and the Next.js security upgrade (#78).
+
+Explicitly not done in Iter 2, and where they went:
+
+- Edit a room (US-04)          → Iter 3 (Should)
+- Delete a room (US-05)        → Iter 3 (Should)
+- US-12 AT-5, total against a room budget → US-12b, #85 (Iter 3)
+- Drag / rotate items (US-10)  → Iter 3
+- Collision highlight (US-11)  → Iter 3
+- DOM component test harness (CH-05, #66) → Iter 3
+- Feature-based source tree (CH-04, #65)  → backlog
 
 ## Full backlog
 

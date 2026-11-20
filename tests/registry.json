@@ -1,0 +1,953 @@
+{
+  "repository": "MESW-LES-2627/les-project-group-4",
+  "stories": {
+    "CH-01": {
+      "issue": 41,
+      "title": "Set up staging and production deployment",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Staging deploy"
+        },
+        {
+          "id": "AT-2",
+          "title": "Production deploy"
+        },
+        {
+          "id": "AT-3",
+          "title": "Isolated environments"
+        },
+        {
+          "id": "AT-4",
+          "title": "Migrations"
+        },
+        {
+          "id": "AT-5",
+          "title": "Smoke test"
+        },
+        {
+          "id": "AT-6",
+          "title": "Fail fast"
+        },
+        {
+          "id": "AT-7",
+          "title": "Health ping"
+        },
+        {
+          "id": "AT-8",
+          "title": "CLAIM"
+        },
+        {
+          "id": "AT-9",
+          "title": "Clean clone"
+        }
+      ]
+    },
+    "CH-02": {
+      "issue": 42,
+      "title": "Seed items, stores and cities",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Idempotent seed"
+        },
+        {
+          "id": "AT-2",
+          "title": "Catalog data"
+        },
+        {
+          "id": "AT-3",
+          "title": "Stores"
+        },
+        {
+          "id": "AT-4",
+          "title": "Cities"
+        },
+        {
+          "id": "AT-5",
+          "title": "Saved layouts"
+        },
+        {
+          "id": "AT-6",
+          "title": "Sample data"
+        },
+        {
+          "id": "AT-7",
+          "title": "Pipeline seed"
+        }
+      ]
+    },
+    "CH-03a": {
+      "issue": 62,
+      "title": "Move acceptance tests under tests/acceptance and add the US/AT registry",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Structure"
+        },
+        {
+          "id": "AT-2",
+          "title": "Traceability"
+        },
+        {
+          "id": "AT-3",
+          "title": "Coverage gate"
+        },
+        {
+          "id": "AT-4",
+          "title": "No drift"
+        },
+        {
+          "id": "AT-5",
+          "title": "Manual ATs"
+        }
+      ]
+    },
+    "CH-03b": {
+      "issue": 63,
+      "title": "Report test failures by story/AT and detect regressions in CI",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Reported failure"
+        },
+        {
+          "id": "AT-2",
+          "title": "Regression"
+        },
+        {
+          "id": "AT-3",
+          "title": "Not a regression"
+        },
+        {
+          "id": "AT-4",
+          "title": "Pre-existing"
+        },
+        {
+          "id": "AT-5",
+          "title": "Required check"
+        },
+        {
+          "id": "AT-6",
+          "title": "Sprint review"
+        }
+      ]
+    },
+    "CH-04": {
+      "issue": 65,
+      "title": "Refactor the source tree into feature-based folders",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "One home per feature"
+        },
+        {
+          "id": "AT-2",
+          "title": "No behaviour change"
+        },
+        {
+          "id": "AT-3",
+          "title": "Thin app layer"
+        },
+        {
+          "id": "AT-4",
+          "title": "Boundaries"
+        },
+        {
+          "id": "AT-5",
+          "title": "Small shared layer"
+        },
+        {
+          "id": "AT-6",
+          "title": "Docs match tree"
+        }
+      ]
+    },
+    "CH-05": {
+      "issue": 66,
+      "title": "Add a DOM component test harness with jsdom and Testing Library",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Harness"
+        },
+        {
+          "id": "AT-2",
+          "title": "Create form confirmation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Location errors"
+        },
+        {
+          "id": "AT-4",
+          "title": "Location race"
+        },
+        {
+          "id": "AT-5",
+          "title": "Room details"
+        },
+        {
+          "id": "AT-6",
+          "title": "Registry and no new CI job"
+        }
+      ]
+    },
+    "US-01": {
+      "issue": 23,
+      "title": "Create a room by name and dimensions",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Create"
+        },
+        {
+          "id": "AT-2",
+          "title": "Validation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Persistence"
+        },
+        {
+          "id": "AT-4",
+          "title": "Confirmation"
+        },
+        {
+          "id": "AT-5",
+          "title": "End to end"
+        }
+      ]
+    },
+    "US-02": {
+      "issue": 24,
+      "title": "List my rooms",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List rooms"
+        },
+        {
+          "id": "AT-2",
+          "title": "Empty state"
+        },
+        {
+          "id": "AT-3",
+          "title": "Open details"
+        },
+        {
+          "id": "AT-4",
+          "title": "Newest first"
+        }
+      ]
+    },
+    "US-02a": {
+      "issue": 54,
+      "title": "My rooms UI — card gallery, header and loading state",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Cards"
+        },
+        {
+          "id": "AT-2",
+          "title": "Empty state"
+        },
+        {
+          "id": "AT-3",
+          "title": "Loading"
+        },
+        {
+          "id": "AT-4",
+          "title": "Header"
+        },
+        {
+          "id": "AT-5",
+          "title": "Navigation"
+        }
+      ]
+    },
+    "US-03": {
+      "issue": 25,
+      "title": "View room details",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Show details"
+        },
+        {
+          "id": "AT-2",
+          "title": "Load by id"
+        },
+        {
+          "id": "AT-3",
+          "title": "Missing room"
+        },
+        {
+          "id": "AT-4",
+          "title": "Optional fields"
+        }
+      ]
+    },
+    "US-04": {
+      "issue": 26,
+      "title": "Edit a room's name and dimensions",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Pre-filled form"
+        },
+        {
+          "id": "AT-2",
+          "title": "Same validation as create"
+        },
+        {
+          "id": "AT-3",
+          "title": "Persisted edit"
+        },
+        {
+          "id": "AT-4",
+          "title": "Smaller-than-items warning"
+        }
+      ]
+    },
+    "US-05": {
+      "issue": 27,
+      "title": "Delete a room",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Delete action"
+        },
+        {
+          "id": "AT-2",
+          "title": "Confirmation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Cancel"
+        },
+        {
+          "id": "AT-4",
+          "title": "Deleted"
+        },
+        {
+          "id": "AT-5",
+          "title": "Cascade"
+        }
+      ]
+    },
+    "US-06": {
+      "issue": 28,
+      "title": "2D plan view of the room",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Room outline"
+        },
+        {
+          "id": "AT-2",
+          "title": "Item footprint"
+        },
+        {
+          "id": "AT-3",
+          "title": "Dimension change"
+        },
+        {
+          "id": "AT-4",
+          "title": "Reusable scene"
+        },
+        {
+          "id": "AT-5",
+          "title": "Renderer test"
+        }
+      ]
+    },
+    "US-06a": {
+      "issue": 43,
+      "title": "Plan2D renderer — R3F orthographic plan view",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Plan outline"
+        },
+        {
+          "id": "AT-2",
+          "title": "Item footprint"
+        },
+        {
+          "id": "AT-3",
+          "title": "Reusable scene"
+        },
+        {
+          "id": "AT-4",
+          "title": "Identify items"
+        },
+        {
+          "id": "AT-5",
+          "title": "Renderer test"
+        },
+        {
+          "id": "AT-6",
+          "title": "Docs"
+        }
+      ]
+    },
+    "US-06b": {
+      "issue": 44,
+      "title": "Plan geometry — cm contract and true-to-scale footprints",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Contract"
+        },
+        {
+          "id": "AT-2",
+          "title": "cm to metres"
+        },
+        {
+          "id": "AT-3",
+          "title": "Rotated bounds"
+        },
+        {
+          "id": "AT-4",
+          "title": "Fit with rotation"
+        },
+        {
+          "id": "AT-5",
+          "title": "Overlap"
+        },
+        {
+          "id": "AT-6",
+          "title": "Out of bounds"
+        },
+        {
+          "id": "AT-7",
+          "title": "Placement"
+        },
+        {
+          "id": "AT-8",
+          "title": "Regression tests"
+        },
+        {
+          "id": "AT-9",
+          "title": "No duplication"
+        }
+      ]
+    },
+    "US-07": {
+      "issue": 29,
+      "title": "Browse catalog items by category",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Catalog list"
+        },
+        {
+          "id": "AT-2",
+          "title": "Category filter"
+        },
+        {
+          "id": "AT-3",
+          "title": "Empty category"
+        },
+        {
+          "id": "AT-4",
+          "title": "Sample data label"
+        },
+        {
+          "id": "AT-5",
+          "title": "API filter"
+        }
+      ]
+    },
+    "US-08": {
+      "issue": 30,
+      "title": "Filter items by max price and tags",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Maximum price"
+        },
+        {
+          "id": "AT-2",
+          "title": "One tag"
+        },
+        {
+          "id": "AT-3",
+          "title": "OR within a facet"
+        },
+        {
+          "id": "AT-4",
+          "title": "AND across facets"
+        },
+        {
+          "id": "AT-5",
+          "title": "Combined with category"
+        },
+        {
+          "id": "AT-6",
+          "title": "Clear filters"
+        },
+        {
+          "id": "AT-7",
+          "title": "Stale response"
+        }
+      ]
+    },
+    "US-09": {
+      "issue": 31,
+      "title": "Add a selected item to the layout",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Add item"
+        },
+        {
+          "id": "AT-2",
+          "title": "Default placement"
+        },
+        {
+          "id": "AT-3",
+          "title": "True-to-scale footprint"
+        },
+        {
+          "id": "AT-4",
+          "title": "Remove item"
+        },
+        {
+          "id": "AT-5",
+          "title": "Doesn't fit"
+        },
+        {
+          "id": "AT-6",
+          "title": "Survives navigation"
+        }
+      ]
+    },
+    "US-09a": {
+      "issue": 81,
+      "title": "Add a selected item to the layout — functional slice",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Add item"
+        },
+        {
+          "id": "AT-2",
+          "title": "Default placement"
+        },
+        {
+          "id": "AT-3",
+          "title": "True-to-scale footprint"
+        },
+        {
+          "id": "AT-4",
+          "title": "Remove item"
+        },
+        {
+          "id": "AT-5",
+          "title": "Doesn't fit"
+        },
+        {
+          "id": "AT-6",
+          "title": "Survives navigation"
+        }
+      ]
+    },
+    "US-09b": {
+      "issue": 82,
+      "title": "Add a selected item to the layout — UI polish",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Workspace layout"
+        },
+        {
+          "id": "AT-2",
+          "title": "Item presentation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Add and remove feedback"
+        },
+        {
+          "id": "AT-4",
+          "title": "Empty state"
+        },
+        {
+          "id": "AT-5",
+          "title": "Keyboard and focus"
+        }
+      ]
+    },
+    "US-10": {
+      "issue": 32,
+      "title": "Drag and rotate items on the floor plan",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Drag"
+        },
+        {
+          "id": "AT-2",
+          "title": "Rotate"
+        },
+        {
+          "id": "AT-3",
+          "title": "Stored state"
+        },
+        {
+          "id": "AT-4",
+          "title": "Room bounds"
+        },
+        {
+          "id": "AT-5",
+          "title": "Save and reload"
+        }
+      ]
+    },
+    "US-11": {
+      "issue": 33,
+      "title": "Highlight colliding items in red",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Overlap"
+        },
+        {
+          "id": "AT-2",
+          "title": "No overlap"
+        },
+        {
+          "id": "AT-3",
+          "title": "Resolve"
+        },
+        {
+          "id": "AT-4",
+          "title": "Rotated rectangles"
+        },
+        {
+          "id": "AT-5",
+          "title": "Out of bounds"
+        }
+      ]
+    },
+    "US-12": {
+      "issue": 34,
+      "title": "Running total cost of placed items",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Total"
+        },
+        {
+          "id": "AT-2",
+          "title": "Add"
+        },
+        {
+          "id": "AT-3",
+          "title": "Remove"
+        },
+        {
+          "id": "AT-4",
+          "title": "Currency"
+        },
+        {
+          "id": "AT-6",
+          "title": "Stored prices"
+        }
+      ]
+    },
+    "US-12b": {
+      "issue": 85,
+      "title": "Show the running total against a room budget",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Set budget"
+        },
+        {
+          "id": "AT-2",
+          "title": "Budget"
+        }
+      ]
+    },
+    "US-13": {
+      "issue": 35,
+      "title": "Save a layout with a custom name",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Name required"
+        },
+        {
+          "id": "AT-2",
+          "title": "Persist items"
+        },
+        {
+          "id": "AT-3",
+          "title": "Confirmation"
+        },
+        {
+          "id": "AT-4",
+          "title": "Validation"
+        },
+        {
+          "id": "AT-5",
+          "title": "Failure"
+        },
+        {
+          "id": "AT-6",
+          "title": "Unique name"
+        }
+      ]
+    },
+    "US-13a": {
+      "issue": 69,
+      "title": "Layouts API — save a layout",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Save"
+        },
+        {
+          "id": "AT-2",
+          "title": "Validation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Unique name"
+        }
+      ]
+    },
+    "US-13b": {
+      "issue": 70,
+      "title": "Save layout form on the room page",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Name required"
+        },
+        {
+          "id": "AT-2",
+          "title": "Confirmation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Duplicate name"
+        },
+        {
+          "id": "AT-4",
+          "title": "Failure"
+        },
+        {
+          "id": "AT-5",
+          "title": "Current items"
+        },
+        {
+          "id": "AT-6",
+          "title": "Empty plan cannot be saved"
+        }
+      ]
+    },
+    "US-14": {
+      "issue": 36,
+      "title": "Reload a previously saved layout",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List saved layouts"
+        },
+        {
+          "id": "AT-2",
+          "title": "Restore"
+        },
+        {
+          "id": "AT-3",
+          "title": "Confirm replace"
+        },
+        {
+          "id": "AT-4",
+          "title": "Empty"
+        },
+        {
+          "id": "AT-5",
+          "title": "Missing layout"
+        },
+        {
+          "id": "AT-6",
+          "title": "Delete saved layout"
+        },
+        {
+          "id": "AT-7",
+          "title": "Cancel delete"
+        }
+      ]
+    },
+    "US-14a": {
+      "issue": 71,
+      "title": "Layouts API — list, open and delete",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List"
+        },
+        {
+          "id": "AT-2",
+          "title": "Open"
+        },
+        {
+          "id": "AT-3",
+          "title": "Missing"
+        },
+        {
+          "id": "AT-4",
+          "title": "Delete"
+        }
+      ]
+    },
+    "US-14b": {
+      "issue": 72,
+      "title": "Saved layouts list and reload on the room page",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "List"
+        },
+        {
+          "id": "AT-2",
+          "title": "Empty"
+        },
+        {
+          "id": "AT-3",
+          "title": "Restore"
+        },
+        {
+          "id": "AT-4",
+          "title": "Confirm replace"
+        },
+        {
+          "id": "AT-5",
+          "title": "Delete"
+        },
+        {
+          "id": "AT-6",
+          "title": "Missing layout"
+        }
+      ]
+    },
+    "US-15": {
+      "issue": 37,
+      "title": "Set my location",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "City"
+        },
+        {
+          "id": "AT-2",
+          "title": "Geolocation"
+        },
+        {
+          "id": "AT-3",
+          "title": "Permission denied"
+        },
+        {
+          "id": "AT-4",
+          "title": "Non-HTTPS"
+        },
+        {
+          "id": "AT-5",
+          "title": "Reuse"
+        },
+        {
+          "id": "AT-6",
+          "title": "No reverse geocoding"
+        }
+      ]
+    },
+    "US-16": {
+      "issue": 38,
+      "title": "Natural-language filter input",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Sentence to filters"
+        },
+        {
+          "id": "AT-2",
+          "title": "Applied"
+        },
+        {
+          "id": "AT-3",
+          "title": "Facet logic"
+        },
+        {
+          "id": "AT-4",
+          "title": "Unknown sentence"
+        },
+        {
+          "id": "AT-5",
+          "title": "Filters only"
+        }
+      ]
+    },
+    "US-17": {
+      "issue": 39,
+      "title": "See nearby stores stocking selected items",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Stores"
+        },
+        {
+          "id": "AT-2",
+          "title": "Distance"
+        },
+        {
+          "id": "AT-3",
+          "title": "No location"
+        },
+        {
+          "id": "AT-4",
+          "title": "Seeded data"
+        },
+        {
+          "id": "AT-5",
+          "title": "No live claims"
+        },
+        {
+          "id": "AT-6",
+          "title": "Empty"
+        }
+      ]
+    },
+    "US-18": {
+      "issue": 45,
+      "title": "Fallback when a natural-language sentence is not understood",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Unknown sentence"
+        },
+        {
+          "id": "AT-2",
+          "title": "Manual fallback"
+        },
+        {
+          "id": "AT-3",
+          "title": "No fake understanding"
+        },
+        {
+          "id": "AT-4",
+          "title": "Test coverage"
+        },
+        {
+          "id": "AT-5",
+          "title": "Filters only"
+        }
+      ]
+    }
+  }
+}

@@ -1,18 +1,21 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { CatalogList } from '@/components/catalog/CatalogList'
-import { CategoryFilter } from '@/components/catalog/CategoryFilter'
-import { findItems } from '@/lib/items'
-import { listItemsQuerySchema } from '@/lib/schemas/item'
+import { CatalogBrowser } from '@/components/catalog/CatalogBrowser'
+import { CurrentRoomBanner } from '@/components/catalog/CurrentRoomBanner'
+import { PlacementError } from '@/components/catalog/PlacementError'
+import { findItems, findTagOptions } from '@/lib/items'
+import { listItemsQuerySchema, readListItemsQuery } from '@/lib/schemas/item'
 
 export const metadata: Metadata = {
   title: 'FurniMi - Catalog',
 }
 
 /**
- * US-07: loads the catalog on the server, filtered by ?category=. An unknown category shows
- * not-found.tsx; loading.tsx and error.tsx cover the other states.
+ * US-07/US-08: loads the catalog on the server, filtered by ?category=, ?maxPrice=, ?style=
+ * and ?room=. An invalid filter shows not-found.tsx; loading.tsx and error.tsx cover the other
+ * states. Later filter changes are handled on the client by CatalogBrowser.
+ * US-09: the banner and the per-card add buttons target the last room opened.
  */
 export default async function CatalogPage({
   searchParams,
@@ -20,13 +23,18 @@ export default async function CatalogPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   // Reading searchParams makes the page render on every request, so the list is always current.
-  const { category } = await searchParams
-  const parsed = listItemsQuerySchema.safeParse({ category })
+  const params = new URLSearchParams()
+  // Rebuild URLSearchParams so the page reads the query exactly like the API route does.
+  for (const [key, value] of Object.entries(await searchParams)) {
+    if (value === undefined) continue
+    for (const one of Array.isArray(value) ? value : [value]) params.append(key, one)
+  }
+  const parsed = listItemsQuerySchema.safeParse(readListItemsQuery(params))
   if (!parsed.success) {
     notFound()
   }
 
-  const items = await findItems(parsed.data.category)
+  const [items, tagOptions] = await Promise.all([findItems(parsed.data), findTagOptions()])
 
   return (
     <main className="flex flex-1 px-4 py-8 sm:px-8 sm:py-12">
@@ -46,8 +54,19 @@ export default async function CatalogPage({
             Retailers and prices are fictional.
           </p>
         </div>
-        <CategoryFilter selected={parsed.data.category} />
-        <CatalogList items={items} category={parsed.data.category} />
+        <CurrentRoomBanner />
+        <PlacementError />
+        {/*
+          key: a new id on every server render, so any server navigation (a category link, the
+          header link) remounts CatalogBrowser with the new data. A key built from the URL would
+          keep stale client state when the new URL equals the first one.
+        */}
+        <CatalogBrowser
+          key={crypto.randomUUID()}
+          initialQuery={parsed.data}
+          initialItems={items}
+          tagOptions={tagOptions}
+        />
       </section>
     </main>
   )

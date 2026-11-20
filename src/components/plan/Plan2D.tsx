@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from 'react'
 import { MapControls, OrthographicCamera } from '@react-three/drei'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, type RootState } from '@react-three/fiber'
 import {
   Maximize2,
   Minimize2,
@@ -17,8 +17,10 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react'
+import { Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
+import type { CatalogItem } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import type { RoomSize } from '@/lib/geometry/plan'
 import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
@@ -26,7 +28,7 @@ import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
 import { PlanGrid, PlanGridProjector } from './PlanGrid'
 import { ScaleBar, ScaleBarProjector } from './ScaleBar'
-import { ItemLabel } from './ItemLabel'
+import { ItemLabels, ItemLabelProjector } from './ItemLabels'
 import {
   CAMERA_HEIGHT_M,
   MAX_ZOOM,
@@ -43,6 +45,7 @@ export interface Plan2DProps {
   items?: PlacedItemData[]
   selectedId?: string | null
   onSelect?: (id: string | null) => void
+  onDropItem?: (item: CatalogItem, xCm: number, yCm: number) => void
 }
 
 export type Plan2DSceneProps = Plan2DProps &
@@ -160,6 +163,7 @@ export function Plan2D({
   items = [],
   selectedId = null,
   onSelect,
+  onDropItem,
 }: Plan2DProps) {
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const widthLabelRef = useRef<HTMLDivElement>(null)
@@ -167,8 +171,13 @@ export function Plan2D({
   const scaleLineRef = useRef<HTMLDivElement>(null)
   const scaleTextRef = useRef<HTMLSpanElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const canvasStateRef = useRef<RootState | null>(null)
+  const dragCounterRef = useRef(0)
+  const [labelRefs] = useState(() => new Map<string, HTMLDivElement | null>())
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
 
   // While expanded, lock page scrolling and let Escape close the plan.
   useEffect(() => {
@@ -207,13 +216,69 @@ export function Plan2D({
     camera.updateProjectionMatrix()
   }
 
+  function parseDragItem(dataTransfer: DataTransfer): CatalogItem | null {
+    const raw = dataTransfer.getData('application/json')
+    if (!raw) return null
+    try {
+      return JSON.parse(raw) as CatalogItem
+    } catch {
+      return null
+    }
+  }
+
+  function handleDragEnter(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+    if (!onDropItem) return
+    dragCounterRef.current += 1
+    setIsDragOver(true)
+  }
+
+  function handleDragLeave(_event: React.DragEvent<HTMLDivElement>) {
+    if (!onDropItem) return
+    dragCounterRef.current -= 1
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0
+      setIsDragOver(false)
+    }
+  }
+
+  function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy'
+  }
+
+  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+    dragCounterRef.current = 0
+    setIsDragOver(false)
+
+    if (!onDropItem || !containerRef.current || !canvasStateRef.current) return
+
+    const item = parseDragItem(event.dataTransfer)
+    if (!item) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const ndcX = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    const ndcY = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+    const { camera } = canvasStateRef.current
+    const point = new Vector3(ndcX, ndcY, 0).unproject(camera)
+
+    onDropItem(item, point.x * 100, point.z * 100)
+  }
+
   return (
     <div
+      ref={containerRef}
       className={
         isFullscreen
           ? 'fixed inset-0 z-50 h-dvh bg-secondary'
           : 'relative h-full w-full'
       }
+      onDragEnter={onDropItem ? handleDragEnter : undefined}
+      onDragLeave={onDropItem ? handleDragLeave : undefined}
+      onDragOver={onDropItem ? handleDragOver : undefined}
+      onDrop={onDropItem ? handleDrop : undefined}
     >
       <PlanGrid gridRef={gridRef} />
 
@@ -226,6 +291,9 @@ export function Plan2D({
         // Double-clicking anywhere on the plan is a quick "fit to room".
         onDoubleClick={resetView}
         style={{ touchAction: 'none' }}
+        onCreated={(state) => {
+          canvasStateRef.current = state
+        }}
       >
         <FitOrthoCamera room={room} />
         <DimensionProjector
@@ -240,10 +308,8 @@ export function Plan2D({
           items={items}
           selectedId={selectedId}
           onSelect={onSelect}
-          renderLabel={(item, selected) => (
-            <ItemLabel item={item} selected={selected} />
-          )}
         />
+        <ItemLabelProjector items={items} labelRefs={labelRefs} />
         <PlanControls
           room={room}
           controlsRef={controlsRef}
@@ -257,6 +323,11 @@ export function Plan2D({
         depthRef={depthLabelRef}
       />
       <ScaleBar lineRef={scaleLineRef} textRef={scaleTextRef} />
+      <ItemLabels
+        items={items}
+        selectedId={selectedId}
+        labelRefs={labelRefs}
+      />
 
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
         <Button
@@ -311,6 +382,14 @@ export function Plan2D({
           <ZoomOut aria-hidden="true" />
         </Button>
       </div>
+
+      {isDragOver ? (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-primary/10">
+          <span className="rounded-full bg-background/90 px-3 py-1.5 text-sm font-medium text-foreground shadow-sm">
+            Drop here to place
+          </span>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -20,7 +20,7 @@ export function RoomsHeader({ count }: { count?: number }) {
         </p>
       </div>
       <Button asChild>
-        <Link href="/">
+        <Link href="/rooms/new">
           <Plus aria-hidden="true" />
           New room
         </Link>

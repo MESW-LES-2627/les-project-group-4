@@ -25,6 +25,9 @@ model Room {
   latitude  Float?
   longitude Float?
 
+  // US-13: deleting a room deletes its saved layouts (and, through them, their items).
+  layouts Layout[]
+
   @@map("room")
 }
 
@@ -46,6 +49,9 @@ model Item {
   source       String   @db.VarChar(100)
   sourceUrl    String?  @map("source_url") @db.VarChar(500)
 
+  // US-13: saved layouts that place this item. An item in a saved layout cannot be deleted.
+  layoutItems LayoutItem[]
+
   @@index([category])
   @@map("item")
 
@@ -62,4 +68,39 @@ model City {
   rooms     Room[]
 
   @@map("city")
+}
+
+// US-13 / US-14: a named layout saved under a room. The name is unique per room
+// (US-13 AT-6), and deleting the room deletes its layouts (US-05 AT-5).
+model Layout {
+  id     Int    @id @default(autoincrement())
+  roomId Int    @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name   String @db.VarChar(100)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  items LayoutItem[]
+
+  @@unique([roomId, name])
+  @@map("layout")
+}
+
+// US-13: one catalog item placed in a saved layout. Field names match Placement in
+// src/lib/geometry/plan.ts. `priceCents` is the catalog price when the layout was
+// saved, so the total of a saved layout (US-12) does not change if the catalog does.
+model LayoutItem {
+  id          Int    @id @default(autoincrement())
+  layoutId    Int    @map("layout_id")
+  layout      Layout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  itemId      Int    @map("item_id")
+  item        Item   @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  xCm         Float  @map("x_cm")
+  yCm         Float  @map("y_cm")
+  rotationDeg Float  @map("rotation_deg")
+  priceCents  Int    @map("price_cents")
+
+  @@index([layoutId])
+  @@map("layout_item")
 }
