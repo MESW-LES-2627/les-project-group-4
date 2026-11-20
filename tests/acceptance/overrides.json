@@ -190,6 +190,10 @@
     "status": "manual",
     "note": "save confirmation rendering; no component test harness yet (#66, CH-05)"
   },
+  "US-13b/AT-6": {
+    "status": "manual",
+    "note": "disabled Save layout button and hint for an empty plan; no component test harness yet (#66, CH-05)"
+  },
   "US-14b/AT-1": {
     "status": "manual",
     "note": "list rendering by name; no component test harness yet (#66, CH-05)"
