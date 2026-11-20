@@ -60,7 +60,7 @@ Staging and production deploy automatically on push:
 | Environment | Branch    | URL |
 | ----------- | --------- | --- |
 | Staging     | `develop` | <https://furnimi-staging.vercel.app/> |
-| Production  | `main`    | TBD — deploys at the end of the iteration |
+| Production  | `main`    | <https://furnimi-production.vercel.app/> |
 
 A push to `develop` or `main` applies that environment's Prisma migrations against the Supabase
 session pooler, then deploys the new version to Vercel. Vercel's own Git integration is not used
