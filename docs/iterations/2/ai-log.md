@@ -5,7 +5,7 @@
 Same rule as Iterations 0 and 1: AI was an assistant, not an author. Every
 suggestion was read, changed where needed, run locally and reviewed by another
 team member before it was merged. Each member records their own; this file
-currently has Francisca's and João's entries.
+currently has Francisca's, João's and Nicolas's entries.
 
 ## Tool
 
@@ -13,6 +13,7 @@ currently has Francisca's and João's entries.
 | --- | --- | --- |
 | OpenCode (DeepSeek V4.1 Flash) | Francisca | CH-03a/CH-03b (#62, #63), US-09a (#81), US-09b (#82), the Next.js security upgrade (#80) and the Iteration 2 docs. |
 | Claude (Claude Code) | João | US-13/US-14 layouts (#73, #74, #75, #84), help reviewing #79, #80 and #83, and the iteration plan. |
+| Claude | Nicolas | US-08 filters (#77), the Windows test fix (#76) and US-12 running total (#86), help reviewing #64, #67, #73, #74, #75, #79, #80, #83 and #84. |
 
 ## Francisca (OpenCode)
 
@@ -141,3 +142,54 @@ Francisca's branch as its upstream.
   counts and the empty state; delete with confirm/cancel; open with the
   replace confirmation and cancel; a deleted layout showing the not found
   message.
+
+## Nicolas (Claude)
+
+### What I used it for
+
+- **Catalog filters (US-08).** First versions of the price and tag filters
+  (one Zod schema for the API and the page, filtering in the database, the
+  newest request winning) and one acceptance test file per AT (#77). I applied
+  them on my branch, read every change and checked the filters in the browser.
+- **Windows test fix (#76).** Four acceptance-tool tests failed only on
+  Windows because of `\` in paths. It found the two lines and suggested the
+  same fix as the earlier CH-03a one; I made the edit and checked it on
+  Windows.
+- **Running total (US-12).** First versions of `totalPriceCents`, the Total
+  row in the placed-items list and the acceptance tests (#86). The budget
+  question on #34 and the split into US-12b (#85) were drafted with it and
+  decided by the team.
+- **Reviews.** It ran the branches of #64, #67, #73, #74, #75, #79, #80, #83
+  and #84 and drafted the review notes: traceability gaps, merge conflicts
+  with `develop`, what to re-test. I tried the flows myself, kept only what I
+  had seen, and rewrote the comments in my own words.
+
+### One place the model was wrong
+
+**What the model produced.** For US-12, a test helper `addAll()` that gave
+each placed item an id from its position in the list.
+
+**What was wrong.** Francisca found it in review: the position restarted at 0
+on every call, so two items could share an id. The tests passed because they
+only add up prices. Her suggested fix (number by the item count) still
+repeated an id when an item was removed from the middle, which we found by
+trying that case.
+
+**What we changed.** The next id is the highest number in use plus one,
+checked for: called twice, empty list, and adding after removing the first,
+the last or all items.
+
+**Why it matters.** Test helpers need tests too: ask what happens when they
+are called twice, with nothing, or after a remove. A smaller miss: in the #74
+review it said the US-14b tests were in #75 without checking; they were not,
+and the comment had to be corrected.
+
+### What I checked before merging
+
+- `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`.
+- `npm run acceptance:check -- --issue <n>` for the story the PR closes.
+- Tests broken on purpose to see that they fail (`lte` to `lt` for US-08, the
+  total starting at 100 instead of 0 for US-12).
+- By hand: the US-08 filters on `/catalog`; the US-12 total adding and
+  removing items (499,00 € -> 828,00 € -> 329,00 € with the seed prices); and
+  each PR I reviewed, following its "How to verify".
