@@ -3,8 +3,8 @@
 > FurniMi · LES - Team D · FEUP 2026/27
 
 Two snapshots of the Iteration 2 project board: [before.png](board/before.png)
-(taken on 10 Nov, four days into the iteration) and `board/after.png`
-(iteration closeout, 20 Nov — **add this file before tagging**).
+(taken on 10 Nov, four days into the iteration) and [after.png](board/after.png)
+(iteration closeout, 20 Nov).
 
 | Before                                                  | After                                                 |
 | :-----------------------------------------------------: | :---------------------------------------------------: |
@@ -12,18 +12,19 @@ Two snapshots of the Iteration 2 project board: [before.png](board/before.png)
 
 ## Column totals
 
-| Column      | Before | After      | Change |
-| ----------- | :----: | :--------: | ------ |
-| Backlog     |   8    | **to fill** |        |
-| Ready       |   8    | **to fill** |        |
-| In progress |   0    | **to fill** |        |
-| In review   |   0    | **to fill** |        |
-| Done        |   11   | **to fill** |        |
-| **Total**   | **27** | **to fill** |        |
+| Column      | Before | After  | Change |
+| ----------- | :----: | :----: | ------ |
+| Backlog     |   8    |   10   | +2     |
+| Ready       |   8    |   0    | -8     |
+| In progress |   0    |   0    | -      |
+| In review   |   0    |   0    | -      |
+| Done        |   11   |   26   | +15    |
+| **Total**   | **27** | **36** | **+9** |
 
-The before board already shows the Iteration 1 work in `Done` (11 cards) and
-the Iteration 2 work in `Ready` (8 cards). The after counts and the image are
-the only parts of this document that need the closeout snapshot.
+The after board has nine more cards than the before board: #66, #69–#72, #78,
+#81, #82 and #85. All Iteration 2 issue cards are in `Done`, and `Ready` is
+empty. The two Should cards (#26, #27) moved to `Backlog` for Iteration 3, and
+#66 and #85 were added there; the other backlog cards did not change.
 
 ## What moved from Ready to Done
 
@@ -38,7 +39,7 @@ the only parts of this document that need the closeout snapshot.
 
 All six Ready cards that belonged to Iteration 2 moved to `Done`. #31 closes
 through #82/#83; #34 through #86. The two Should cards (#26 US-04,
-#27 US-05) stayed in `Ready` and moved to Iteration 3.
+#27 US-05) moved from `Ready` to `Backlog` and are labeled Iteration 3.
 
 ## What was pulled forward from the backlog
 
@@ -68,7 +69,7 @@ the parent stories closed early and O4 is complete.
 before board, so they are not in this table. #77, #79, #83, #84 and #86 are
 pull requests, not issues; #76 has no issue of its own.
 
-## What did not move
+## What did not move to Done
 
 | Issue | Title | Why |
 | ----- | ----- | --- |
@@ -89,9 +90,10 @@ pull requests, not issues; #76 has no issue of its own.
   **2/2, 100%** once #62 and #63 are done.
 - **#34 has no sub-issue bar.** The budget was moved to a separate story (#85),
   not made a sub-issue, so US-12 stays a single card.
-- **The milestone is complete.** #83 closes #82 and #86 closes #34, so the
-  Iteration 2 milestone should show 100%. If GitHub leaves #31 open after its
-  last sub-issue (#82) closes, close it by hand before taking the snapshot.
+- **The milestone is complete.** #83 closed #82 and #86 closed #34, so every
+  Iteration 2 issue is closed. GitHub still counts the open release PR #88 in
+  the milestone, so its open counter is not zero until that PR merges; no story
+  is open.
 - **Boundary snapshots.** The before snapshot was taken on 10 Nov, not on
   6 Nov, so it shows CH-03 already in `Ready`. As in Iteration 1, the two
   boundary snapshots do not show the work flowing through `In progress` and
