@@ -4,6 +4,14 @@ Closes #
 
 <!-- What does this change do, and which issue / MVP outcome does it serve? Link the issue. -->
 
+## Screenshots
+
+<!-- Visual evidence of the change. Drag images into the table cells, or delete this section if the change has no visual impact. -->
+
+| Before | After |
+| ------ | ----- |
+|        |       |
+
 ## How to verify
 
 <!-- Steps a reviewer who did not write this can follow to see it working. -->
