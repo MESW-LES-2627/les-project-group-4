@@ -38,7 +38,8 @@ describe('toSaveLayoutRequest', () => {
       ])
     })
 
-    it('accepts an empty plan', () => {
+    // The helper does not judge the item count: the form blocks an empty plan (US-13b AT-6).
+    it('builds a request with no items when given an empty list', () => {
       expect(toSaveLayoutRequest('Empty', [])).toEqual({
         ok: true,
         request: { name: 'Empty', items: [] },
