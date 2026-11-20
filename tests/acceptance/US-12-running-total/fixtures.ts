@@ -31,11 +31,23 @@ export const lamp: CatalogItem = {
   roomTypeTags: ['bedroom'],
 }
 
+/**
+ * The next free "item-N" id in room 1: one more than the highest N in use.
+ * Unlike a position or a count, it never repeats, even after a remove, and it
+ * stays deterministic (no random ids in tests).
+ */
+function nextItemId(state: DraftState): string {
+  const used = (state.byRoom[1] ?? [])
+    .map((item) => Number(item.id.replace(/^item-/, '')))
+    .filter(Number.isInteger)
+  return `item-${used.length === 0 ? 0 : Math.max(...used) + 1}`
+}
+
 /** Adds catalog items to room 1 one after the other, as the "Add" button does. */
 export function addAll(items: CatalogItem[], state: DraftState = EMPTY_DRAFT_STATE): DraftState {
   return items.reduce(
-    (current, item, index) =>
-      draftReducer(current, { type: 'add', roomId: 1, room, id: `item-${index}`, item }),
+    (current, item) =>
+      draftReducer(current, { type: 'add', roomId: 1, room, id: nextItemId(current), item }),
     state,
   )
 }
