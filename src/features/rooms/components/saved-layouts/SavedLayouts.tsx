@@ -8,7 +8,7 @@ import { deleteLayout, getLayout } from '@/features/rooms/api'
 import type { LayoutSummary, LayoutWithItems, Room } from '@/features/rooms/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { LayoutThumbnail } from '@/components/layouts/LayoutThumbnail'
+import { LayoutThumbnail } from '@/features/rooms/components/saved-layouts/LayoutThumbnail'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import {
   describeOpenError,

@@ -1,4 +1,4 @@
-import { RoomsHeader } from '@/components/rooms/RoomsHeader'
+import { RoomsHeader } from '@/features/rooms/components/RoomsHeader'
 
 /** Shown while the /rooms page loads the rooms on the server. */
 export default function RoomsLoading() {

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
 import type { City } from '@/features/locations/types'
-import { CreateRoomForm } from '@/components/CreateRoomForm'
+import { CreateRoomForm } from '@/features/rooms/components/CreateRoomForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { findCities } from '@/features/locations/server/cities'
 

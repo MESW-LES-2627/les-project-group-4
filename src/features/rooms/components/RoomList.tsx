@@ -3,7 +3,7 @@ import { ChevronRight, DoorOpen, MapPin, Plus, Ruler, SquareDashed } from 'lucid
 
 import type { Room } from '@/features/rooms/types'
 import { Button } from '@/components/ui/button'
-import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
+import { RoomThumbnail } from '@/features/rooms/components/RoomThumbnail'
 import { formatRoomLocation } from '@/features/locations/model/location'
 import { formatArea } from '@/features/rooms/model/roomFormat'
 

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
-import { RoomDetails } from '@/components/rooms/RoomDetails'
+import { RoomDetails } from '@/features/rooms/components/RoomDetails'
 import { findItems } from '@/features/catalog/server/items'
 import { listItemsQuerySchema } from '@/features/catalog/schema'
 import { roomIdSchema } from '@/features/rooms/schema'

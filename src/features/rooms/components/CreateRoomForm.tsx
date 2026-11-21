@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
 import type { City } from '@/features/locations/types'
-import { CreateRoomSuccess } from '@/components/CreateRoomSuccess'
+import { CreateRoomSuccess } from '@/features/rooms/components/CreateRoomSuccess'
 import { LocationField } from '@/features/locations/components/LocationField'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
