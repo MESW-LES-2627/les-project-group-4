@@ -4,7 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 import type { Room } from '@/api/types'
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import type { PlacedItemSource } from '@/features/plan/types'
 
 const Plan2D = dynamic(

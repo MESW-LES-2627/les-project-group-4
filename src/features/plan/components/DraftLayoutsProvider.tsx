@@ -5,7 +5,7 @@ import { useCallback, useMemo, useReducer, useState, type ReactNode } from 'reac
 import {
   DraftLayoutsContext,
   type DraftLayouts,
-} from '@/hooks/useDraftLayouts'
+} from '@/features/plan/hooks/useDraftLayouts'
 import type { Placement, RoomSize } from '@/features/plan/model/geometry'
 import { draftReducer, EMPTY_DRAFT_STATE } from '@/features/plan/model/draft'
 import type { PlacedItem } from '@/features/plan/model/layout'

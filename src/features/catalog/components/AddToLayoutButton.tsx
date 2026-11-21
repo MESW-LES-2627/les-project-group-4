@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react'
 
 import type { CatalogItem } from '@/features/catalog/types'
 import { Button } from '@/components/ui/button'
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import type { CurrentRoom } from '@/features/plan/types'
 
 /**

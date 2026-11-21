@@ -9,7 +9,7 @@ import type { LayoutSummary, LayoutWithItems, Room } from '@/api/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { LayoutThumbnail } from '@/components/layouts/LayoutThumbnail'
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import {
   describeOpenError,
   formatItemCount,

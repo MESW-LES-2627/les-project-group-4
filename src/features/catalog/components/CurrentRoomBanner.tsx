@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 
 /**
  * US-09: says which room the catalog adds to, or how to pick one. The item count

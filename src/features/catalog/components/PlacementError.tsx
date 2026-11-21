@@ -4,7 +4,7 @@ import { X } from 'lucide-react'
 
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 
 /**
  * US-09 AT-5: why the last add failed. Without an explicit room it follows the

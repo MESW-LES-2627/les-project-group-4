@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 
 import type { Room } from '@/api/types'
-import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 
 /**
  * US-09: remembers the room the user opened, so the catalog page can add to it.
