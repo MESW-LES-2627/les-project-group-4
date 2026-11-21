@@ -1,4 +1,4 @@
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { CITY_SELECT } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 

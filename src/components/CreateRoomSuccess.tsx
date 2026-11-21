@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { CircleCheck } from 'lucide-react'
 
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { Button } from '@/components/ui/button'
 import { formatRoomLocation } from '@/features/locations/model/location'
 

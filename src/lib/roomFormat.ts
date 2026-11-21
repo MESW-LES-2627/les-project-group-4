@@ -1,4 +1,4 @@
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 
 /** 400 × 300 cm becomes 12 m². */
 export function formatArea(room: Pick<Room, 'widthCm' | 'lengthCm'>) {

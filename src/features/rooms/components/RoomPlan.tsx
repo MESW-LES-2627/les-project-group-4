@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import type { PlacedItemSource } from '@/features/plan/types'
 

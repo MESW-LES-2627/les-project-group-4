@@ -1,7 +1,6 @@
-// Types for the FurniMi REST API.
-// This file is the frontend's single source of truth for the API shape.
+// Types for the rooms API.
 // Field names must stay identical to the frozen contract in the epic
-// (served by the route handlers under src/app/api).
+// (served by the route handlers under src/app/api/rooms).
 
 import type { City } from '@/features/locations/types'
 
@@ -46,8 +45,9 @@ export interface CreateLayoutRequest {
 }
 
 /**
- * US-13 / US-14: one item of a saved layout, in the same shape as PlacedItem (src/lib/layout/layout.ts)
- * except that `id` is the saved row id. `priceCents` is the catalog price when the layout was saved.
+ * US-13 / US-14: one item of a saved layout, in the same shape as PlacedItem
+ * (features/plan/model/layout.ts) except that `id` is the saved row id.
+ * `priceCents` is the catalog price when the layout was saved.
  */
 export interface SavedLayoutItem {
   id: number
@@ -87,6 +87,3 @@ export interface LayoutDetails {
 export interface LayoutWithItems extends LayoutSummary {
   items: SavedLayoutItem[]
 }
-
-// The generic HTTP envelope (ApiError, ApiResult, ValidationErrorBody) lives in
-// src/lib/http.ts: it is infrastructure, not part of the domain contract below.

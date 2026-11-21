@@ -1,4 +1,4 @@
-import type { CreateRoomRequest } from '@/api/types'
+import type { CreateRoomRequest } from '@/features/rooms/types'
 import type { RoomLocationInput } from '@/features/locations/schema'
 
 // Client-side rules for the create-room form

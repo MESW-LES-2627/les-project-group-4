@@ -1,6 +1,6 @@
 'use client'
 
-import type { LayoutWithItems, Room } from '@/api/types'
+import type { LayoutWithItems, Room } from '@/features/rooms/types'
 import type { CatalogItem } from '@/features/catalog/types'
 import { RoomCatalog } from '@/features/catalog/components/RoomCatalog'
 import { RegisterCurrentRoom } from '@/components/layout/RegisterCurrentRoom'

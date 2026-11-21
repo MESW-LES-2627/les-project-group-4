@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { LayoutSummary } from '@/api/types'
+import type { LayoutSummary } from '@/features/rooms/types'
 import type { ApiError } from '@/lib/http'
 import { isAlreadyDeleted, savedConfirmation, visibleLayouts } from '@/lib/savedLayouts'
 

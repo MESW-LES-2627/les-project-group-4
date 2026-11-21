@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 
-import { createRoom } from '@/api/client'
-import type { Room } from '@/api/types'
+import { createRoom } from '@/features/rooms/api'
+import type { Room } from '@/features/rooms/types'
 import { mapServerFieldErrors, pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
 import type { RoomLocationInput } from '@/features/locations/schema'
 import type { RoomFormErrors, RoomFormValues } from '@/lib/roomValidation'

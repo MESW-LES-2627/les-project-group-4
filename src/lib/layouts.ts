@@ -1,4 +1,4 @@
-import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '@/api/types'
+import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '@/features/rooms/types'
 import { getDb } from '@/lib/db'
 import type { CreateLayoutInput } from '@/lib/schemas/layout'
 

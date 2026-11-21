@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { LayoutDetails, LayoutSummary } from '@/api/types'
+import type { LayoutDetails, LayoutSummary } from '@/features/rooms/types'
 import type { ApiError } from '@/lib/http'
 import {
   describeOpenError,

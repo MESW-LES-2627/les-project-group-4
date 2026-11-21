@@ -1,4 +1,4 @@
-import type { Room, SavedLayoutItem } from '@/api/types'
+import type { Room, SavedLayoutItem } from '@/features/rooms/types'
 import {
   ITEM_BORDER_OPACITY,
   ITEM_COLOR,

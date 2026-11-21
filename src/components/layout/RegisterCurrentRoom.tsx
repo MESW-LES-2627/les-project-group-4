@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 
 /**

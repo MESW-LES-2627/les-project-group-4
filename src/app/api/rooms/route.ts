@@ -1,4 +1,4 @@
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import type { ValidationErrorBody } from '@/lib/http'
 import { cityExists } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'

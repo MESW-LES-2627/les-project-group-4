@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ChevronRight, DoorOpen, MapPin, Plus, Ruler, SquareDashed } from 'lucide-react'
 
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { Button } from '@/components/ui/button'
 import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
 import { formatRoomLocation } from '@/features/locations/model/location'
