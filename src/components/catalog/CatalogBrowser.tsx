@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { catalogHref, hasFilters, parsePriceInput, tagLabel, toggleTag } from '@/features/catalog/model/catalogFilters'
 import type { ListItemsQuery } from '@/features/catalog/schema'
-import { useCatalogItems } from '@/hooks/useCatalogItems'
+import { useCatalogItems } from '@/features/catalog/hooks/useCatalogItems'
 
 interface CatalogBrowserProps {
   initialQuery: ListItemsQuery
