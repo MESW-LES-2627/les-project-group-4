@@ -1,11 +1,19 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/features/catalog/types'
 import type { Placement } from '@/features/plan/model/geometry'
+import type { PlacedItemSource } from '@/features/plan/types'
 
 import { toPlacedItem } from './layout'
 
-const catalogSofa: CatalogItem = {
+type CatalogItemFixture = PlacedItemSource & {
+  slug: string
+  category: string
+  heightCm: number | null
+  styleTags: string[]
+  roomTypeTags: string[]
+}
+
+const catalogSofa: CatalogItemFixture = {
   id: 12,
   slug: 'sofa-nordic-3-seat',
   name: 'Nordic 3-seat sofa',
@@ -54,7 +62,7 @@ describe('toPlacedItem', () => {
   })
 
   it('snapshots the price when the item is added', () => {
-    const item: CatalogItem = { ...catalogSofa }
+    const item: CatalogItemFixture = { ...catalogSofa }
 
     const placed = toPlacedItem(item, 'draft-1', placement)
     item.priceCents = 1

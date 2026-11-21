@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/features/catalog/types'
 import type { RoomSize } from '@/features/plan/model/geometry'
 import { DOES_NOT_FIT_MESSAGE } from '@/features/plan/model/placement'
+import type { PlacedItemSource } from '@/features/plan/types'
 
 import { EMPTY_DRAFT_STATE, draftReducer } from './draft'
 import type { DraftAction } from './draft'
@@ -11,35 +11,28 @@ import type { PlacedItem } from './layout'
 const room: RoomSize = { widthCm: 300, lengthCm: 200 }
 const smallRoom: RoomSize = { widthCm: 100, lengthCm: 100 }
 
-const sofa: CatalogItem = {
+const sofa: PlacedItemSource = {
   id: 12,
-  slug: 'sofa',
   name: 'Sofa',
-  category: 'sofa',
   widthCm: 100,
   depthCm: 50,
-  heightCm: null,
   priceCents: 49900,
-  styleTags: [],
-  roomTypeTags: [],
 }
 
-const lamp: CatalogItem = {
+const lamp: PlacedItemSource = {
   ...sofa,
   id: 13,
-  slug: 'lamp',
   name: 'Lamp',
   widthCm: 40,
   depthCm: 40,
   priceCents: 3990,
 }
 
-const table: CatalogItem = { ...sofa, id: 14, slug: 'table', name: 'Table', depthCm: 100 }
+const table: PlacedItemSource = { ...sofa, id: 14, name: 'Table', depthCm: 100 }
 
-const wardrobe: CatalogItem = {
+const wardrobe: PlacedItemSource = {
   ...sofa,
   id: 15,
-  slug: 'wardrobe',
   name: 'Wardrobe',
   widthCm: 200,
 }
@@ -59,7 +52,7 @@ const placedSofa: PlacedItem = {
 function add(
   roomId: number,
   id: string,
-  item: CatalogItem,
+  item: PlacedItemSource,
   inside: RoomSize = room,
 ): DraftAction {
   return { type: 'add', roomId, room: inside, id, item }
