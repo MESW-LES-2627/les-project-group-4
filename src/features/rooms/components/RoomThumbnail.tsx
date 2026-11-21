@@ -1,9 +1,6 @@
 import type { Room } from '@/features/rooms/types'
 
-/** Keeps the drawing inside the thumbnail with room to breathe. */
-const BOX_WIDTH = 120
-const BOX_HEIGHT = 80
-const PADDING = 10
+import { fitRoomToThumbnail, THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from './thumbnail'
 
 /**
  * A small top-down blueprint of the room, scaled to the real proportions of
@@ -11,19 +8,7 @@ const PADDING = 10
  * the room.
  */
 export function RoomThumbnail({ room }: { room: Room }) {
-  const availableWidth = BOX_WIDTH - PADDING * 2
-  const availableHeight = BOX_HEIGHT - PADDING * 2
-  const ratio = room.widthCm / room.lengthCm
-
-  let width = availableWidth
-  let height = width / ratio
-  if (height > availableHeight) {
-    height = availableHeight
-    width = height * ratio
-  }
-
-  const x = (BOX_WIDTH - width) / 2
-  const y = (BOX_HEIGHT - height) / 2
+  const { width, height, x, y } = fitRoomToThumbnail(room.widthCm, room.lengthCm)
 
   return (
     <div
@@ -32,7 +17,7 @@ export function RoomThumbnail({ room }: { room: Room }) {
     >
       <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [background-size:16px_16px]" />
       <svg
-        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+        viewBox={`0 0 ${THUMBNAIL_WIDTH} ${THUMBNAIL_HEIGHT}`}
         className="relative h-full w-full"
       >
         <rect

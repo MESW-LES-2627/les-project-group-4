@@ -5,11 +5,11 @@ import {
   ITEM_FILL_OPACITY,
 } from '@/features/plan/components/scene/PlacedItem'
 import { footprintCorners, type Point } from '@/features/plan/model/geometry'
-
-/** Same box and padding as RoomThumbnail, so the two card sets look like siblings. */
-const BOX_WIDTH = 120
-const BOX_HEIGHT = 80
-const PADDING = 10
+import {
+  fitRoomToThumbnail,
+  THUMBNAIL_HEIGHT,
+  THUMBNAIL_WIDTH,
+} from '@/features/rooms/components/thumbnail'
 
 /**
  * US-14b: a miniature top-down view of a saved layout. The room keeps its real
@@ -25,20 +25,7 @@ export function LayoutThumbnail({
   layoutId: number
   items: readonly SavedLayoutItem[]
 }) {
-  const availableWidth = BOX_WIDTH - PADDING * 2
-  const availableHeight = BOX_HEIGHT - PADDING * 2
-  const ratio = room.widthCm / room.lengthCm
-
-  let width = availableWidth
-  let height = width / ratio
-  if (height > availableHeight) {
-    height = availableHeight
-    width = height * ratio
-  }
-
-  const x = (BOX_WIDTH - width) / 2
-  const y = (BOX_HEIGHT - height) / 2
-  const scale = width / room.widthCm
+  const { width, height, x, y, scale } = fitRoomToThumbnail(room.widthCm, room.lengthCm)
   const clipId = `layout-room-${layoutId}`
 
   function toSvg(point: Point) {
@@ -55,7 +42,7 @@ export function LayoutThumbnail({
     >
       <span className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [background-size:16px_16px]" />
       <svg
-        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+        viewBox={`0 0 ${THUMBNAIL_WIDTH} ${THUMBNAIL_HEIGHT}`}
         className="relative h-full w-full"
       >
         <defs>
