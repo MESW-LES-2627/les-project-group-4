@@ -6,7 +6,7 @@ import { CircleCheck } from 'lucide-react'
 
 import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
-import { formatRoomLocation } from '@/lib/location'
+import { formatRoomLocation } from '@/features/locations/model/location'
 
 interface CreateRoomSuccessProps {
   room: Room

@@ -13,10 +13,10 @@ import {
   GEOLOCATION_MESSAGES,
   getGeolocationSupport,
   messageForPositionError,
-} from '@/lib/geolocation'
-import type { GeolocationSupport } from '@/lib/geolocation'
-import { CURRENT_LOCATION_LABEL } from '@/lib/location'
-import type { RoomLocationInput } from '@/lib/roomValidation'
+} from '@/features/locations/model/geolocation'
+import type { GeolocationSupport } from '@/features/locations/model/geolocation'
+import { CURRENT_LOCATION_LABEL } from '@/features/locations/model/location'
+import type { RoomLocationInput } from '@/features/locations/schema'
 
 /** AT-4: reads the browser's secure-context flag and geolocation support. */
 function getBrowserSupport(): GeolocationSupport {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { GEOLOCATION_MESSAGES, messageForPositionError } from '@/lib/geolocation'
+import { GEOLOCATION_MESSAGES, messageForPositionError } from '@/features/locations/model/geolocation'
 import { toCreateRoomRequest } from '@/lib/roomValidation'
 
 const formValues = { name: ' Bedroom ', width: '300', length: '400' }

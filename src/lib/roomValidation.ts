@@ -1,5 +1,5 @@
 import type { CreateRoomRequest } from '@/api/types'
-import type { RoomLocationInput } from '@/lib/schemas/room'
+import type { RoomLocationInput } from '@/features/locations/schema'
 
 // Client-side rules for the create-room form
 
@@ -14,9 +14,6 @@ export type RoomFormField = 'name' | 'width' | 'length'
 export type RoomFormValues = Record<RoomFormField, string>
 
 export type RoomFormErrors = Partial<Record<RoomFormField, string>>
-
-// US-15: the location type comes from the shared schema (see roomLocationSchema).
-export type { RoomLocationInput } from '@/lib/schemas/room'
 
 const FORM_FIELDS: readonly RoomFormField[] = ['name', 'width', 'length']
 

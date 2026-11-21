@@ -3,7 +3,8 @@ import { useRef, useState } from 'react'
 import { createRoom } from '@/api/client'
 import type { Room } from '@/api/types'
 import { mapServerFieldErrors, pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
-import type { RoomFormErrors, RoomFormValues, RoomLocationInput } from '@/lib/roomValidation'
+import type { RoomLocationInput } from '@/features/locations/schema'
+import type { RoomFormErrors, RoomFormValues } from '@/lib/roomValidation'
 
 interface UseCreateRoomOptions {
   onFieldErrors: (errors: RoomFormErrors) => void

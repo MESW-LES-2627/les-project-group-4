@@ -8,8 +8,8 @@ import {
   parseSavedLocation,
   resolveRoomLocation,
   toLocationInput,
-} from '@/lib/location'
-import { roomLocationSchema } from '@/lib/schemas/room'
+} from '@/features/locations/model/location'
+import { roomLocationSchema } from '@/features/locations/schema'
 
 const { findRoom } = vi.hoisted(() => ({ findRoom: vi.fn() }))
 

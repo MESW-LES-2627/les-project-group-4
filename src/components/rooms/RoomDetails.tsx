@@ -10,9 +10,9 @@ import { PlacedItemsList } from '@/components/plan/PlacedItemsList'
 import { RoomPlan } from '@/components/plan/RoomPlan'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
-import { formatRoomLocation, resolveRoomLocation } from '@/lib/location'
+import { formatRoomLocation, resolveRoomLocation } from '@/features/locations/model/location'
 import { formatArea } from '@/lib/roomFormat'
-import { COORDINATE_DECIMALS } from '@/lib/schemas/room'
+import { COORDINATE_DECIMALS } from '@/features/locations/schema'
 
 /**
  * US-03: one room's details, including the 2D plan. US-15: with its saved location.

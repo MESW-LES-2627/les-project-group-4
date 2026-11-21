@@ -4,7 +4,7 @@ import { ChevronRight, DoorOpen, MapPin, Plus, Ruler, SquareDashed } from 'lucid
 import type { Room } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
-import { formatRoomLocation } from '@/lib/location'
+import { formatRoomLocation } from '@/features/locations/model/location'
 import { formatArea } from '@/lib/roomFormat'
 
 /** US-02: the saved rooms, newest first, or an empty state when there are none. */

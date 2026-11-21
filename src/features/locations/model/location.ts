@@ -1,17 +1,9 @@
-import type { Room } from '@/api/types'
-import type { City } from '@/features/locations/types'
-import { roomLocationSchema } from '@/lib/schemas/room'
-import type { RoomLocationInput } from '@/lib/schemas/room'
+import { roomLocationSchema } from '../schema'
+import type { RoomLocationInput } from '../schema'
+import type { City, Coordinates, LocatedRoom } from '../types'
 
 /** What the UI shows for coordinates that have no city (AT-2: no reverse geocoding). */
 export const CURRENT_LOCATION_LABEL = 'Current location'
-
-export interface Coordinates {
-  latitude: number
-  longitude: number
-}
-
-type RoomLocation = Pick<Room, 'city' | 'latitude' | 'longitude'>
 
 /** US-15: a saved room's location, in one place: a city, browser coordinates, or none. */
 export type ResolvedLocation =
@@ -20,7 +12,7 @@ export type ResolvedLocation =
   | { kind: 'none' }
 
 /** The single "city, else coordinates, else none" rule; the helpers below all use it. */
-export function resolveRoomLocation(room: RoomLocation): ResolvedLocation {
+export function resolveRoomLocation(room: LocatedRoom): ResolvedLocation {
   if (room.city !== null) {
     return { kind: 'city', city: room.city }
   }
@@ -34,7 +26,7 @@ export function resolveRoomLocation(room: RoomLocation): ResolvedLocation {
  * US-15: the label for a room's saved location: the city name, "Current location" for
  * browser coordinates, or null when the room has no location.
  */
-export function formatRoomLocation(room: RoomLocation): string | null {
+export function formatRoomLocation(room: LocatedRoom): string | null {
   const location = resolveRoomLocation(room)
   switch (location.kind) {
     case 'city':
@@ -50,7 +42,7 @@ export function formatRoomLocation(room: RoomLocation): string | null {
  * US-15 AT-5: the saved location as coordinates, so later features (e.g. nearby stores)
  * reuse it without asking again. A city uses its seeded coordinates.
  */
-export function getRoomCoordinates(room: RoomLocation): Coordinates | null {
+export function getRoomCoordinates(room: LocatedRoom): Coordinates | null {
   const location = resolveRoomLocation(room)
   switch (location.kind) {
     case 'city':
@@ -63,7 +55,7 @@ export function getRoomCoordinates(room: RoomLocation): Coordinates | null {
 }
 
 /** AT-5: the location of a saved room, in the shape the create-room form sends. */
-export function toLocationInput(room: RoomLocation): RoomLocationInput {
+export function toLocationInput(room: LocatedRoom): RoomLocationInput {
   const location = resolveRoomLocation(room)
   switch (location.kind) {
     case 'city':
