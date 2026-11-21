@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
+import { MAX_INT } from '@/lib/validation'
 
 /**
  * A catalog category, validated the same way as rooms: routes safeParse their input
@@ -16,9 +17,6 @@ export function isItemCategory(value: unknown): value is ItemCategory {
   return itemCategorySchema.safeParse(value).success
 }
 
-// Prices are stored as integer cents in a Postgres INT column.
-const MAX_PRICE_CENTS = 2_147_483_647
-
 /**
  * US-08: a maximum price in euros as typed in the URL ("500", "499.99"), turned into cents.
  * A string regex instead of z.coerce.number(): coerce turns "" into 0 and accepts "1e3".
@@ -27,7 +25,7 @@ const maxPriceSchema = z
   .string()
   .regex(/^\d+(\.\d{1,2})?$/, { error: 'must be a price in euros, e.g. 500 or 499.99' })
   .transform((euros) => Math.round(Number(euros) * 100))
-  .pipe(z.number().int().max(MAX_PRICE_CENTS, { error: 'is too large' }))
+  .pipe(z.number().int().max(MAX_INT, { error: 'is too large' }))
 
 /** US-08: a style or room-type tag as stored by the seed (nordic, living-room). */
 export const itemTagSchema = z

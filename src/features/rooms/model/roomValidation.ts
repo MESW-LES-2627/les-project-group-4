@@ -1,14 +1,10 @@
 import type { RoomLocationInput } from '@/features/locations/schema'
+import { MAX_INT } from '@/lib/validation'
 
+import { ROOM_NAME_MAX } from '../schema'
 import type { CreateRoomRequest } from '../types'
 
 // Client-side rules for the create-room form
-
-export const NAME_MAX_LENGTH = 255
-
-// The database stores dimensions as a 32-bit int, so anything above this would
-// overflow when the JSON body is deserialised.
-export const MAX_DIMENSION_CM = 2_147_483_647
 
 export type RoomFormField = 'name' | 'width' | 'length'
 
@@ -41,8 +37,8 @@ export function validateName(value: string): string | undefined {
   if (name === '') {
     return 'Name is required'
   }
-  if (name.length > NAME_MAX_LENGTH) {
-    return `Name must be at most ${NAME_MAX_LENGTH} characters`
+  if (name.length > ROOM_NAME_MAX) {
+    return `Name must be at most ${ROOM_NAME_MAX} characters`
   }
   return undefined
 }
@@ -69,7 +65,7 @@ export function validateDimension(
   if (centimetres <= 0) {
     return `${label} must be greater than 0`
   }
-  if (centimetres > MAX_DIMENSION_CM) {
+  if (centimetres > MAX_INT) {
     return `${label} is too large`
   }
   return undefined

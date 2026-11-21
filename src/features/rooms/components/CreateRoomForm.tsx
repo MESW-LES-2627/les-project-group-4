@@ -18,7 +18,7 @@ import {
   saveLastLocation,
   toLocationInput,
 } from '@/features/locations/model/location'
-import { NAME_MAX_LENGTH } from '@/features/rooms/model/roomValidation'
+import { ROOM_NAME_MAX } from '@/features/rooms/schema'
 import type { RoomLocationInput } from '@/features/locations/schema'
 
 // The stored location only changes when this form writes it, so there is nothing to subscribe to.
@@ -117,7 +117,7 @@ export function CreateRoomForm({ cities: loadedCities }: { cities: City[] | null
         name="name"
         label="Room name"
         placeholder="e.g. Bedroom"
-        maxLength={NAME_MAX_LENGTH}
+        maxLength={ROOM_NAME_MAX}
         autoComplete="off"
         spellCheck={false}
         autoFocus={focusNameOnMount}

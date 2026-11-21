@@ -3,6 +3,9 @@ import { z } from 'zod'
 import { checkLocation, locationFields } from '@/features/locations/schema'
 import { MAX_INT } from '@/lib/validation'
 
+/** The longest room name the form and the API accept. */
+export const ROOM_NAME_MAX = 255
+
 const dimensionCm = z
   .int({ error: 'must be a whole number' })
   .positive({ error: 'must be greater than 0' })
@@ -20,7 +23,7 @@ export const createRoomSchema = z
         .string({ error: 'is required' })
         .trim()
         .min(1, { error: 'is required' })
-        .max(255, { error: 'must be at most 255 characters' }),
+        .max(ROOM_NAME_MAX, { error: `must be at most ${ROOM_NAME_MAX} characters` }),
       widthCm: dimensionCm,
       lengthCm: dimensionCm,
       ...locationFields,

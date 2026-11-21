@@ -4,7 +4,6 @@ import type {
   CreateLayoutRequest,
   CreateRoomRequest,
   LayoutDetails,
-  LayoutSummary,
   Room,
 } from './types'
 
@@ -25,11 +24,6 @@ export function saveLayout(
     method: 'POST',
     body: JSON.stringify(layout),
   })
-}
-
-/** US-14: the room's saved layouts, listed by name. */
-export function listLayouts(roomId: number): Promise<ApiResult<LayoutSummary[]>> {
-  return request<LayoutSummary[]>(`/api/rooms/${roomId}/layouts`, { method: 'GET' })
 }
 
 /** US-14: one saved layout with its items (404 if it does not exist in this room). */
