@@ -20,10 +20,9 @@ import {
 import { Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
-import type { CatalogItem } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import type { RoomSize } from '@/lib/geometry/plan'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import type { PlacedItem as PlacedItemData, PlacedItemSource } from '@/lib/layout/layout'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
 import { PlanGrid, PlanGridProjector } from './PlanGrid'
@@ -45,7 +44,7 @@ export interface Plan2DProps {
   items?: PlacedItemData[]
   selectedId?: string | null
   onSelect?: (id: string | null) => void
-  onDropItem?: (item: CatalogItem, xCm: number, yCm: number) => void
+  onDropItem?: (item: PlacedItemSource, xCm: number, yCm: number) => void
 }
 
 export type Plan2DSceneProps = Plan2DProps &
@@ -216,11 +215,11 @@ export function Plan2D({
     camera.updateProjectionMatrix()
   }
 
-  function parseDragItem(dataTransfer: DataTransfer): CatalogItem | null {
+  function parseDragItem(dataTransfer: DataTransfer): PlacedItemSource | null {
     const raw = dataTransfer.getData('application/json')
     if (!raw) return null
     try {
-      return JSON.parse(raw) as CatalogItem
+      return JSON.parse(raw) as PlacedItemSource
     } catch {
       return null
     }

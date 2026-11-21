@@ -3,8 +3,19 @@
  * src/lib/layout/draft.ts owns add/remove/replace; move/rotate belong to US-10.
  */
 
-import type { CatalogItem } from '@/api/types'
 import type { Placement, Size } from '@/lib/geometry/plan'
+
+/**
+ * The part of a catalog item the plan needs. Structural on purpose: the plan
+ * feature must not depend on the catalog feature.
+ */
+export interface PlacedItemSource {
+  id: number
+  name: string
+  widthCm: number
+  depthCm: number
+  priceCents: number
+}
 
 /**
  * One item placed in the current room.
@@ -22,7 +33,7 @@ export interface PlacedItem extends Size, Placement {
  * was added. `id` is the instance, so the same catalog item can be added twice.
  */
 export function toPlacedItem(
-  item: CatalogItem,
+  item: PlacedItemSource,
   id: string,
   placement: Placement,
 ): PlacedItem {

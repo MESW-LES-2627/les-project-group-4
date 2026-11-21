@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useReducer, useState, type ReactNode } from 'react'
 
-import type { CatalogItem } from '@/api/types'
 import {
   DraftLayoutsContext,
   type CurrentRoom,
@@ -10,7 +9,7 @@ import {
 } from '@/hooks/useDraftLayouts'
 import type { Placement, RoomSize } from '@/lib/geometry/plan'
 import { draftReducer, EMPTY_DRAFT_STATE } from '@/lib/layout/draft'
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem, PlacedItemSource } from '@/lib/layout/layout'
 
 /** One shared empty array, so a room with no items keeps a stable prop. */
 const NO_ITEMS: PlacedItem[] = []
@@ -34,12 +33,12 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
     [state.error],
   )
 
-  const addItem = useCallback((roomId: number, room: RoomSize, item: CatalogItem) => {
+  const addItem = useCallback((roomId: number, room: RoomSize, item: PlacedItemSource) => {
     dispatch({ type: 'add', roomId, room, id: crypto.randomUUID(), item })
   }, [])
 
   const addItemAt = useCallback(
-    (roomId: number, room: RoomSize, item: CatalogItem, placement: Placement) => {
+    (roomId: number, room: RoomSize, item: PlacedItemSource, placement: Placement) => {
       dispatch({ type: 'add-at', roomId, room, id: crypto.randomUUID(), item, placement })
     },
     [],

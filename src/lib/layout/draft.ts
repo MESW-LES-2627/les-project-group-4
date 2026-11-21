@@ -7,10 +7,9 @@
  * src/components/layout/DraftLayoutProvider.tsx owns the React state.
  */
 
-import type { CatalogItem } from '@/api/types'
 import { boundingBox, isInsideRoom, type Placement, type RoomSize } from '@/lib/geometry/plan'
 import { toPlacedItem } from '@/lib/layout/layout'
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem, PlacedItemSource } from '@/lib/layout/layout'
 import {
   DOES_NOT_FIT_MESSAGE,
   PLACEMENT_MARGIN_CM,
@@ -34,8 +33,8 @@ export interface DraftState {
 export const EMPTY_DRAFT_STATE: DraftState = { byRoom: {}, error: null }
 
 export type DraftAction =
-  | { type: 'add'; roomId: number; room: RoomSize; id: string; item: CatalogItem }
-  | { type: 'add-at'; roomId: number; room: RoomSize; id: string; item: CatalogItem; placement: Placement }
+  | { type: 'add'; roomId: number; room: RoomSize; id: string; item: PlacedItemSource }
+  | { type: 'add-at'; roomId: number; room: RoomSize; id: string; item: PlacedItemSource; placement: Placement }
   | { type: 'remove'; roomId: number; id: string }
   | { type: 'replace'; roomId: number; items: PlacedItem[] }
   | { type: 'dismiss-error'; roomId: number }

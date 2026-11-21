@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
-import type { CatalogItem, Room } from '@/api/types'
+import type { Room } from '@/api/types'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
+import type { PlacedItemSource } from '@/lib/layout/layout'
 
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),
@@ -36,7 +37,7 @@ export function RoomPlan({ room }: { room: Room }) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selected = items.find((item) => item.id === selectedId) ?? null
 
-  function handleDropItem(item: CatalogItem, xCm: number, yCm: number) {
+  function handleDropItem(item: PlacedItemSource, xCm: number, yCm: number) {
     addItemAt(room.id, room, item, { xCm, yCm, rotationDeg: 0 })
   }
 
