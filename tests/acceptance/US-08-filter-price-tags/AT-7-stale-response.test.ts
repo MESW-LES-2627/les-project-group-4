@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { listItems } from '@/api/client'
-import { createLatestRequest, runLatest } from '@/lib/catalogFilters'
+import { listItems } from '@/features/catalog/api'
+import { createLatestRequest, runLatest } from '@/features/catalog/model/latestRequest'
 
 afterEach(() => {
   vi.unstubAllGlobals()

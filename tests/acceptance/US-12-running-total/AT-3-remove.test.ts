@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { draftReducer } from '@/lib/layout/draft'
-import { totalPriceCents } from '@/lib/layout/layout'
+import { draftReducer } from '@/features/plan/model/draft'
+import { totalPriceCents } from '@/features/plan/model/layout'
 
 import { addAll, lamp, sofa } from './fixtures'
 

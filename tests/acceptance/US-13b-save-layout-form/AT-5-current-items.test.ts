@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
-import { draftReducer, EMPTY_DRAFT_STATE } from '@/lib/layout/draft'
-import { toSaveLayoutRequest } from '@/lib/saveLayout'
+import type { CatalogItem } from '@/features/catalog/types'
+import { draftReducer, EMPTY_DRAFT_STATE } from '@/features/plan/model/draft'
+import { toSaveLayoutRequest } from '@/features/rooms/model/saveLayout'
 
 const room = { widthCm: 400, lengthCm: 300 }
 

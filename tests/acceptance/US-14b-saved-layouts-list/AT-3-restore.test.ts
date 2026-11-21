@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { LayoutDetails } from '@/api/types'
-import { toDraftItems } from '@/lib/savedLayouts'
+import type { LayoutDetails } from '@/features/rooms/types'
+import { toDraftItems } from '@/features/rooms/model/savedLayouts'
 
 const layout: LayoutDetails = {
   id: 4,

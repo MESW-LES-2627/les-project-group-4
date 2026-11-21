@@ -2,10 +2,10 @@ import ReactThreeTestRenderer from '@react-three/test-renderer'
 import type { BoxGeometry, Group, Mesh } from 'three'
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
-import { Plan2DScene } from '@/components/plan/Plan2D'
-import type { RoomSize } from '@/lib/geometry/plan'
-import { EMPTY_DRAFT_STATE, draftReducer } from '@/lib/layout/draft'
+import type { CatalogItem } from '@/features/catalog/types'
+import { Plan2DScene } from '@/features/plan/components/Plan2D'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { EMPTY_DRAFT_STATE, draftReducer } from '@/features/plan/model/draft'
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 }
 

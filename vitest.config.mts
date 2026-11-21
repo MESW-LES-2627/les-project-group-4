@@ -25,6 +25,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // Next resolves `server-only` per bundling layer. In plain Node/Vitest the
+      // package throws by design, so tests use a no-op marker instead.
+      'server-only': fileURLToPath(new URL('./tests/stubs/server-only.ts', import.meta.url)),
     },
   },
   test: {

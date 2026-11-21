@@ -8,9 +8,9 @@ import type {
 } from 'three'
 import { describe, expect, it } from 'vitest'
 
-import { fitOrthoFrustum } from '@/components/plan/ortho'
-import { FitOrthoCamera } from '@/components/plan/Plan2D'
-import { RoomScene } from '@/components/plan/scene/RoomScene'
+import { fitOrthoFrustum } from '@/features/plan/model/ortho'
+import { FitOrthoCamera } from '@/features/plan/components/Plan2D'
+import { RoomScene } from '@/features/plan/components/scene/RoomScene'
 
 const room = { widthCm: 300, lengthCm: 400 }
 

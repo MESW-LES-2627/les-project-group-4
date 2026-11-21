@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-import { ITEM_CATEGORIES } from '@/lib/catalog'
+import { ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
 import {
   isItemCategory,
   itemCategorySchema,
   listItemsQuerySchema,
-} from '@/lib/schemas/item'
-import { toFieldErrors } from '@/lib/schemas/room'
+} from '@/features/catalog/schema'
+import { toFieldErrors } from '@/lib/validation'
 
 describe(
   'AT-5 — API filter: only a known category is accepted',

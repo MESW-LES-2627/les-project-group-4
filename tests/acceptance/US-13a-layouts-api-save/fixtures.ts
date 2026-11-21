@@ -1,4 +1,4 @@
-import type { LayoutDetails } from '@/api/types'
+import type { LayoutDetails } from '@/features/rooms/types'
 import { POST } from '@/app/api/rooms/[id]/layouts/route'
 
 export const savedAt = new Date('2026-11-11T18:00:00.000Z')

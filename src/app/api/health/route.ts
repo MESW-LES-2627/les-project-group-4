@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/db'
+import { pingDatabase } from '@/lib/db'
 
 /**
  * Health ping used by the daily Vercel cron.
@@ -9,7 +9,7 @@ import { getDb } from '@/lib/db'
  */
 export async function GET() {
   try {
-    await getDb().$queryRaw`SELECT 1`
+    await pingDatabase()
     return Response.json({ status: 'ok' })
   } catch (error) {
     // Log the details on the server only; the caller gets a generic message.

@@ -7,7 +7,7 @@ import 'dotenv/config'
 
 // The app's client (src/lib/db.ts): one place for the connection setup.
 import { getDb } from '../src/lib/db'
-import { SEED_CITIES, SEED_ITEMS } from '../src/lib/seedData'
+import { SEED_CITIES, SEED_ITEMS } from './seed-data'
 
 async function main(): Promise<void> {
   const db = getDb()

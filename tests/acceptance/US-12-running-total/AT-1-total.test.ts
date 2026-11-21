@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { EMPTY_DRAFT_STATE, draftReducer } from '@/lib/layout/draft'
-import { totalPriceCents, toPlacedItem } from '@/lib/layout/layout'
+import { EMPTY_DRAFT_STATE, draftReducer } from '@/features/plan/model/draft'
+import { totalPriceCents, toPlacedItem } from '@/features/plan/model/layout'
 
 import { lamp, sofa } from './fixtures'
 

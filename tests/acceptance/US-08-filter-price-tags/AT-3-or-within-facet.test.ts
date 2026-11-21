@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GET } from '@/app/api/items/route'
-import { toggleTag } from '@/lib/catalogFilters'
+import { toggleTag } from '@/features/catalog/model/catalogFilters'
 
 const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }))
 

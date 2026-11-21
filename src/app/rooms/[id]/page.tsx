@@ -3,12 +3,12 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
-import { RoomDetails } from '@/components/rooms/RoomDetails'
-import { findItems } from '@/lib/items'
-import { findLayoutsWithItems } from '@/lib/layouts'
-import { findRoomById } from '@/lib/rooms'
-import { listItemsQuerySchema } from '@/lib/schemas/item'
-import { roomIdSchema } from '@/lib/schemas/room'
+import { RoomDetails } from '@/features/rooms/components/RoomDetails'
+import { findItems } from '@/features/catalog/server/items'
+import { listItemsQuerySchema } from '@/features/catalog/schema'
+import { roomIdSchema } from '@/features/rooms/schema'
+import { findLayoutsWithItems } from '@/features/rooms/server/layouts'
+import { findRoomById } from '@/features/rooms/server/rooms'
 
 export const metadata: Metadata = {
   title: 'FurniMi - Room',

@@ -2,10 +2,10 @@ import ReactThreeTestRenderer from '@react-three/test-renderer'
 import type { BoxGeometry, Mesh, MeshBasicMaterial } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 
-import { dimensionLabelText, itemLabelText } from '@/components/plan/label'
-import { SELECTED_ITEM_COLOR } from '@/components/plan/scene/PlacedItem'
-import { RoomScene } from '@/components/plan/scene/RoomScene'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import { dimensionLabelText, itemLabelText } from '@/features/plan/model/label'
+import { SELECTED_ITEM_COLOR } from '@/features/plan/components/scene/PlacedItem'
+import { RoomScene } from '@/features/plan/components/scene/RoomScene'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 const room = { widthCm: 300, lengthCm: 400 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { LOCAL_DATABASE_URL, resolveDatabaseUrl } from '@/lib/databaseUrl'
+import { LOCAL_DATABASE_URL, resolveDatabaseUrl } from '@/lib/env'
 
 describe(
   'AT-6 — Fail fast: a missing DATABASE_URL fails loudly instead of using localhost',

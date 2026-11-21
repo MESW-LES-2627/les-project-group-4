@@ -1,15 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { Room } from '@/api/types'
+import type { Room } from '@/features/rooms/types'
 import { GET } from '@/app/api/rooms/[id]/route'
 import {
-  getRoomCoordinates,
   loadLastLocation,
   parseSavedLocation,
+} from '@/features/locations/model/lastLocation'
+import {
+  getRoomCoordinates,
   resolveRoomLocation,
   toLocationInput,
-} from '@/lib/location'
-import { roomLocationSchema } from '@/lib/schemas/room'
+} from '@/features/locations/model/location'
+import { roomLocationSchema } from '@/features/locations/schema'
 
 const { findRoom } = vi.hoisted(() => ({ findRoom: vi.fn() }))
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { ITEM_CATEGORIES } from '@/lib/catalog'
-import { isItemCategory } from '@/lib/schemas/item'
-import { SEED_ITEMS } from '@/lib/seedData'
+import { ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
+import { isItemCategory } from '@/features/catalog/schema'
+import { SEED_ITEMS } from '../../../prisma/seed-data'
 
 const INT4_MAX = 2_147_483_647 // Postgres INTEGER
 

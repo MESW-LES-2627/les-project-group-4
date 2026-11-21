@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { normalizeRotation, roomOutline } from '@/lib/geometry/plan'
+import { normalizeRotation, roomOutline } from '@/features/plan/model/geometry'
 
 const room = { widthCm: 400, lengthCm: 300 }
 
