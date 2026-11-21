@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Room } from '@/features/rooms/types'
 import { GET } from '@/app/api/rooms/[id]/route'
 import {
-  getRoomCoordinates,
   loadLastLocation,
   parseSavedLocation,
+} from '@/features/locations/model/lastLocation'
+import {
+  getRoomCoordinates,
   resolveRoomLocation,
   toLocationInput,
 } from '@/features/locations/model/location'

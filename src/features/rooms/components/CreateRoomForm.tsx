@@ -16,8 +16,8 @@ import {
   parseSavedLocation,
   readLastLocationRaw,
   saveLastLocation,
-  toLocationInput,
-} from '@/features/locations/model/location'
+} from '@/features/locations/model/lastLocation'
+import { toLocationInput } from '@/features/locations/model/location'
 import { ROOM_NAME_MAX } from '@/features/rooms/schema'
 import type { RoomLocationInput } from '@/features/locations/schema'
 
