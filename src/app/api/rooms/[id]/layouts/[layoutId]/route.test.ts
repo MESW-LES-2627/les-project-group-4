@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ValidationErrorBody } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 
 import { DELETE, GET } from './route'
 

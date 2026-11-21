@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ApiError, LayoutSummary } from '@/api/types'
+import type { LayoutSummary } from '@/api/types'
+import type { ApiError } from '@/lib/http'
 import { isAlreadyDeleted, savedConfirmation, visibleLayouts } from '@/lib/savedLayouts'
 
 const cosy: LayoutSummary = { id: 1, name: 'Cosy corner', itemCount: 3, updatedAt: '2026-11-12T10:00:00.000Z' }

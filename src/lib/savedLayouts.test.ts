@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ApiError, LayoutDetails, LayoutSummary } from '@/api/types'
+import type { LayoutDetails, LayoutSummary } from '@/api/types'
+import type { ApiError } from '@/lib/http'
 import {
   describeOpenError,
   formatItemCount,

@@ -1,4 +1,4 @@
-import type { ValidationErrorBody } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import {
   createLayout,
   findItemPrices,
@@ -7,7 +7,8 @@ import {
   roomExists,
 } from '@/lib/layouts'
 import { createLayoutSchema, DUPLICATE_LAYOUT_NAME } from '@/lib/schemas/layout'
-import { roomIdSchema, toFieldErrors } from '@/lib/schemas/room'
+import { roomIdSchema } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 type Context = { params: Promise<{ id: string }> }
 

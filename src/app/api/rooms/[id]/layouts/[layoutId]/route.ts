@@ -1,4 +1,4 @@
-import type { ValidationErrorBody } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { deleteLayout, findLayout } from '@/lib/layouts'
 import { layoutIdSchema } from '@/lib/schemas/layout'
 import { roomIdSchema } from '@/lib/schemas/room'

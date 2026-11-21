@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { Room, ValidationErrorBody } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { GET } from '@/app/api/rooms/[id]/route'
 
 const { findRoom } = vi.hoisted(() => ({ findRoom: vi.fn() }))

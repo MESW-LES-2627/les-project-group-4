@@ -1,7 +1,8 @@
-import type { ApiError, CreateLayoutRequest } from '@/api/types'
+import type { CreateLayoutRequest } from '@/api/types'
+import type { ApiError } from '@/lib/http'
 import type { PlacedItem } from '@/lib/layout/layout'
 import { createLayoutSchema } from '@/lib/schemas/layout'
-import { toFieldErrors } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 export type SaveLayoutRequestResult =
   | { ok: true; request: CreateLayoutRequest }

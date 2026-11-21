@@ -1,8 +1,10 @@
-import type { Room, ValidationErrorBody } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { cityExists } from '@/lib/cities'
 import { getDb } from '@/lib/db'
 import { findRooms, ROOM_SELECT } from '@/lib/rooms'
-import { createRoomSchema, toFieldErrors } from '@/lib/schemas/room'
+import { createRoomSchema } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 function validationError(errors: Record<string, string>) {
   return Response.json({ errors } satisfies ValidationErrorBody, { status: 400 })

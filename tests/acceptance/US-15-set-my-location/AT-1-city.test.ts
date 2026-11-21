@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { Room, ValidationErrorBody } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { POST } from '@/app/api/rooms/route'
 import { formatRoomLocation } from '@/lib/location'
 import { pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'

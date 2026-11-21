@@ -7,7 +7,7 @@ import {
   itemCategorySchema,
   listItemsQuerySchema,
 } from '@/lib/schemas/item'
-import { toFieldErrors } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 describe(
   'AT-5 — API filter: only a known category is accepted',

@@ -1,7 +1,7 @@
-import type { ValidationErrorBody } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { findItems } from '@/lib/items'
 import { listItemsQuerySchema, readListItemsQuery } from '@/lib/schemas/item'
-import { toFieldErrors } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 /**
  * US-07/US-08: lists catalog items, filtered by ?category=, ?maxPrice= (euros),

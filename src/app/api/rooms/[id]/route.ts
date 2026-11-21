@@ -1,4 +1,4 @@
-import type { ValidationErrorBody } from '@/api/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { findRoomById } from '@/lib/rooms'
 import { roomIdSchema } from '@/lib/schemas/room'
 

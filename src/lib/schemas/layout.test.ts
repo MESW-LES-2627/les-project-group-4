@@ -6,7 +6,7 @@ import {
   LAYOUT_NAME_MAX,
   layoutIdSchema,
 } from '@/lib/schemas/layout'
-import { toFieldErrors } from '@/lib/schemas/room'
+import { toFieldErrors } from '@/lib/validation'
 
 const sofa = { catalogItemId: 4, xCm: 120, yCm: 45.5, rotationDeg: 90 }
 

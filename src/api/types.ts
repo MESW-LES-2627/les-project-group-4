@@ -108,22 +108,5 @@ export interface LayoutWithItems extends LayoutSummary {
   items: SavedLayoutItem[]
 }
 
-/** Body returned by the API with 400 Bad Request (and 409 Conflict for a duplicate layout name). */
-export interface ValidationErrorBody {
-  errors: Record<string, string>
-}
-
-/** The one error shape the UI ever has to handle. */
-export interface ApiError {
-  /** HTTP status code, or 0 when the server could not be reached. */
-  status: number
-  /** A message that can be shown to the user as-is. */
-  message: string
-  /** Messages per form field, e.g. { widthCm: "must be greater than 0" }. Empty if none. */
-  fieldErrors: Record<string, string>
-}
-
-/** Every client call resolves to either data or an error; it never throws. */
-export type ApiResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: ApiError }
+// The generic HTTP envelope (ApiError, ApiResult, ValidationErrorBody) lives in
+// src/lib/http.ts: it is infrastructure, not part of the domain contract below.
