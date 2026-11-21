@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatPriceCents } from '@/lib/catalog'
+import { formatPriceCents } from '@/lib/utils'
 import { totalPriceCents } from '@/lib/layout/layout'
 
 import { addAll, lamp, sofa } from './fixtures'

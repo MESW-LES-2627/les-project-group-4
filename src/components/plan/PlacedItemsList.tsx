@@ -3,7 +3,7 @@
 import { Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { formatPriceCents } from '@/lib/catalog'
+import { formatPriceCents } from '@/lib/utils'
 import { totalPriceCents, type PlacedItem } from '@/lib/layout/layout'
 
 /** US-09: the items in the current layout, with the price each one adds. US-12: and their running total. */

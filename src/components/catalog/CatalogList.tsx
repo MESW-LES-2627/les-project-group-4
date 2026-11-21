@@ -5,7 +5,8 @@ import { GripVertical } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { CatalogItem } from '@/api/types'
-import { CATEGORY_LABELS, formatPriceCents } from '@/lib/catalog'
+import { CATEGORY_LABELS } from '@/lib/catalog'
+import { formatPriceCents } from '@/lib/utils'
 import type { ItemCategory } from '@/lib/catalog'
 import { isItemCategory } from '@/lib/schemas/item'
 
