@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react'
 import type { CatalogItem } from '@/features/catalog/types'
 import { Button } from '@/components/ui/button'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
-import type { CurrentRoom } from '@/hooks/useDraftLayouts'
+import type { CurrentRoom } from '@/features/plan/types'
 
 /**
  * US-09: adds a catalog item to a room's draft. The room page passes its own

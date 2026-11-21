@@ -3,7 +3,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { Vector3 } from 'three'
 
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
 
 import { ItemLabel } from './ItemLabel'
 

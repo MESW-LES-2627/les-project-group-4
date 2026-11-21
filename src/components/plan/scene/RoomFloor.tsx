@@ -1,7 +1,7 @@
 import type { ThreeEvent } from '@react-three/fiber'
 
-import type { RoomSize } from '@/lib/geometry/plan'
-import { roomOutline } from '@/lib/geometry/plan'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { roomOutline } from '@/features/plan/model/geometry'
 
 /** Matches the room thumbnails: brand-soft floor on the surface-2 canvas. */
 export const FLOOR_COLOR = '#f6e9e1'

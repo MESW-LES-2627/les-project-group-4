@@ -6,7 +6,7 @@ import { CatalogList } from '@/features/catalog/components/CatalogList'
 import { CategoryFilter } from '@/features/catalog/components/CategoryFilter'
 import { PlacementError } from '@/features/catalog/components/PlacementError'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
-import type { CurrentRoom } from '@/hooks/useDraftLayouts'
+import type { CurrentRoom } from '@/features/plan/types'
 
 /**
  * US-09: the catalog inside the room page. Category links stay on the room and

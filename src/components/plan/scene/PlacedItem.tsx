@@ -1,8 +1,8 @@
 import { useMemo, type ReactNode } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 
-import { sizeToScene, toScene } from '@/lib/geometry/plan'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import { sizeToScene, toScene } from '@/features/plan/model/geometry'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 /**
  * Shared with the saved-layout miniatures (LayoutThumbnail), so the plan and

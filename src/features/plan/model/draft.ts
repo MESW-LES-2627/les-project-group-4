@@ -7,15 +7,16 @@
  * src/components/layout/DraftLayoutProvider.tsx owns the React state.
  */
 
-import { boundingBox, isInsideRoom, type Placement, type RoomSize } from '@/lib/geometry/plan'
-import { toPlacedItem } from '@/lib/layout/layout'
-import type { PlacedItem, PlacedItemSource } from '@/lib/layout/layout'
+import { boundingBox, isInsideRoom, type Placement, type RoomSize } from '@/features/plan/model/geometry'
+import { toPlacedItem } from '@/features/plan/model/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
+import type { PlacedItemSource } from '@/features/plan/types'
 import {
   DOES_NOT_FIT_MESSAGE,
   PLACEMENT_MARGIN_CM,
   overlaps,
   placeInRoom,
-} from '@/lib/layout/placement'
+} from '@/features/plan/model/placement'
 
 /** A failed placement, scoped to the room it happened in. */
 export interface DraftError {

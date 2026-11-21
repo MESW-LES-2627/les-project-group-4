@@ -1,6 +1,6 @@
 import type { CreateLayoutRequest } from '@/api/types'
 import type { ApiError } from '@/lib/http'
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
 import { createLayoutSchema } from '@/lib/schemas/layout'
 import { toFieldErrors } from '@/lib/validation'
 

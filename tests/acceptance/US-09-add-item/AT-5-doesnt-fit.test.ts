@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import type { CatalogItem } from '@/features/catalog/types'
-import type { RoomSize } from '@/lib/geometry/plan'
-import { EMPTY_DRAFT_STATE, draftReducer } from '@/lib/layout/draft'
-import { DOES_NOT_FIT_MESSAGE } from '@/lib/layout/placement'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { EMPTY_DRAFT_STATE, draftReducer } from '@/features/plan/model/draft'
+import { DOES_NOT_FIT_MESSAGE } from '@/features/plan/model/placement'
 
 const smallRoom: RoomSize = { widthCm: 100, lengthCm: 100 }
 

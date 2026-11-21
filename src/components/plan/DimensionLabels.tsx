@@ -3,9 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber'
 import type { Camera } from 'three'
 import { Vector3 } from 'three'
 
-import type { RoomSize } from '@/lib/geometry/plan'
+import type { RoomSize } from '@/features/plan/model/geometry'
 
-import { dimensionLabelText } from './label'
+import { dimensionLabelText } from '@/features/plan/model/label'
 
 /** Gap between the room edge and its dimension label, in metres. */
 const OFFSET_M = 0.2

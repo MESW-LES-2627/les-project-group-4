@@ -3,19 +3,8 @@
  * src/lib/layout/draft.ts owns add/remove/replace; move/rotate belong to US-10.
  */
 
-import type { Placement, Size } from '@/lib/geometry/plan'
-
-/**
- * The part of a catalog item the plan needs. Structural on purpose: the plan
- * feature must not depend on the catalog feature.
- */
-export interface PlacedItemSource {
-  id: number
-  name: string
-  widthCm: number
-  depthCm: number
-  priceCents: number
-}
+import type { Placement, Size } from '@/features/plan/model/geometry'
+import type { PlacedItemSource } from '@/features/plan/types'
 
 /**
  * One item placed in the current room.

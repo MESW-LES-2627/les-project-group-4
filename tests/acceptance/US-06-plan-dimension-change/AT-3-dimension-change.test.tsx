@@ -10,8 +10,8 @@ import type {
 import { describe, expect, it } from 'vitest'
 
 import { RoomScene } from '@/components/plan/scene/RoomScene'
-import { fitOrthoFrustum } from '@/components/plan/ortho'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import { fitOrthoFrustum } from '@/features/plan/model/ortho'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 import { FitOrthoCamera } from '@/components/plan/Plan2D'
 
 const room = { widthCm: 300, lengthCm: 400 }

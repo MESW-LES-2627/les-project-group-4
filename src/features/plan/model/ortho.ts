@@ -1,4 +1,4 @@
-import type { RoomSize } from '@/lib/geometry/plan'
+import type { RoomSize } from '@/features/plan/model/geometry'
 
 /** Camera-space bounds for the top-down orthographic camera. */
 export interface OrthoFrustum {

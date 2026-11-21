@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import type { CatalogItem } from '@/features/catalog/types'
-import type { RoomSize } from '@/lib/geometry/plan'
-import { EMPTY_DRAFT_STATE, draftReducer } from '@/lib/layout/draft'
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { EMPTY_DRAFT_STATE, draftReducer } from '@/features/plan/model/draft'
+import type { PlacedItem } from '@/features/plan/model/layout'
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 }
 

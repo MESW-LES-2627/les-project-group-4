@@ -1,6 +1,6 @@
 import type { CatalogItem } from '@/features/catalog/types'
-import type { RoomSize } from '@/lib/geometry/plan'
-import { EMPTY_DRAFT_STATE, draftReducer, type DraftState } from '@/lib/layout/draft'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { EMPTY_DRAFT_STATE, draftReducer, type DraftState } from '@/features/plan/model/draft'
 
 /** A room big enough for every item below, side by side. */
 export const room: RoomSize = { widthCm: 600, lengthCm: 500 }

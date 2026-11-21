@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-import type { RoomSize } from '@/lib/geometry/plan'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 import { PlacedItem } from './PlacedItem'
 import { RoomFloor } from './RoomFloor'

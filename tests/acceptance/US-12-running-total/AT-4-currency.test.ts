@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { formatPriceCents } from '@/lib/utils'
-import { totalPriceCents } from '@/lib/layout/layout'
+import { totalPriceCents } from '@/features/plan/model/layout'
 
 import { addAll, lamp, sofa } from './fixtures'
 

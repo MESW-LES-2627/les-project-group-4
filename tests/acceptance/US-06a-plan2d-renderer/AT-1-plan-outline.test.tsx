@@ -8,7 +8,7 @@ import type {
 } from 'three'
 import { describe, expect, it } from 'vitest'
 
-import { fitOrthoFrustum } from '@/components/plan/ortho'
+import { fitOrthoFrustum } from '@/features/plan/model/ortho'
 import { FitOrthoCamera } from '@/components/plan/Plan2D'
 import { RoomScene } from '@/components/plan/scene/RoomScene'
 

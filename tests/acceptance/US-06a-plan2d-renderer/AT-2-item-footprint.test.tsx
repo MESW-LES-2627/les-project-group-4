@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { Plan2DScene } from '@/components/plan/Plan2D'
 import { RoomScene } from '@/components/plan/scene/RoomScene'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 const room = { widthCm: 300, lengthCm: 400 }
 

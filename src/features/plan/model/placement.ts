@@ -8,8 +8,8 @@
  * moved. Overlap uses AABBs, exact at 0°/90°; SAT is US-11.
  */
 
-import { EPSILON_CM, boundingBox, isInsideRoom } from '@/lib/geometry/plan'
-import type { Box, Placement, RoomSize, Size } from '@/lib/geometry/plan'
+import { EPSILON_CM, boundingBox, isInsideRoom } from '@/features/plan/model/geometry'
+import type { Box, Placement, RoomSize, Size } from '@/features/plan/model/geometry'
 
 /** A footprint already in the room: its size and where it sits. */
 export type PlacedFootprint = Size & Placement

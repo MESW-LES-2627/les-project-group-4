@@ -2,7 +2,7 @@ import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import type { OrthographicCamera } from 'three'
 
-import { MINOR_PER_MAJOR, planScale } from './ortho'
+import { MINOR_PER_MAJOR, planScale } from '@/features/plan/model/ortho'
 
 const MINOR_COLOR = 'color-mix(in oklch, var(--border), transparent 35%)'
 const MAJOR_COLOR = 'var(--border)'

@@ -21,8 +21,9 @@ import { Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
 import { Button } from '@/components/ui/button'
-import type { RoomSize } from '@/lib/geometry/plan'
-import type { PlacedItem as PlacedItemData, PlacedItemSource } from '@/lib/layout/layout'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
+import type { PlacedItemSource } from '@/features/plan/types'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
 import { PlanGrid, PlanGridProjector } from './PlanGrid'
@@ -36,7 +37,7 @@ import {
   planViewPose,
   stepZoom,
   type ZoomDirection,
-} from './ortho'
+} from '@/features/plan/model/ortho'
 import { RoomScene, type RoomSceneProps } from './scene/RoomScene'
 
 export interface Plan2DProps {

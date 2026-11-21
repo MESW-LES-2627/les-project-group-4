@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { sizeToScene, toScene } from '@/lib/geometry/plan'
+import { sizeToScene, toScene } from '@/features/plan/model/geometry'
 
 const sofa = { widthCm: 200, depthCm: 100 }
 const at = (xCm: number, yCm: number, rotationDeg = 0) => ({ xCm, yCm, rotationDeg })

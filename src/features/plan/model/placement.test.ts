@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { boundingBox, isInsideRoom } from '@/lib/geometry/plan'
-import type { Placement, RoomSize, Size } from '@/lib/geometry/plan'
+import { boundingBox, isInsideRoom } from '@/features/plan/model/geometry'
+import type { Placement, RoomSize, Size } from '@/features/plan/model/geometry'
 
 import { placeInRoom } from './placement'
 import type { PlacedFootprint } from './placement'

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import type { CatalogItem } from '@/features/catalog/types'
-import type { RoomSize } from '@/lib/geometry/plan'
-import { placeInRoom } from '@/lib/layout/placement'
-import type { PlacedFootprint } from '@/lib/layout/placement'
+import type { RoomSize } from '@/features/plan/model/geometry'
+import { placeInRoom } from '@/features/plan/model/placement'
+import type { PlacedFootprint } from '@/features/plan/model/placement'
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 }
 

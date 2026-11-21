@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { totalPriceCents } from '@/lib/layout/layout'
+import { totalPriceCents } from '@/features/plan/model/layout'
 
 import { addAll, lamp, sofa } from './fixtures'
 

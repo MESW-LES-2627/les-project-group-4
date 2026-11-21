@@ -2,8 +2,8 @@ import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import type { OrthographicCamera } from 'three'
 
-import { dimensionLabelText } from './label'
-import { planScale } from './ortho'
+import { dimensionLabelText } from '@/features/plan/model/label'
+import { planScale } from '@/features/plan/model/ortho'
 
 interface ScaleBarProps {
   lineRef: RefObject<HTMLDivElement | null>

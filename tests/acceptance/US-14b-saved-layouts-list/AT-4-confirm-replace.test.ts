@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
 import { needsReplaceConfirmation } from '@/lib/savedLayouts'
 
 const desk: PlacedItem = {

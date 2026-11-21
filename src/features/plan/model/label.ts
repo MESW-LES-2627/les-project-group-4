@@ -1,4 +1,4 @@
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
 
 /** Label shown above a footprint. Selected items also show their size. */
 export function itemLabelText(item: PlacedItem, selected = false): string {

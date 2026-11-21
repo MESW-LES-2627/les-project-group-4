@@ -4,12 +4,12 @@ import { useCallback, useMemo, useReducer, useState, type ReactNode } from 'reac
 
 import {
   DraftLayoutsContext,
-  type CurrentRoom,
   type DraftLayouts,
 } from '@/hooks/useDraftLayouts'
-import type { Placement, RoomSize } from '@/lib/geometry/plan'
-import { draftReducer, EMPTY_DRAFT_STATE } from '@/lib/layout/draft'
-import type { PlacedItem, PlacedItemSource } from '@/lib/layout/layout'
+import type { Placement, RoomSize } from '@/features/plan/model/geometry'
+import { draftReducer, EMPTY_DRAFT_STATE } from '@/features/plan/model/draft'
+import type { PlacedItem } from '@/features/plan/model/layout'
+import type { CurrentRoom, PlacedItemSource } from '@/features/plan/types'
 
 /** One shared empty array, so a room with no items keeps a stable prop. */
 const NO_ITEMS: PlacedItem[] = []

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 
 import type { Room } from '@/api/types'
 import { useDraftLayouts } from '@/hooks/useDraftLayouts'
-import type { PlacedItemSource } from '@/lib/layout/layout'
+import type { PlacedItemSource } from '@/features/plan/types'
 
 const Plan2D = dynamic(
   () => import('./Plan2D').then((module) => module.Plan2D),

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { CatalogItem } from '@/features/catalog/types'
-import type { Placement } from '@/lib/geometry/plan'
+import type { Placement } from '@/features/plan/model/geometry'
 
 import { toPlacedItem } from './layout'
 

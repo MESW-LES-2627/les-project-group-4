@@ -1,6 +1,6 @@
-import type { PlacedItem } from '@/lib/layout/layout'
+import type { PlacedItem } from '@/features/plan/model/layout'
 
-import { itemLabelText } from './label'
+import { itemLabelText } from '@/features/plan/model/label'
 
 const BASE_CLASS =
   'whitespace-nowrap rounded border px-1.5 py-0.5 text-[10px] font-medium shadow-sm'
