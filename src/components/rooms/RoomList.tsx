@@ -5,7 +5,7 @@ import type { Room } from '@/features/rooms/types'
 import { Button } from '@/components/ui/button'
 import { RoomThumbnail } from '@/components/rooms/RoomThumbnail'
 import { formatRoomLocation } from '@/features/locations/model/location'
-import { formatArea } from '@/lib/roomFormat'
+import { formatArea } from '@/features/rooms/model/roomFormat'
 
 /** US-02: the saved rooms, newest first, or an empty state when there are none. */
 export function RoomList({ rooms }: { rooms: Room[] }) {

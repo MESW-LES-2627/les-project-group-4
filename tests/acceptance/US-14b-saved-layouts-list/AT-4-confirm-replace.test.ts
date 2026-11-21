@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { PlacedItem } from '@/features/plan/model/layout'
-import { needsReplaceConfirmation } from '@/lib/savedLayouts'
+import { needsReplaceConfirmation } from '@/features/rooms/model/savedLayouts'
 
 const desk: PlacedItem = {
   id: 'draft-1',

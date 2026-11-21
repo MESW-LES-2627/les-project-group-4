@@ -4,7 +4,7 @@ import type { Room } from '@/features/rooms/types'
 import type { ValidationErrorBody } from '@/lib/http'
 import { POST } from '@/app/api/rooms/route'
 import { formatRoomLocation } from '@/features/locations/model/location'
-import { pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
+import { pickLocationError, toCreateRoomRequest } from '@/features/rooms/model/roomValidation'
 import { createRoomSchema } from '@/features/rooms/schema'
 
 const { createRoom, findCity } = vi.hoisted(() => ({

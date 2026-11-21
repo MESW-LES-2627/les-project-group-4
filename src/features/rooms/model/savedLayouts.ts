@@ -1,6 +1,7 @@
-import type { LayoutDetails, LayoutSummary } from '@/features/rooms/types'
-import type { ApiError } from '@/lib/http'
 import type { PlacedItem } from '@/features/plan/model/layout'
+import type { ApiError } from '@/lib/http'
+
+import type { LayoutDetails, LayoutSummary } from '../types'
 
 /** US-14b AT-1: "1 item", "3 items". */
 export function formatItemCount(count: number): string {

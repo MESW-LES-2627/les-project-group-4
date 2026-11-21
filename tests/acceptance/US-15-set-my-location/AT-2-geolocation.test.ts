@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ValidationErrorBody } from '@/lib/http'
 import { POST } from '@/app/api/rooms/route'
 import { CURRENT_LOCATION_LABEL, formatRoomLocation } from '@/features/locations/model/location'
-import { pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
+import { pickLocationError, toCreateRoomRequest } from '@/features/rooms/model/roomValidation'
 import { roundCoordinate } from '@/features/locations/schema'
 import { createRoomSchema } from '@/features/rooms/schema'
 

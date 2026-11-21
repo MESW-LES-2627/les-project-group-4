@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { LayoutSummary } from '@/features/rooms/types'
 import type { ApiError } from '@/lib/http'
-import { isAlreadyDeleted, savedConfirmation, visibleLayouts } from '@/lib/savedLayouts'
+import { isAlreadyDeleted, savedConfirmation, visibleLayouts } from '@/features/rooms/model/savedLayouts'
 
 const cosy: LayoutSummary = { id: 1, name: 'Cosy corner', itemCount: 3, updatedAt: '2026-11-12T10:00:00.000Z' }
 const office: LayoutSummary = { id: 2, name: 'Office', itemCount: 1, updatedAt: '2026-11-12T11:00:00.000Z' }

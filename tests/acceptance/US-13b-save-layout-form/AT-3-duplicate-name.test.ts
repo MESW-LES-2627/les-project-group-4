@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { DUPLICATE_LAYOUT_NAME } from '@/features/rooms/schema'
-import { describeSaveError } from '@/lib/saveLayout'
+import { describeSaveError } from '@/features/rooms/model/saveLayout'
 
 describe(
   'AT-3 — Duplicate name: "A layout with this name already exists" is shown next to the name',

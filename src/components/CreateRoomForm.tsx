@@ -18,7 +18,7 @@ import {
   saveLastLocation,
   toLocationInput,
 } from '@/features/locations/model/location'
-import { NAME_MAX_LENGTH } from '@/lib/roomValidation'
+import { NAME_MAX_LENGTH } from '@/features/rooms/model/roomValidation'
 import type { RoomLocationInput } from '@/features/locations/schema'
 
 // The stored location only changes when this form writes it, so there is nothing to subscribe to.

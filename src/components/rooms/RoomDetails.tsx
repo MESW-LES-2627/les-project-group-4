@@ -11,7 +11,7 @@ import { RoomPlan } from '@/features/rooms/components/RoomPlan'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
 import { formatRoomLocation, resolveRoomLocation } from '@/features/locations/model/location'
-import { formatArea } from '@/lib/roomFormat'
+import { formatArea } from '@/features/rooms/model/roomFormat'
 import { COORDINATE_DECIMALS } from '@/features/locations/schema'
 
 /**

@@ -17,7 +17,7 @@ import {
   needsReplaceConfirmation,
   toDraftItems,
   visibleLayouts,
-} from '@/lib/savedLayouts'
+} from '@/features/rooms/model/savedLayouts'
 
 interface SavedLayoutsProps {
   room: Room

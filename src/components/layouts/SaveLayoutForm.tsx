@@ -11,8 +11,8 @@ import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import type { PlacedItem } from '@/features/plan/model/layout'
-import { describeSaveError, toSaveLayoutRequest } from '@/lib/saveLayout'
-import { formatItemCount, savedConfirmation } from '@/lib/savedLayouts'
+import { describeSaveError, toSaveLayoutRequest } from '@/features/rooms/model/saveLayout'
+import { formatItemCount, savedConfirmation } from '@/features/rooms/model/savedLayouts'
 import { LAYOUT_NAME_MAX } from '@/features/rooms/schema'
 
 interface SaveLayoutFormProps {
