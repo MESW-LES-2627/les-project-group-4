@@ -1,12 +1,12 @@
 'use client'
 
-import type { Room } from '@/api/types'
 import type { CatalogItem } from '@/features/catalog/types'
 import { AddToLayoutButton } from '@/features/catalog/components/AddToLayoutButton'
 import { CatalogList } from '@/features/catalog/components/CatalogList'
 import { CategoryFilter } from '@/features/catalog/components/CategoryFilter'
 import { PlacementError } from '@/features/catalog/components/PlacementError'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
+import type { CurrentRoom } from '@/hooks/useDraftLayouts'
 
 /**
  * US-09: the catalog inside the room page. Category links stay on the room and
@@ -19,7 +19,7 @@ export function RoomCatalog({
   category,
   className = '',
 }: {
-  room: Room
+  room: CurrentRoom
   items: CatalogItem[]
   category: ItemCategory | undefined
   /** Extra classes for the panel, e.g. its position in the editor grid. */
