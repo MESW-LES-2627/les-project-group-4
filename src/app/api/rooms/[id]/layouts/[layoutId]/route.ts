@@ -1,10 +1,8 @@
+import { LAYOUT_NOT_FOUND, serverError, validationError } from '@/app/api/response'
 import { layoutIdSchema, roomIdSchema } from '@/features/rooms/schema'
 import { deleteLayout, findLayout } from '@/features/rooms/server/layouts'
-import type { ValidationErrorBody } from '@/lib/http'
 
 type Context = { params: Promise<{ id: string; layoutId: string }> }
-
-const LAYOUT_NOT_FOUND = { message: 'Layout not found.' }
 
 /** Parses both ids from the URL, or returns the 400 response for the first malformed one. */
 async function parseIds(
@@ -13,17 +11,11 @@ async function parseIds(
   const { id, layoutId } = await params
   const room = roomIdSchema.safeParse(id)
   if (!room.success) {
-    return Response.json(
-      { errors: { id: room.error.issues[0].message } } satisfies ValidationErrorBody,
-      { status: 400 },
-    )
+    return validationError({ id: room.error.issues[0].message })
   }
   const layout = layoutIdSchema.safeParse(layoutId)
   if (!layout.success) {
-    return Response.json(
-      { errors: { layoutId: layout.error.issues[0].message } } satisfies ValidationErrorBody,
-      { status: 400 },
-    )
+    return validationError({ layoutId: layout.error.issues[0].message })
   }
   return { roomId: room.data, layoutId: layout.data }
 }
@@ -43,10 +35,10 @@ export async function GET(_request: Request, { params }: Context) {
     }
     return Response.json(layout)
   } catch (error) {
-    console.error('Failed to load layout', error)
-    return Response.json(
-      { message: 'Could not load the layout. Please try again later.' },
-      { status: 500 },
+    return serverError(
+      'Failed to load layout',
+      'Could not load the layout. Please try again later.',
+      error,
     )
   }
 }
@@ -65,10 +57,10 @@ export async function DELETE(_request: Request, { params }: Context) {
     }
     return new Response(null, { status: 204 })
   } catch (error) {
-    console.error('Failed to delete layout', error)
-    return Response.json(
-      { message: 'Could not delete the layout. Please try again later.' },
-      { status: 500 },
+    return serverError(
+      'Failed to delete layout',
+      'Could not delete the layout. Please try again later.',
+      error,
     )
   }
 }

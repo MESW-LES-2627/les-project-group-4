@@ -1,3 +1,4 @@
+import { ROOM_NOT_FOUND, serverError, validationError } from '@/app/api/response'
 import { findItemPrices } from '@/features/catalog/server/items'
 import {
   createLayoutSchema,
@@ -10,16 +11,9 @@ import {
   isUniqueViolation,
 } from '@/features/rooms/server/layouts'
 import { roomExists } from '@/features/rooms/server/rooms'
-import type { ValidationErrorBody } from '@/lib/http'
 import { toFieldErrors } from '@/lib/validation'
 
 type Context = { params: Promise<{ id: string }> }
-
-function validationError(errors: Record<string, string>, status = 400) {
-  return Response.json({ errors } satisfies ValidationErrorBody, { status })
-}
-
-const ROOM_NOT_FOUND = { message: 'Room not found.' }
 
 /** US-14 AT-1 / AT-4: the room's saved layouts by name. 200 with an array (possibly empty), 400 for a malformed id, 404 if the room does not exist, 500 if the database fails. */
 export async function GET(_request: Request, { params }: Context) {
@@ -35,10 +29,10 @@ export async function GET(_request: Request, { params }: Context) {
     }
     return Response.json(await findLayouts(roomId.data))
   } catch (error) {
-    console.error('Failed to list layouts', error)
-    return Response.json(
-      { message: 'Could not load the saved layouts. Please try again later.' },
-      { status: 500 },
+    return serverError(
+      'Failed to list layouts',
+      'Could not load the saved layouts. Please try again later.',
+      error,
     )
   }
 }
@@ -86,11 +80,10 @@ export async function POST(request: Request, { params }: Context) {
     if (isUniqueViolation(error)) {
       return validationError({ name: DUPLICATE_LAYOUT_NAME }, 409)
     }
-    // Log the details on the server only; the client gets a generic message.
-    console.error('Failed to save layout', error)
-    return Response.json(
-      { message: 'Could not save the layout. Please try again later.' },
-      { status: 500 },
+    return serverError(
+      'Failed to save layout',
+      'Could not save the layout. Please try again later.',
+      error,
     )
   }
 }

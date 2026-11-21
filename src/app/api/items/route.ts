@@ -1,4 +1,4 @@
-import type { ValidationErrorBody } from '@/lib/http'
+import { serverError, validationError } from '@/app/api/response'
 import { findItems } from '@/features/catalog/server/items'
 import { listItemsQuerySchema, readListItemsQuery } from '@/features/catalog/schema'
 import { toFieldErrors } from '@/lib/validation'
@@ -13,19 +13,17 @@ export async function GET(request: Request) {
     readListItemsQuery(new URL(request.url).searchParams),
   )
   if (!parsed.success) {
-    return Response.json({ errors: toFieldErrors(parsed.error) } satisfies ValidationErrorBody, {
-      status: 400,
-    })
+    return validationError(toFieldErrors(parsed.error))
   }
 
   try {
     const items = await findItems(parsed.data)
     return Response.json(items)
   } catch (error) {
-    console.error('Failed to list items', error)
-    return Response.json(
-      { message: 'Could not load the catalog. Please try again later.' },
-      { status: 500 },
+    return serverError(
+      'Failed to list items',
+      'Could not load the catalog. Please try again later.',
+      error,
     )
   }
 }
