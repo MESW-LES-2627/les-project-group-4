@@ -1,7 +1,6 @@
+import { layoutIdSchema, roomIdSchema } from '@/features/rooms/schema'
+import { deleteLayout, findLayout } from '@/features/rooms/server/layouts'
 import type { ValidationErrorBody } from '@/lib/http'
-import { deleteLayout, findLayout } from '@/lib/layouts'
-import { layoutIdSchema } from '@/features/rooms/schema'
-import { roomIdSchema } from '@/features/rooms/schema'
 
 type Context = { params: Promise<{ id: string; layoutId: string }> }
 

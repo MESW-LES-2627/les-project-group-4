@@ -1,9 +1,7 @@
-import type { Room } from '@/features/rooms/types'
-import type { ValidationErrorBody } from '@/lib/http'
 import { cityExists } from '@/features/locations/server/cities'
-import { getDb } from '@/lib/db'
-import { findRooms, ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema } from '@/features/rooms/schema'
+import { createRoom, findRooms } from '@/features/rooms/server/rooms'
+import type { ValidationErrorBody } from '@/lib/http'
 import { toFieldErrors } from '@/lib/validation'
 
 function validationError(errors: Record<string, string>) {
@@ -44,10 +42,7 @@ export async function POST(request: Request) {
       return validationError({ cityId: 'does not exist' })
     }
 
-    const room: Room = await getDb().room.create({
-      data: parsed.data,
-      select: ROOM_SELECT,
-    })
+    const room = await createRoom(parsed.data)
     return Response.json(room, { status: 201 })
   } catch (error) {
     // Log the details on the server only; the client gets a generic message.

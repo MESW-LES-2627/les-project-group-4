@@ -45,6 +45,19 @@ export function findItems(query: ListItemsQuery = {}): Promise<CatalogItem[]> {
   })
 }
 
+/**
+ * US-13: the catalog price of each item id that exists. Ids that are not in the map do not exist.
+ * The price is copied into the saved layout, so the client never decides what an item costs.
+ */
+export async function findItemPrices(ids: readonly number[]): Promise<Map<number, number>> {
+  if (ids.length === 0) return new Map()
+  const items = await getDb().item.findMany({
+    where: { id: { in: [...new Set(ids)] } },
+    select: { id: true, priceCents: true },
+  })
+  return new Map(items.map((item) => [item.id, item.priceCents]))
+}
+
 /** US-08: every style and room-type tag used in the catalog, sorted, for the filter options. */
 export async function findTagOptions(): Promise<{ style: string[]; room: string[] }> {
   const rows = await getDb().item.findMany({ select: { styleTags: true, roomTypeTags: true } })

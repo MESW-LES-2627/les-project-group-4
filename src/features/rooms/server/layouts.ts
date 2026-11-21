@@ -1,8 +1,11 @@
-import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '@/features/rooms/types'
-import { getDb } from '@/lib/db'
-import type { CreateLayoutInput } from '@/features/rooms/schema'
+import 'server-only'
 
-// The layout fields the API returns (see LayoutDetails in src/api/types.ts).
+import { getDb } from '@/lib/db'
+
+import type { CreateLayoutInput } from '../schema'
+import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '../types'
+
+// The layout fields the API returns (see LayoutDetails in features/rooms/types.ts).
 // Shared by the layouts routes so they all return the same shape.
 const LAYOUT_DETAILS_SELECT = {
   id: true,
@@ -115,19 +118,6 @@ export async function findLayout(roomId: number, layoutId: number): Promise<Layo
 }
 
 /**
- * US-13: the catalog price of each item id that exists. Ids that are not in the map do not exist.
- * The price is copied into the saved layout, so the client never decides what an item costs.
- */
-export async function findItemPrices(ids: readonly number[]): Promise<Map<number, number>> {
-  if (ids.length === 0) return new Map()
-  const items = await getDb().item.findMany({
-    where: { id: { in: [...new Set(ids)] } },
-    select: { id: true, priceCents: true },
-  })
-  return new Map(items.map((item) => [item.id, item.priceCents]))
-}
-
-/**
  * US-13 AT-2: saves the layout and every placed item in one insert, so a failure leaves nothing half-saved (AT-5).
  * Throws Prisma's P2002 error when the room already has a layout with this name (AT-6).
  */
@@ -146,7 +136,7 @@ export async function createLayout(
           xCm: item.xCm,
           yCm: item.yCm,
           rotationDeg: item.rotationDeg,
-          // findItemPrices has every id here: the route rejects unknown items first.
+          // The route has already rejected unknown catalog items.
           priceCents: prices.get(item.catalogItemId) ?? 0,
         })),
       },

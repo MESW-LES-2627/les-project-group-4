@@ -1,8 +1,12 @@
-import type { Room } from '@/features/rooms/types'
+import 'server-only'
+
 import { CITY_SELECT } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 
-// The room fields the API returns (see Room in src/api/types.ts).
+import type { CreateRoomInput } from '../schema'
+import type { Room } from '../types'
+
+// The room fields the API returns (see Room in features/rooms/types.ts).
 // Shared by the rooms routes and pages so they all return the same shape.
 export const ROOM_SELECT = {
   id: true,
@@ -27,4 +31,9 @@ export function findRooms(): Promise<Room[]> {
 /** US-03: one room, or null if it does not exist. Used by GET /api/rooms/[id] and the /rooms/[id] page. */
 export function findRoomById(id: number): Promise<Room | null> {
   return getDb().room.findUnique({ where: { id }, select: ROOM_SELECT })
+}
+
+/** US-01: creates a room with the validated input. Used by POST /api/rooms. */
+export function createRoom(input: CreateRoomInput): Promise<Room> {
+  return getDb().room.create({ data: input, select: ROOM_SELECT })
 }

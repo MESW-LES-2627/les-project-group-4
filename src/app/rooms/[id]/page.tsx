@@ -5,10 +5,10 @@ import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
 import { findItems } from '@/features/catalog/server/items'
-import { findLayoutsWithItems } from '@/lib/layouts'
-import { findRoomById } from '@/lib/rooms'
 import { listItemsQuerySchema } from '@/features/catalog/schema'
 import { roomIdSchema } from '@/features/rooms/schema'
+import { findLayoutsWithItems } from '@/features/rooms/server/layouts'
+import { findRoomById } from '@/features/rooms/server/rooms'
 
 export const metadata: Metadata = {
   title: 'FurniMi - Room',

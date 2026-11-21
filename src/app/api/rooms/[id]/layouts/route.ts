@@ -1,13 +1,16 @@
-import type { ValidationErrorBody } from '@/lib/http'
+import { findItemPrices } from '@/features/catalog/server/items'
+import {
+  createLayoutSchema,
+  DUPLICATE_LAYOUT_NAME,
+  roomIdSchema,
+} from '@/features/rooms/schema'
 import {
   createLayout,
-  findItemPrices,
   findLayouts,
   isUniqueViolation,
   roomExists,
-} from '@/lib/layouts'
-import { createLayoutSchema, DUPLICATE_LAYOUT_NAME } from '@/features/rooms/schema'
-import { roomIdSchema } from '@/features/rooms/schema'
+} from '@/features/rooms/server/layouts'
+import type { ValidationErrorBody } from '@/lib/http'
 import { toFieldErrors } from '@/lib/validation'
 
 type Context = { params: Promise<{ id: string }> }
