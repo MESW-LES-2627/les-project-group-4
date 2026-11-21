@@ -8,8 +8,8 @@ import {
   createLayout,
   findLayouts,
   isUniqueViolation,
-  roomExists,
 } from '@/features/rooms/server/layouts'
+import { roomExists } from '@/features/rooms/server/rooms'
 import type { ValidationErrorBody } from '@/lib/http'
 import { toFieldErrors } from '@/lib/validation'
 

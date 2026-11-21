@@ -65,12 +65,6 @@ function toLayoutDetails(row: LayoutRow): LayoutDetails {
   }
 }
 
-/** True when a room with this id exists. Used to answer 404 before touching its layouts. */
-export async function roomExists(id: number): Promise<boolean> {
-  const room = await getDb().room.findUnique({ where: { id }, select: { id: true } })
-  return room !== null
-}
-
 /** US-14 AT-1: the room's saved layouts, listed by name (id breaks ties, which the unique name makes rare). */
 export async function findLayouts(roomId: number): Promise<LayoutSummary[]> {
   const layouts = await getDb().layout.findMany({

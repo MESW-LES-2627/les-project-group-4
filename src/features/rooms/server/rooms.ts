@@ -33,6 +33,12 @@ export function findRoomById(id: number): Promise<Room | null> {
   return getDb().room.findUnique({ where: { id }, select: ROOM_SELECT })
 }
 
+/** True when a room with this id exists. Used to answer 404 before touching its layouts. */
+export async function roomExists(id: number): Promise<boolean> {
+  const room = await getDb().room.findUnique({ where: { id }, select: { id: true } })
+  return room !== null
+}
+
 /** US-01: creates a room with the validated input. Used by POST /api/rooms. */
 export function createRoom(input: CreateRoomInput): Promise<Room> {
   return getDb().room.create({ data: input, select: ROOM_SELECT })
