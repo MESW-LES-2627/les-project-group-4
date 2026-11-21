@@ -495,6 +495,36 @@
         }
       ]
     },
+    "US-08b": {
+      "issue": 91,
+      "title": "Filter items by a price range",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Range"
+        },
+        {
+          "id": "AT-2",
+          "title": "Inclusive bounds"
+        },
+        {
+          "id": "AT-3",
+          "title": "One-sided"
+        },
+        {
+          "id": "AT-4",
+          "title": "Invalid range"
+        },
+        {
+          "id": "AT-5",
+          "title": "URL"
+        },
+        {
+          "id": "AT-6",
+          "title": "Combined and clear"
+        }
+      ]
+    },
     "US-09": {
       "issue": 31,
       "title": "Add a selected item to the layout",
