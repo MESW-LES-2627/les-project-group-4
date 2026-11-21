@@ -1,6 +1,6 @@
 import type { LayoutDetails, LayoutSummary, LayoutWithItems } from '@/features/rooms/types'
 import { getDb } from '@/lib/db'
-import type { CreateLayoutInput } from '@/lib/schemas/layout'
+import type { CreateLayoutInput } from '@/features/rooms/schema'
 
 // The layout fields the API returns (see LayoutDetails in src/api/types.ts).
 // Shared by the layouts routes so they all return the same shape.

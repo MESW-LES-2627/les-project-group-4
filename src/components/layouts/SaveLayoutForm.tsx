@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import type { PlacedItem } from '@/features/plan/model/layout'
 import { describeSaveError, toSaveLayoutRequest } from '@/lib/saveLayout'
 import { formatItemCount, savedConfirmation } from '@/lib/savedLayouts'
-import { LAYOUT_NAME_MAX } from '@/lib/schemas/layout'
+import { LAYOUT_NAME_MAX } from '@/features/rooms/schema'
 
 interface SaveLayoutFormProps {
   roomId: number

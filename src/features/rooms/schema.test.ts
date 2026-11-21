@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { roomIdSchema } from './room'
+import { roomIdSchema } from './schema'
 
 describe('roomIdSchema', () => {
   it('turns a positive whole number into a number', () => {

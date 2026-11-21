@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ValidationErrorBody } from '@/lib/http'
 import { POST } from '@/app/api/rooms/route'
-import { createRoomSchema } from '@/lib/schemas/room'
+import { createRoomSchema } from '@/features/rooms/schema'
 
 const { createRoom } = vi.hoisted(() => ({ createRoom: vi.fn() }))
 

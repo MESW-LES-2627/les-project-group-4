@@ -1,6 +1,6 @@
 import type { ValidationErrorBody } from '@/lib/http'
 import { findRoomById } from '@/lib/rooms'
-import { roomIdSchema } from '@/lib/schemas/room'
+import { roomIdSchema } from '@/features/rooms/schema'
 
 /** US-03: one room. 200 with the room, 400 for a malformed id, 404 if it does not exist, 500 if the database fails. */
 export async function GET(

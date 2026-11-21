@@ -1,7 +1,7 @@
 import type { CreateLayoutRequest } from '@/features/rooms/types'
 import type { ApiError } from '@/lib/http'
 import type { PlacedItem } from '@/features/plan/model/layout'
-import { createLayoutSchema } from '@/lib/schemas/layout'
+import { createLayoutSchema } from '@/features/rooms/schema'
 import { toFieldErrors } from '@/lib/validation'
 
 export type SaveLayoutRequestResult =

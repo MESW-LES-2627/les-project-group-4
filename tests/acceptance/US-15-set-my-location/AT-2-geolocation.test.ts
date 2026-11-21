@@ -5,7 +5,7 @@ import { POST } from '@/app/api/rooms/route'
 import { CURRENT_LOCATION_LABEL, formatRoomLocation } from '@/features/locations/model/location'
 import { pickLocationError, toCreateRoomRequest } from '@/lib/roomValidation'
 import { roundCoordinate } from '@/features/locations/schema'
-import { createRoomSchema } from '@/lib/schemas/room'
+import { createRoomSchema } from '@/features/rooms/schema'
 
 const { createRoom } = vi.hoisted(() => ({ createRoom: vi.fn() }))
 

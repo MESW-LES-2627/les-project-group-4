@@ -3,7 +3,7 @@ import type { ValidationErrorBody } from '@/lib/http'
 import { cityExists } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 import { findRooms, ROOM_SELECT } from '@/lib/rooms'
-import { createRoomSchema } from '@/lib/schemas/room'
+import { createRoomSchema } from '@/features/rooms/schema'
 import { toFieldErrors } from '@/lib/validation'
 
 function validationError(errors: Record<string, string>) {

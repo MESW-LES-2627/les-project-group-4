@@ -6,8 +6,8 @@ import {
   isUniqueViolation,
   roomExists,
 } from '@/lib/layouts'
-import { createLayoutSchema, DUPLICATE_LAYOUT_NAME } from '@/lib/schemas/layout'
-import { roomIdSchema } from '@/lib/schemas/room'
+import { createLayoutSchema, DUPLICATE_LAYOUT_NAME } from '@/features/rooms/schema'
+import { roomIdSchema } from '@/features/rooms/schema'
 import { toFieldErrors } from '@/lib/validation'
 
 type Context = { params: Promise<{ id: string }> }

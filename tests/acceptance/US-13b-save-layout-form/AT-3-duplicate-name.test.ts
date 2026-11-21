@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { DUPLICATE_LAYOUT_NAME } from '@/lib/schemas/layout'
+import { DUPLICATE_LAYOUT_NAME } from '@/features/rooms/schema'
 import { describeSaveError } from '@/lib/saveLayout'
 
 describe(
