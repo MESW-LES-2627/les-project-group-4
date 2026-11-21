@@ -1,5 +1,5 @@
 import type { Room } from '@/api/types'
-import { CITY_SELECT } from '@/lib/cities'
+import { CITY_SELECT } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 
 // The room fields the API returns (see Room in src/api/types.ts).

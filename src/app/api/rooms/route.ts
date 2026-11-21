@@ -1,6 +1,6 @@
 import type { Room } from '@/api/types'
 import type { ValidationErrorBody } from '@/lib/http'
-import { cityExists } from '@/lib/cities'
+import { cityExists } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 import { findRooms, ROOM_SELECT } from '@/lib/rooms'
 import { createRoomSchema } from '@/lib/schemas/room'

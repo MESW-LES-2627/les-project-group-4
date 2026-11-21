@@ -3,6 +3,8 @@
 // Field names must stay identical to the frozen contract in the epic
 // (served by the route handlers under src/app/api).
 
+import type { City } from '@/features/locations/types'
+
 /**
  * Body sent to POST /api/rooms.
  * US-15: the location is optional: either `cityId`, or `latitude` + `longitude`, never both.
@@ -14,14 +16,6 @@ export interface CreateRoomRequest {
   cityId?: number
   latitude?: number
   longitude?: number
-}
-
-/** US-15: a seeded city, returned by GET /api/cities and inside a Room. */
-export interface City {
-  id: number
-  name: string
-  latitude: number
-  longitude: number
 }
 
 /** Body returned by POST /api/rooms with 201 Created, GET /api/rooms and GET /api/rooms/[id]. */

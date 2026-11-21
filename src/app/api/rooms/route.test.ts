@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { City, Room } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { City } from '@/features/locations/types'
 
 import { GET, POST } from './route'
 

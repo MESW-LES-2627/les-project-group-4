@@ -1,4 +1,5 @@
-import type { City, Room } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { City } from '@/features/locations/types'
 import { roomLocationSchema } from '@/lib/schemas/room'
 import type { RoomLocationInput } from '@/lib/schemas/room'
 

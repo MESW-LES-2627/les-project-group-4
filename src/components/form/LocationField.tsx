@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { LoaderCircle, LocateFixed } from 'lucide-react'
 
-import type { City } from '@/api/types'
+import type { City } from '@/features/locations/types'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {

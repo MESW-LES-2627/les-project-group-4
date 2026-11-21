@@ -1,4 +1,4 @@
-import { findCities } from '@/lib/cities'
+import { findCities } from '@/features/locations/server/cities'
 
 /** US-15: the seeded cities, A to Z. 200 with an array (possibly empty), 500 if the database fails. */
 export async function GET() {

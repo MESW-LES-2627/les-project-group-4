@@ -1,7 +1,10 @@
-import type { City } from '@/api/types'
+import 'server-only'
+
 import { getDb } from '@/lib/db'
 
-// The city fields the API returns (see City in src/api/types.ts).
+import type { City } from '../types'
+
+// The city fields the API returns (see City in features/locations/types.ts).
 // Also used by ROOM_SELECT, so a room's city has the same shape.
 export const CITY_SELECT = { id: true, name: true, latitude: true, longitude: true } as const
 
