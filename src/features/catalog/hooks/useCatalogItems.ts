@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { listItems } from '@/features/catalog/api'
-import { createLatestRequest, runLatest } from '@/features/catalog/model/catalogFilters'
+import { createLatestRequest, runLatest } from '@/features/catalog/model/latestRequest'
 import type { ListItemsQuery } from '@/features/catalog/schema'
 import type { CatalogItem } from '@/features/catalog/types'
 
