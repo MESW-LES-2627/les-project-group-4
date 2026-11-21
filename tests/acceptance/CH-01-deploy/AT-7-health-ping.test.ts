@@ -2,37 +2,36 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GET } from '@/app/api/health/route'
 
-const { queryRaw } = vi.hoisted(() => ({ queryRaw: vi.fn() }))
+const { ping } = vi.hoisted(() => ({ ping: vi.fn() }))
 
 vi.mock('@/lib/db', () => ({
-  getDb: () => ({ $queryRaw: queryRaw }),
+  pingDatabase: ping,
 }))
 
 beforeEach(() => {
-  queryRaw.mockReset()
+  ping.mockReset()
   vi.restoreAllMocks() // undo the console.error spy from the previous test
 })
 
 describe(
-  'AT-7 — Health ping: /api/health runs SELECT 1 and reports 200',
+  'AT-7 — Health ping: /api/health pings the database and reports 200',
   { tags: ['acceptance', 'CH-01', 'AT-7'] },
   () => {
-    it('runs SELECT 1 and returns 200 when the database answers', async () => {
-      queryRaw.mockResolvedValue([{ '?column?': 1 }])
+    it('pings the database and returns 200 when it answers', async () => {
+      ping.mockResolvedValue(undefined)
 
       const response = await GET()
 
       expect(response.status).toBe(200)
       expect(await response.json()).toEqual({ status: 'ok' })
-      expect(queryRaw).toHaveBeenCalledTimes(1)
-      expect(queryRaw.mock.calls[0][0].join('')).toContain('SELECT 1')
+      expect(ping).toHaveBeenCalledTimes(1)
     })
 
     it('returns 503 without leaking the error when the database is unreachable', async () => {
       // The route logs the real error on the server; catch that log so it is not
       // printed during the test run (it looks like a failure, but it is expected).
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-      queryRaw.mockRejectedValue(new Error('connection refused'))
+      ping.mockRejectedValue(new Error('connection refused'))
 
       const response = await GET()
       const text = await response.text()
