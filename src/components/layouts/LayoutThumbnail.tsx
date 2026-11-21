@@ -3,7 +3,7 @@ import {
   ITEM_BORDER_OPACITY,
   ITEM_COLOR,
   ITEM_FILL_OPACITY,
-} from '@/components/plan/scene/PlacedItem'
+} from '@/features/plan/components/scene/PlacedItem'
 import { footprintCorners, type Point } from '@/features/plan/model/geometry'
 
 /** Same box and padding as RoomThumbnail, so the two card sets look like siblings. */

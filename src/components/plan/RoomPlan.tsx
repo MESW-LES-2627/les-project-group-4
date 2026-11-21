@@ -8,7 +8,7 @@ import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import type { PlacedItemSource } from '@/features/plan/types'
 
 const Plan2D = dynamic(
-  () => import('./Plan2D').then((module) => module.Plan2D),
+  () => import('@/features/plan/components/Plan2D').then((module) => module.Plan2D),
   {
     ssr: false,
     loading: () => <PlanLoading />,
