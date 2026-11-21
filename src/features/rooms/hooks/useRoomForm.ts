@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react'
 import type { Ref, SubmitEvent } from 'react'
 
-import { isFormValid, validateForm } from '@/features/rooms/model/roomValidation'
+import { isFormValid, validateForm } from '../model/roomValidation'
 import type {
   RoomFormErrors,
   RoomFormField,
   RoomFormValues,
-} from '@/features/rooms/model/roomValidation'
+} from '../model/roomValidation'
 
 const FIELD_ORDER: readonly RoomFormField[] = ['name', 'width', 'length']
 

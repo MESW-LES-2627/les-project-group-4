@@ -10,8 +10,8 @@ import { LocationField } from '@/features/locations/components/LocationField'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useCreateRoom } from '@/hooks/useCreateRoom'
-import { useRoomForm } from '@/hooks/useRoomForm'
+import { useCreateRoom } from '@/features/rooms/hooks/useCreateRoom'
+import { useRoomForm } from '@/features/rooms/hooks/useRoomForm'
 import {
   parseSavedLocation,
   readLastLocationRaw,

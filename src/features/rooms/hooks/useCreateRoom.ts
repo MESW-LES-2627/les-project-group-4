@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
 
-import { createRoom } from '@/features/rooms/api'
-import type { Room } from '@/features/rooms/types'
-import { mapServerFieldErrors, pickLocationError, toCreateRoomRequest } from '@/features/rooms/model/roomValidation'
 import type { RoomLocationInput } from '@/features/locations/schema'
-import type { RoomFormErrors, RoomFormValues } from '@/features/rooms/model/roomValidation'
+
+import { createRoom } from '../api'
+import { mapServerFieldErrors, pickLocationError, toCreateRoomRequest } from '../model/roomValidation'
+import type { RoomFormErrors, RoomFormValues } from '../model/roomValidation'
+import type { Room } from '../types'
 
 interface UseCreateRoomOptions {
   onFieldErrors: (errors: RoomFormErrors) => void
