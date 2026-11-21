@@ -5,7 +5,7 @@
 // Physical stores are NOT seeded: they arrive with US-17 in Iteration 4 and are
 // linked to items through `source`.
 
-import type { ItemCategory } from '../features/catalog/model/catalog'
+import type { ItemCategory } from '../../src/features/catalog/model/catalog'
 
 /** Fictional retailers. A retailer can have many physical shops (added in Iteration 4). */
 export const SAMPLE_SOURCES = ['sample-nordic-home', 'sample-casa-moderna', 'sample-atelier-classico'] as const

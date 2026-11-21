@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { SEED_CITIES, SEED_ITEMS } from '@/lib/seedData'
+import { SEED_CITIES, SEED_ITEMS } from '../../../prisma/seed-data'
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
