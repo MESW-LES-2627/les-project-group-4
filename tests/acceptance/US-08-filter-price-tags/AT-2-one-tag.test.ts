@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import type { ValidationErrorBody } from '@/lib/http'
 import { GET } from '@/app/api/items/route'
-import { tagLabel } from '@/lib/catalogFilters'
-import { findTagOptions } from '@/lib/items'
+import { tagLabel } from '@/features/catalog/model/catalogFilters'
+import { findTagOptions } from '@/features/catalog/server/items'
 
 const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }))
 

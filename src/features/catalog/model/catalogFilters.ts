@@ -1,8 +1,8 @@
 // US-08: catalog filter helpers shared by the page, the filter UI and the API client.
 // Pure functions (no React, no fetch), so the acceptance tests can call them directly.
 
-import { listItemsQuerySchema } from '@/lib/schemas/item'
-import type { ListItemsQuery } from '@/lib/schemas/item'
+import { listItemsQuerySchema } from '@/features/catalog/schema'
+import type { ListItemsQuery } from '@/features/catalog/schema'
 
 /**
  * The query string for a catalog query, in the same format readListItemsQuery reads:

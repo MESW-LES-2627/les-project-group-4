@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { ITEM_CATEGORIES } from '@/lib/catalog'
-import type { ItemCategory } from '@/lib/catalog'
+import { ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
+import type { ItemCategory } from '@/features/catalog/model/catalog'
 
 /**
  * A catalog category, validated the same way as rooms: routes safeParse their input

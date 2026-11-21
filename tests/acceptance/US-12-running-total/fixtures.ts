@@ -1,4 +1,4 @@
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import type { RoomSize } from '@/lib/geometry/plan'
 import { EMPTY_DRAFT_STATE, draftReducer, type DraftState } from '@/lib/layout/draft'
 

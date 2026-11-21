@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { listItems } from '@/api/client'
-import type { CatalogItem } from '@/api/types'
-import { createLatestRequest, runLatest } from '@/lib/catalogFilters'
-import type { ListItemsQuery } from '@/lib/schemas/item'
+import { listItems } from '@/features/catalog/api'
+import { createLatestRequest, runLatest } from '@/features/catalog/model/catalogFilters'
+import type { ListItemsQuery } from '@/features/catalog/schema'
+import type { CatalogItem } from '@/features/catalog/types'
 
 /**
  * US-08: the catalog list for the current filters. Starts from the items the server rendered

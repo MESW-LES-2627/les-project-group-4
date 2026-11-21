@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import type { Placement } from '@/lib/geometry/plan'
 
 import { toPlacedItem } from './layout'

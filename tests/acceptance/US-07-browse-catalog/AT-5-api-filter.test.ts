@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import type { ValidationErrorBody } from '@/lib/http'
 import { GET } from '@/app/api/items/route'
 

@@ -1,11 +1,12 @@
 'use client'
 
-import type { CatalogItem, Room } from '@/api/types'
+import type { Room } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
 import { PlacementError } from '@/components/catalog/PlacementError'
-import type { ItemCategory } from '@/lib/catalog'
+import type { ItemCategory } from '@/features/catalog/model/catalog'
 
 /**
  * US-09: the catalog inside the room page. Category links stay on the room and

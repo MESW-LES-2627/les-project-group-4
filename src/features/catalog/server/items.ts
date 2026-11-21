@@ -1,9 +1,12 @@
-import type { CatalogItem } from '@/api/types'
+import 'server-only'
+
 import type { Prisma } from '@/generated/prisma/client'
 import { getDb } from '@/lib/db'
-import type { ListItemsQuery } from '@/lib/schemas/item'
 
-// The item fields the API returns (see CatalogItem in src/api/types.ts).
+import type { ListItemsQuery } from '../schema'
+import type { CatalogItem } from '../types'
+
+// The item fields the API returns (see CatalogItem in features/catalog/types.ts).
 // Shared by the items route and the catalog page so they return the same shape.
 export const ITEM_SELECT = {
   id: true,

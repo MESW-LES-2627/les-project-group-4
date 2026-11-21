@@ -1,9 +1,6 @@
-import { toQueryString } from '@/lib/catalogFilters'
 import { request, type ApiResult } from '@/lib/http'
-import type { ListItemsQuery } from '@/lib/schemas/item'
 
 import type {
-  CatalogItem,
   CreateLayoutRequest,
   CreateRoomRequest,
   LayoutDetails,
@@ -43,16 +40,4 @@ export function getLayout(roomId: number, layoutId: number): Promise<ApiResult<L
 /** US-14: deletes a saved layout. The server answers 204 with no body, so the data is null. */
 export function deleteLayout(roomId: number, layoutId: number): Promise<ApiResult<null>> {
   return request<null>(`/api/rooms/${roomId}/layouts/${layoutId}`, { method: 'DELETE' })
-}
-
-/**
- * US-08: lists catalog items for a filter query. `signal` lets the caller abort a request
- * that a newer filter change has replaced (an aborted request resolves as a network error,
- * which the caller ignores because it is no longer the latest).
- */
-export function listItems(
-  query: ListItemsQuery,
-  signal?: AbortSignal,
-): Promise<ApiResult<CatalogItem[]>> {
-  return request<CatalogItem[]>(`/api/items${toQueryString(query)}`, { method: 'GET', signal })
 }

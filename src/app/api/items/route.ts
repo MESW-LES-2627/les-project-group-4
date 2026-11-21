@@ -1,6 +1,6 @@
 import type { ValidationErrorBody } from '@/lib/http'
-import { findItems } from '@/lib/items'
-import { listItemsQuerySchema, readListItemsQuery } from '@/lib/schemas/item'
+import { findItems } from '@/features/catalog/server/items'
+import { listItemsQuerySchema, readListItemsQuery } from '@/features/catalog/schema'
 import { toFieldErrors } from '@/lib/validation'
 
 /**

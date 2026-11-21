@@ -4,10 +4,10 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 
 import { RoomDetails } from '@/components/rooms/RoomDetails'
-import { findItems } from '@/lib/items'
+import { findItems } from '@/features/catalog/server/items'
 import { findLayoutsWithItems } from '@/lib/layouts'
 import { findRoomById } from '@/lib/rooms'
-import { listItemsQuerySchema } from '@/lib/schemas/item'
+import { listItemsQuerySchema } from '@/features/catalog/schema'
 import { roomIdSchema } from '@/lib/schemas/room'
 
 export const metadata: Metadata = {

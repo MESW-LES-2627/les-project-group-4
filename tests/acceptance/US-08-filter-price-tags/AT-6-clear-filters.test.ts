@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import { GET } from '@/app/api/items/route'
-import { catalogHref, hasFilters } from '@/lib/catalogFilters'
-import { listItemsQuerySchema } from '@/lib/schemas/item'
+import { catalogHref, hasFilters } from '@/features/catalog/model/catalogFilters'
+import { listItemsQuerySchema } from '@/features/catalog/schema'
 
 const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }))
 

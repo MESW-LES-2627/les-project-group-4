@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import { draftReducer, EMPTY_DRAFT_STATE } from '@/lib/layout/draft'
 import { toSaveLayoutRequest } from '@/lib/saveLayout'
 

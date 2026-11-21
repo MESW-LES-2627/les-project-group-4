@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation'
 import { CatalogBrowser } from '@/components/catalog/CatalogBrowser'
 import { CurrentRoomBanner } from '@/components/catalog/CurrentRoomBanner'
 import { PlacementError } from '@/components/catalog/PlacementError'
-import { findItems, findTagOptions } from '@/lib/items'
-import { listItemsQuerySchema, readListItemsQuery } from '@/lib/schemas/item'
+import { findItems, findTagOptions } from '@/features/catalog/server/items'
+import { listItemsQuerySchema, readListItemsQuery } from '@/features/catalog/schema'
 
 export const metadata: Metadata = {
   title: 'FurniMi - Catalog',

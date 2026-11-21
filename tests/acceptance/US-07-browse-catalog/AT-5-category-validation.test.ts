@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-import { ITEM_CATEGORIES } from '@/lib/catalog'
+import { ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
 import {
   isItemCategory,
   itemCategorySchema,
   listItemsQuerySchema,
-} from '@/lib/schemas/item'
+} from '@/features/catalog/schema'
 import { toFieldErrors } from '@/lib/validation'
 
 describe(

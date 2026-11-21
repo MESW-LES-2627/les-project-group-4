@@ -4,11 +4,11 @@ import Link from 'next/link'
 import { GripVertical } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import type { CatalogItem } from '@/api/types'
-import { CATEGORY_LABELS } from '@/lib/catalog'
+import type { CatalogItem } from '@/features/catalog/types'
+import { CATEGORY_LABELS } from '@/features/catalog/model/catalog'
 import { formatPriceCents } from '@/lib/utils'
-import type { ItemCategory } from '@/lib/catalog'
-import { isItemCategory } from '@/lib/schemas/item'
+import type { ItemCategory } from '@/features/catalog/model/catalog'
+import { isItemCategory } from '@/features/catalog/schema'
 
 /**
  * US-07: the catalog items as cards (name, category, footprint, price), or an empty state.

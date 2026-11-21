@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import { isInsideRoom } from '@/lib/geometry/plan'
 import type { RoomSize } from '@/lib/geometry/plan'
 import { EMPTY_DRAFT_STATE, draftReducer } from '@/lib/layout/draft'

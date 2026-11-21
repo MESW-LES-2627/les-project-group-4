@@ -3,15 +3,15 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import type { CatalogItem } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
 import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
 import { CatalogList } from '@/components/catalog/CatalogList'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { catalogHref, hasFilters, parsePriceInput, tagLabel, toggleTag } from '@/lib/catalogFilters'
-import type { ListItemsQuery } from '@/lib/schemas/item'
+import { catalogHref, hasFilters, parsePriceInput, tagLabel, toggleTag } from '@/features/catalog/model/catalogFilters'
+import type { ListItemsQuery } from '@/features/catalog/schema'
 import { useCatalogItems } from '@/hooks/useCatalogItems'
 
 interface CatalogBrowserProps {

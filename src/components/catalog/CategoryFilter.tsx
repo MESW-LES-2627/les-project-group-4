@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
-import { CATEGORY_LABELS, ITEM_CATEGORIES } from '@/lib/catalog'
-import { catalogHref } from '@/lib/catalogFilters'
-import type { ListItemsQuery } from '@/lib/schemas/item'
+import { CATEGORY_LABELS, ITEM_CATEGORIES } from '@/features/catalog/model/catalog'
+import { catalogHref } from '@/features/catalog/model/catalogFilters'
+import type { ListItemsQuery } from '@/features/catalog/schema'
 
 const LINK_CLASS =
   'rounded-full border border-border px-3 py-1 text-sm transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:border-foreground aria-[current=page]:bg-foreground aria-[current=page]:text-background'
