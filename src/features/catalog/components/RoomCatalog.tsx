@@ -2,10 +2,10 @@
 
 import type { Room } from '@/api/types'
 import type { CatalogItem } from '@/features/catalog/types'
-import { AddToLayoutButton } from '@/components/catalog/AddToLayoutButton'
-import { CatalogList } from '@/components/catalog/CatalogList'
-import { CategoryFilter } from '@/components/catalog/CategoryFilter'
-import { PlacementError } from '@/components/catalog/PlacementError'
+import { AddToLayoutButton } from '@/features/catalog/components/AddToLayoutButton'
+import { CatalogList } from '@/features/catalog/components/CatalogList'
+import { CategoryFilter } from '@/features/catalog/components/CategoryFilter'
+import { PlacementError } from '@/features/catalog/components/PlacementError'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
 
 /**

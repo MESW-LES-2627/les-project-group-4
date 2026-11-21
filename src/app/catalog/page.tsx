@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { CatalogBrowser } from '@/components/catalog/CatalogBrowser'
-import { CurrentRoomBanner } from '@/components/catalog/CurrentRoomBanner'
-import { PlacementError } from '@/components/catalog/PlacementError'
+import { CatalogBrowser } from '@/features/catalog/components/CatalogBrowser'
+import { CurrentRoomBanner } from '@/features/catalog/components/CurrentRoomBanner'
+import { PlacementError } from '@/features/catalog/components/PlacementError'
 import { findItems, findTagOptions } from '@/features/catalog/server/items'
 import { listItemsQuerySchema, readListItemsQuery } from '@/features/catalog/schema'
 

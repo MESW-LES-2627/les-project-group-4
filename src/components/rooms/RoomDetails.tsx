@@ -2,7 +2,7 @@
 
 import type { LayoutWithItems, Room } from '@/api/types'
 import type { CatalogItem } from '@/features/catalog/types'
-import { RoomCatalog } from '@/components/catalog/RoomCatalog'
+import { RoomCatalog } from '@/features/catalog/components/RoomCatalog'
 import { RegisterCurrentRoom } from '@/components/layout/RegisterCurrentRoom'
 import { SaveLayoutForm } from '@/components/layouts/SaveLayoutForm'
 import { SavedLayouts } from '@/components/layouts/SavedLayouts'
