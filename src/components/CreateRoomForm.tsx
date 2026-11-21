@@ -6,7 +6,7 @@ import { LoaderCircle, TriangleAlert } from 'lucide-react'
 
 import type { City } from '@/features/locations/types'
 import { CreateRoomSuccess } from '@/components/CreateRoomSuccess'
-import { LocationField } from '@/components/form/LocationField'
+import { LocationField } from '@/features/locations/components/LocationField'
 import { TextField } from '@/components/form/TextField'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
