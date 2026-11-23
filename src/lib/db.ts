@@ -1,6 +1,8 @@
+import 'server-only'
+
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@/generated/prisma/client'
-import { resolveDatabaseUrl } from '@/lib/databaseUrl'
+import { resolveDatabaseUrl } from '@/lib/env'
 
 function createPrismaClient() {
   // Resolving lazily (not at import time) keeps `next build` working without a
@@ -24,4 +26,12 @@ export function getDb(): PrismaClient {
   }
 
   return prisma
+}
+
+/**
+ * Health ping used by the daily Vercel cron: runs `SELECT 1` so the free
+ * Supabase project sees real database activity and does not pause.
+ */
+export async function pingDatabase(db: PrismaClient = getDb()): Promise<void> {
+  await db.$queryRaw`SELECT 1`
 }

@@ -2,9 +2,9 @@ import ReactThreeTestRenderer from '@react-three/test-renderer'
 import type { BoxGeometry, Group, Mesh } from 'three'
 import { describe, expect, it } from 'vitest'
 
-import { Plan2DScene } from '@/components/plan/Plan2D'
-import { RoomScene } from '@/components/plan/scene/RoomScene'
-import type { PlacedItem as PlacedItemData } from '@/lib/layout/layout'
+import { Plan2DScene } from '@/features/plan/components/Plan2D'
+import { RoomScene } from '@/features/plan/components/scene/RoomScene'
+import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 const room = { widthCm: 300, lengthCm: 400 }
 

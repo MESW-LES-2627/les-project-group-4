@@ -241,5 +241,9 @@
   "CH-02/AT-7": {
     "status": "manual",
     "note": "the deploy workflow runs db:seed"
+  },
+  "CH-04/AT-2": {
+    "status": "manual",
+    "note": "CI runs lint, typecheck, unit, acceptance and build; smoke-test /, /rooms, /rooms/:id and /catalog. This refactor changes no route, API shape, Prisma schema or migration."
   }
 }

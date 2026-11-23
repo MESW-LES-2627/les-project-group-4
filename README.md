@@ -70,8 +70,14 @@ because installing its GitHub App requires org-owner rights; the pipeline lives 
 
 ## Structure
 
-- src/app/ Pages and API route handlers
-- src/components/ React components (ui/ holds shadcn/ui)
-- src/api/ Typed client for the API
-- prisma/ Schema and migrations
-- docs/ Vision, MVP, stories, CLAIM, retro, AI log per iteration  
+FurniMi uses one folder per feature. See
+[docs/iterations/3/folder-structure.md](docs/iterations/3/folder-structure.md)
+for the dependency rules and where new files belong.
+
+- `src/app/` — Next.js routes, pages and route handlers (composition only)
+- `src/features/` — `rooms`, `locations`, `catalog` and `plan`
+- `src/components/` — shared UI: `ui/`, `form/` and `layout/`
+- `src/lib/` — infrastructure: database, env, HTTP, validation and utilities
+- `prisma/` — schema, migrations and `seed-data/`
+- `tests/acceptance/` — acceptance tests grouped by story and AT
+- `docs/` — vision, MVP, stories, CLAIM, retro, AI log and architecture

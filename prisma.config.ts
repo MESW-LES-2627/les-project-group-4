@@ -1,8 +1,7 @@
 import 'dotenv/config'
 import { defineConfig } from 'prisma/config'
 
-// Falls back to the Postgres started by docker-compose.yaml, so local development needs no .env.
-const LOCAL_DATABASE_URL = 'postgresql://furnimi:furnimi@localhost:5432/furnimi'
+import { LOCAL_DATABASE_URL } from './src/lib/env'
 
 // Migrations run against the session pooler (port 5432). The transaction pooler
 // (port 6543) used by the app breaks the DDL and prepared statements that
@@ -16,7 +15,8 @@ export default defineConfig({
   migrations: {
     path: 'prisma/migrations',
     // CH-02: `npm run db:seed` (= `prisma db seed`) runs this command.
-    seed: 'tsx prisma/seed.ts',
+    // `react-server` resolves the `server-only` marker in src/lib/db.ts to its no-op build.
+    seed: 'tsx --conditions=react-server prisma/seed.ts',
   },
   datasource: {
     url: databaseUrl,

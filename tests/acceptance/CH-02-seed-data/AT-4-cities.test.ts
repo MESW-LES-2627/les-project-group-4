@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { SEED_CITIES } from '@/lib/seedData'
+import { SEED_CITIES } from '../../../prisma/seed-data'
 
 // Rough bounding box of mainland Portugal: catches swapped or mistyped coordinates.
 const inPortugal = (lat: number, lng: number) =>

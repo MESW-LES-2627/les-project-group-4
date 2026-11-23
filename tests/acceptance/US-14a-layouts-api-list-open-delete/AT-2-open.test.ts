@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { LayoutDetails } from '@/api/types'
+import type { LayoutDetails } from '@/features/rooms/types'
 
 import { open, savedRow } from './fixtures'
 

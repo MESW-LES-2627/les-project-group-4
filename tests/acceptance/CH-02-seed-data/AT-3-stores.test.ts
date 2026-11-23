@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { SAMPLE_SOURCES, SEED_ITEMS } from '@/lib/seedData'
+import { SAMPLE_SOURCES, SEED_ITEMS } from '../../../prisma/seed-data'
 
 describe(
   'AT-3 — Stores: 4–6 real Portuguese stores are represented as item sources',

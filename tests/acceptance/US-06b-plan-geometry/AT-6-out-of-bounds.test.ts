@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isInsideRoom } from '@/lib/geometry/plan'
+import { isInsideRoom } from '@/features/plan/model/geometry'
 
 const sofa = { widthCm: 200, depthCm: 100 }
 const room = { widthCm: 400, lengthCm: 300 }

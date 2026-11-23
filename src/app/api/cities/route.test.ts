@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { City } from '@/api/types'
+import type { City } from '@/features/locations/types'
 
 import { GET } from './route'
 

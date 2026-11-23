@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { describeOpenError, LAYOUT_NOT_FOUND_MESSAGE } from '@/lib/savedLayouts'
+import { describeOpenError, LAYOUT_NOT_FOUND_MESSAGE } from '@/features/rooms/model/savedLayouts'
 
 // Showing the alert is UI (no component test harness yet, #66 CH-05); the plan is only
 // replaced on a successful load, so a failure leaves it as it was.

@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 import { AppHeader } from '@/components/layout/AppHeader'
-import { DraftLayoutsProvider } from '@/components/layout/DraftLayoutsProvider'
+import { DraftLayoutsProvider } from '@/features/plan/components/DraftLayoutsProvider'
 
 import './globals.css'
 

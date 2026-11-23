@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
-import { RoomList } from '@/components/rooms/RoomList'
-import { RoomsHeader } from '@/components/rooms/RoomsHeader'
-import { findRooms } from '@/lib/rooms'
+import { RoomList } from '@/features/rooms/components/RoomList'
+import { RoomsHeader } from '@/features/rooms/components/RoomsHeader'
+import { findRooms } from '@/features/rooms/server/rooms'
 
 export const metadata: Metadata = {
   title: 'FurniMi - My rooms',

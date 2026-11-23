@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { describeSaveError } from '@/lib/saveLayout'
+import { describeSaveError } from '@/features/rooms/model/saveLayout'
 
 describe(
   'AT-4 — Failure: when the API fails, a clear error is shown for the form',

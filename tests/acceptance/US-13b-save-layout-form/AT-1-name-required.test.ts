@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PlacedItem } from '@/lib/layout/layout'
-import { toSaveLayoutRequest } from '@/lib/saveLayout'
+import type { PlacedItem } from '@/features/plan/model/layout'
+import { toSaveLayoutRequest } from '@/features/rooms/model/saveLayout'
 
 const sofa: PlacedItem = {
   id: 'local-1',

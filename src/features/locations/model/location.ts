@@ -1,0 +1,69 @@
+import type { RoomLocationInput } from '../schema'
+import type { City, Coordinates, LocatedRoom } from '../types'
+
+/** What the UI shows for coordinates that have no city (AT-2: no reverse geocoding). */
+export const CURRENT_LOCATION_LABEL = 'Current location'
+
+/** US-15: a saved room's location, in one place: a city, browser coordinates, or none. */
+export type ResolvedLocation =
+  | { kind: 'city'; city: City }
+  | ({ kind: 'coordinates' } & Coordinates)
+  | { kind: 'none' }
+
+/** The single "city, else coordinates, else none" rule; the helpers below all use it. */
+export function resolveRoomLocation(room: LocatedRoom): ResolvedLocation {
+  if (room.city !== null) {
+    return { kind: 'city', city: room.city }
+  }
+  if (room.latitude !== null && room.longitude !== null) {
+    return { kind: 'coordinates', latitude: room.latitude, longitude: room.longitude }
+  }
+  return { kind: 'none' }
+}
+
+/**
+ * US-15: the label for a room's saved location: the city name, "Current location" for
+ * browser coordinates, or null when the room has no location.
+ */
+export function formatRoomLocation(room: LocatedRoom): string | null {
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return location.city.name
+    case 'coordinates':
+      return CURRENT_LOCATION_LABEL
+    case 'none':
+      return null
+  }
+}
+
+/**
+ * US-15 AT-5: the saved location as coordinates, so later features (e.g. nearby stores)
+ * reuse it without asking again. A city uses its seeded coordinates.
+ */
+export function getRoomCoordinates(room: LocatedRoom): Coordinates | null {
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return { latitude: location.city.latitude, longitude: location.city.longitude }
+    case 'coordinates':
+      return { latitude: location.latitude, longitude: location.longitude }
+    case 'none':
+      return null
+  }
+}
+
+/** AT-5: the location of a saved room, in the shape the create-room form sends. */
+export function toLocationInput(room: LocatedRoom): RoomLocationInput {
+  const location = resolveRoomLocation(room)
+  switch (location.kind) {
+    case 'city':
+      return { cityId: location.city.id }
+    case 'coordinates':
+      return { latitude: location.latitude, longitude: location.longitude }
+    case 'none':
+      return {}
+  }
+}
+
+

@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { CatalogItem, ValidationErrorBody } from '@/api/types'
+import type { CatalogItem } from '@/features/catalog/types'
+import type { ValidationErrorBody } from '@/lib/http'
 import { GET } from '@/app/api/items/route'
-import { parsePriceInput, toQueryString } from '@/lib/catalogFilters'
+import { parsePriceInput, toQueryString } from '@/features/catalog/model/catalogFilters'
 
 const { findMany } = vi.hoisted(() => ({ findMany: vi.fn() }))
 
