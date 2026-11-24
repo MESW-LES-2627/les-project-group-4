@@ -978,6 +978,36 @@
           "title": "Filters only"
         }
       ]
+    },
+    "US-19": {
+      "issue": 96,
+      "title": "Update a saved layout",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Update"
+        },
+        {
+          "id": "AT-2",
+          "title": "Save a copy"
+        },
+        {
+          "id": "AT-3",
+          "title": "No layout open"
+        },
+        {
+          "id": "AT-4",
+          "title": "Empty plan"
+        },
+        {
+          "id": "AT-5",
+          "title": "Failure"
+        },
+        {
+          "id": "AT-6",
+          "title": "Missing layout"
+        }
+      ]
     }
   }
 }

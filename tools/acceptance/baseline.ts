@@ -1,5 +1,5 @@
-// Runs the acceptance project at the merge-base in a throwaway worktree, so
-// the report can tell a regression from a new test.
+// Runs the acceptance and components projects at the merge-base in a
+// throwaway worktree, so the report can tell a regression from a new test.
 //
 //   npm run acceptance:baseline -- --base <sha> --out reports/base.json
 //
@@ -32,6 +32,13 @@ export function shouldRunBaseline(input: BaselineInput): BaselineSkip | null {
   if (input.depsChanged) return "deps-changed";
   return null;
 }
+
+/**
+ * The Vitest projects whose results the report compares. CH-05: the component
+ * tests (`*.dom.test.tsx`, project `components`) are acceptance tests too. A
+ * base from before CH-05 has no such project; Vitest then runs acceptance only.
+ */
+export const BASELINE_PROJECTS = ["acceptance", "components"] as const;
 
 export interface BaselineResult {
   status: "written" | "skipped" | "unavailable";
@@ -119,8 +126,7 @@ export function runBaseline({
         [
           join(ROOT, "node_modules/vitest/vitest.mjs"),
           "run",
-          "--project",
-          "acceptance",
+          ...BASELINE_PROJECTS.flatMap((project) => ["--project", project]),
           "--reporter=json",
           "--includeTaskLocation",
           `--outputFile=${output}`,

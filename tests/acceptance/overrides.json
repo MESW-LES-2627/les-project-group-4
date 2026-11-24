@@ -1,19 +1,7 @@
 {
-  "US-01/AT-4": {
-    "status": "manual",
-    "note": "needs a component test for the create form confirmation"
-  },
   "US-01/AT-5": {
     "status": "manual",
     "note": "full UI to database flow; no browser E2E runner yet"
-  },
-  "US-03/AT-1": {
-    "status": "manual",
-    "note": "details page rendering; no component test harness yet"
-  },
-  "US-03/AT-4": {
-    "status": "manual",
-    "note": "optional fields rendering; no component test harness yet"
   },
   "US-06/AT-1": {
     "status": "covered-by",
@@ -245,5 +233,20 @@
   "CH-04/AT-2": {
     "status": "manual",
     "note": "CI runs lint, typecheck, unit, acceptance and build; smoke-test /, /rooms, /rooms/:id and /catalog. This refactor changes no route, API shape, Prisma schema or migration."
+  },
+  "CH-05/AT-2": {
+    "status": "covered-by",
+    "by": "US-01",
+    "note": "the component test is US-01/AT-4 (AT-4-confirmation.dom.test.tsx)"
+  },
+  "CH-05/AT-3": {
+    "status": "covered-by",
+    "by": "US-15",
+    "note": "the component tests are US-15/AT-3 and AT-4 (*.dom.test.tsx)"
+  },
+  "CH-05/AT-5": {
+    "status": "covered-by",
+    "by": "US-03",
+    "note": "the component tests are US-03/AT-1 and AT-4 (*.dom.test.tsx)"
   }
 }

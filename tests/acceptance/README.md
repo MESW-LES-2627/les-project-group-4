@@ -4,12 +4,13 @@ Tests that verify an acceptance test (AT) from a story issue. They live here
 instead of next to the code so the suite reads by story and CI can report which
 story and which AT broke.
 
-Vitest is split into two projects:
+Vitest is split into three projects:
 
-| Project | What it runs | Files |
-| --- | --- | --- |
-| `unit` | tests for a helper, component or route in isolation, plus the repo tooling under `tools/` | `src/**`, `tools/**` |
-| `acceptance` | tests that verify an AT from an issue | `tests/acceptance/**/*.test.ts(x)` |
+| Project | What it runs | Files | Environment |
+| --- | --- | --- | --- |
+| `unit` | tests for a helper, component or route in isolation, plus the repo tooling under `tools/` | `src/**`, `tools/**` | node |
+| `acceptance` | tests that verify an AT from an issue | `tests/acceptance/**/*.test.ts(x)`, except `*.dom.test.tsx` | node |
+| `components` | component tests that verify an AT by rendering React components (CH-05) | `tests/acceptance/**/*.dom.test.tsx` | jsdom |
 
 Only tests that verify an AT belong in this directory; anything else stays next
 to the code it covers.
@@ -17,8 +18,9 @@ to the code it covers.
 ## Running
 
 ```sh
-npm test                            # both projects
-npm test -- --project acceptance    # only the acceptance tests
+npm test                            # all three projects
+npm test -- --project acceptance    # only the acceptance tests (node)
+npm test -- --project components    # only the component tests (jsdom)
 npm test -- --project unit          # only the unit tests
 ```
 
@@ -26,6 +28,41 @@ The `acceptance` project contains every story that has started: US-01, US-03,
 US-06/06a/06b, US-07, US-08, US-09/09a/09b, US-12, US-13/13a/13b,
 US-14/14a/14b, US-15, CH-01, CH-02, CH-03a and CH-03b. `--project acceptance`
 runs only those tests.
+
+## Component tests (CH-05)
+
+A component test renders a React component in jsdom with Testing Library and
+checks what the user sees: text, roles, labels, enabled/disabled buttons. It is
+an acceptance test like the others: it lives in the story directory and is
+tagged `acceptance`, `US-xx`, `AT-n`. Only the file name differs:
+
+```
+tests/acceptance/US-01-create-room/
+  AT-3-persistence.test.ts           # node: route handler with a mocked database
+  AT-4-confirmation.dom.test.tsx     # jsdom: renders <CreateRoomForm>
+```
+
+The `.dom.test.tsx` suffix is what moves a file to the `components` project, so
+each test runs once. `vitest.setup.dom.ts` registers the jest-dom matchers
+(`toBeInTheDocument`, `toBeDisabled`, `toHaveValue`...) and calls `cleanup()`
+after each test. Network calls are stubbed with `vi.spyOn(globalThis, 'fetch')`;
+browser APIs jsdom does not have (`navigator.geolocation`, `isSecureContext`) are
+stubbed per test (see `US-15-set-my-location/fixtures.ts`).
+
+Which kind of test to write:
+
+| The AT is about | Write |
+| --- | --- |
+| a rule, a calculation or a validation | a helper test (`*.test.ts`, node) |
+| an API route's status and body | a route test (`*.test.ts`, node) |
+| what a form or page shows, or what the user can click | a component test (`*.dom.test.tsx`, jsdom) |
+| the 2D plan scene (react-three-fiber) | an R3F test with `@react-three/test-renderer` (`*.test.tsx`, node) |
+
+jsdom has no WebGL, so a component test that renders a page with the plan
+replaces `RoomPlan` with `vi.mock` (see `US-03-view-room-details/fixtures.tsx`).
+No browser is downloaded: CI runs the component tests in the existing
+acceptance job (`--project acceptance --project components`), so they appear in
+the per-story report.
 
 ## Report and regressions
 
@@ -37,7 +74,7 @@ locally:
 
 ```sh
 mkdir -p reports
-npx vitest run --project acceptance \
+npx vitest run --project acceptance --project components \
   --reporter=json --includeTaskLocation \
   --outputFile reports/head.json
 
