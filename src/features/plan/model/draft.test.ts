@@ -224,6 +224,80 @@ describe('draftReducer', () => {
     expect(next.error).toBeNull()
   })
 
+  it('stores a moved and rotated placement for one item', () => {
+    const first = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
+    const filled = draftReducer(first, add(1, 'lamp-1', lamp))
+    const untouched = filled.byRoom[1]?.[1]
+
+    const next = draftReducer(filled, {
+      type: 'update-placement',
+      roomId: 1,
+      room,
+      id: 'sofa-1',
+      placement: { xCm: 180, yCm: 120, rotationDeg: 90 },
+    })
+
+    expect(next.byRoom[1]?.[0]).toMatchObject({ xCm: 180, yCm: 120, rotationDeg: 90 })
+    expect(next.byRoom[1]?.[1]).toBe(untouched)
+    expect(filled.byRoom[1]?.[0]).toMatchObject({ xCm: 50, yCm: 25, rotationDeg: 0 })
+  })
+
+  it('clamps an updated placement that would leave the room', () => {
+    const filled = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
+
+    const next = draftReducer(filled, {
+      type: 'update-placement',
+      roomId: 1,
+      room,
+      id: 'sofa-1',
+      placement: { xCm: -40, yCm: 500, rotationDeg: 0 },
+    })
+
+    expect(next.byRoom[1]?.[0]).toMatchObject({ xCm: 50, yCm: 175, rotationDeg: 0 })
+  })
+
+  it('ignores an update for an item that is not in the room', () => {
+    const filled = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
+
+    const next = draftReducer(filled, {
+      type: 'update-placement',
+      roomId: 1,
+      room,
+      id: 'missing',
+      placement: { xCm: 150, yCm: 100, rotationDeg: 0 },
+    })
+
+    expect(next).toBe(filled)
+  })
+
+  it('ignores an update for a room with no items', () => {
+    const next = draftReducer(EMPTY_DRAFT_STATE, {
+      type: 'update-placement',
+      roomId: 9,
+      room,
+      id: 'sofa-1',
+      placement: { xCm: 150, yCm: 100, rotationDeg: 0 },
+    })
+
+    expect(next).toBe(EMPTY_DRAFT_STATE)
+  })
+
+  it('clears the room’s error after a successful update', () => {
+    const filled = draftReducer(EMPTY_DRAFT_STATE, add(1, 'table-1', table, smallRoom))
+    const failed = draftReducer(filled, add(1, 'lamp-1', lamp, smallRoom))
+
+    const next = draftReducer(failed, {
+      type: 'update-placement',
+      roomId: 1,
+      room: smallRoom,
+      id: 'table-1',
+      placement: { xCm: 50, yCm: 50, rotationDeg: 0 },
+    })
+
+    expect(next.error).toBeNull()
+    expect(next.byRoom[1]?.[0]).toMatchObject({ xCm: 50, yCm: 50, rotationDeg: 0 })
+  })
+
   it('dismisses only the error of the given room', () => {
     const failed = draftReducer(EMPTY_DRAFT_STATE, add(1, 'wardrobe-1', wardrobe, smallRoom))
 
