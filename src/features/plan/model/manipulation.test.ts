@@ -8,14 +8,17 @@ import type {
   Size,
 } from "@/features/plan/model/geometry";
 
-import { clampPlacementToRoom, dragPlacement } from "./manipulation";
+import {
+  clampPlacementToRoom,
+  dragPlacement,
+  rotatePlacement,
+} from "./manipulation";
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 };
 const sofa: Size = { widthCm: 100, depthCm: 50 };
 
 function placed(xCm: number, yCm: number, rotationDeg = 0): Placement {
   return { xCm, yCm, rotationDeg };
-  j;
 }
 
 describe("clampPlacementToRoom", () => {
@@ -170,5 +173,66 @@ describe("dragPlacement", () => {
 
     expect(placement).toEqual(placed(150, 100));
     expect(grabOffset).toEqual({ x: 10, y: 5 });
+  });
+});
+
+describe("rotatePlacement", () => {
+  it("turns the footprint a quarter turn clockwise around its centre", () => {
+    expect(rotatePlacement(sofa, placed(150, 100), room)).toEqual(
+      placed(150, 100, 90),
+    );
+  });
+
+  it("returns to the original orientation after four turns", () => {
+    const start = placed(150, 100);
+    let turned = start;
+
+    for (let turn = 0; turn < 4; turn += 1) {
+      turned = rotatePlacement(sofa, turned, room);
+    }
+
+    expect(turned).toEqual(start);
+  });
+
+  it("normalises a negative rotation", () => {
+    expect(rotatePlacement(sofa, placed(150, 100, -90), room)).toEqual(
+      placed(150, 100, 0),
+    );
+  });
+
+  it("wraps 270 degrees back to zero", () => {
+    expect(rotatePlacement(sofa, placed(150, 100, 270), room)).toEqual(
+      placed(150, 100, 0),
+    );
+  });
+
+  it("accepts a custom rotation step", () => {
+    expect(rotatePlacement(sofa, placed(150, 100), room, 45)).toEqual(
+      placed(150, 100, 45),
+    );
+  });
+
+  it("nudges the centre only when the rotated footprint leaves the room", () => {
+    // Turned flat against the top wall, the sofa needs 50 cm of clearance in y.
+    expect(rotatePlacement(sofa, placed(150, 10), room)).toEqual(
+      placed(150, 50, 90),
+    );
+  });
+
+  it("keeps an exact rotated fit on whole centimetres", () => {
+    const square: RoomSize = { widthCm: 100, lengthCm: 100 };
+
+    expect(rotatePlacement(sofa, placed(50, 50), square)).toEqual(
+      placed(50, 50, 90),
+    );
+  });
+
+  it("does not mutate the placement it is given", () => {
+    const placement = placed(150, 100);
+
+    const turned = rotatePlacement(sofa, placement, room);
+
+    expect(placement).toEqual(placed(150, 100));
+    expect(turned).not.toBe(placement);
   });
 });

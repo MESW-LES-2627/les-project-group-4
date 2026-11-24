@@ -10,6 +10,7 @@
 import {
   EPSILON_CM,
   boundingBox,
+  normalizeRotation,
   type Placement,
   type Point,
   type RoomSize,
@@ -18,6 +19,9 @@ import {
 
 /** Dragging snaps the footprint centre to whole centimetres. */
 export const DRAG_SNAP_CM = 1;
+
+/** One rotate action turns the footprint a quarter turn clockwise. */
+export const ROTATION_STEP_DEG = 90;
 
 /** Keeps near-integer results integral when a rotated box adds float noise. */
 function clean(value: number): number {
@@ -85,6 +89,27 @@ export function dragPlacement(
       ...placement,
       xCm: pointer.x + grabOffsetCm.x,
       yCm: pointer.y + grabOffsetCm.y,
+    },
+    room,
+  );
+}
+
+/**
+ * The placement after turning the footprint clockwise by `stepDeg`, around its
+ * own centre. The centre only moves when the rotated footprint would leave the
+ * room, where clampPlacementToRoom nudges it the minimum amount needed.
+ */
+export function rotatePlacement(
+  size: Size,
+  placement: Placement,
+  room: RoomSize,
+  stepDeg = ROTATION_STEP_DEG,
+): Placement {
+  return clampPlacementToRoom(
+    size,
+    {
+      ...placement,
+      rotationDeg: normalizeRotation(placement.rotationDeg + stepDeg),
     },
     room,
   );
