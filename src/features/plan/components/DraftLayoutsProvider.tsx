@@ -44,6 +44,13 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const updateItemPlacement = useCallback(
+    (roomId: number, room: RoomSize, id: string, placement: Placement) => {
+      dispatch({ type: 'update-placement', roomId, room, id, placement })
+    },
+    [],
+  )
+
   const removeItem = useCallback((roomId: number, id: string) => {
     dispatch({ type: 'remove', roomId, id })
   }, [])
@@ -64,11 +71,22 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
       errorFor,
       addItem,
       addItemAt,
+      updateItemPlacement,
       removeItem,
       replaceItems,
       dismissError,
     }),
-    [currentRoom, itemsFor, errorFor, addItem, addItemAt, removeItem, replaceItems, dismissError],
+    [
+      currentRoom,
+      itemsFor,
+      errorFor,
+      addItem,
+      addItemAt,
+      updateItemPlacement,
+      removeItem,
+      replaceItems,
+      dismissError,
+    ],
   )
 
   return <DraftLayoutsContext.Provider value={value}>{children}</DraftLayoutsContext.Provider>
