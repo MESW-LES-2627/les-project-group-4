@@ -4,6 +4,7 @@ import type { RoomSize } from '@/features/plan/model/geometry'
 import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 
 import { PlacedItem } from './PlacedItem'
+import type { ItemPointerHandler } from './PlacedItem'
 import { RoomFloor } from './RoomFloor'
 
 export interface RoomSceneProps {
@@ -12,6 +13,11 @@ export interface RoomSceneProps {
   itemHeight?: number // Item box height in metres (defaults to the thin 2D footprint)
   selectedId?: string | null
   onSelect?: (id: string | null) => void
+  /** US-10: forwarded to every item so the plan can drag it. */
+  onItemPointerDown?: ItemPointerHandler
+  onItemPointerMove?: ItemPointerHandler
+  onItemPointerUp?: ItemPointerHandler
+  onItemPointerCancel?: ItemPointerHandler
   /** Label slot, so the shared scene does not import DOM-only components. */
   renderLabel?: (item: PlacedItemData, selected: boolean) => ReactNode
 }
@@ -30,6 +36,10 @@ export function RoomScene({
   itemHeight,
   selectedId = null,
   onSelect,
+  onItemPointerDown,
+  onItemPointerMove,
+  onItemPointerUp,
+  onItemPointerCancel,
   renderLabel,
 }: RoomSceneProps) {
   return (
@@ -44,7 +54,11 @@ export function RoomScene({
             height={itemHeight}
             selected={item.id === selectedId}
             onSelect={onSelect}
-            label={renderLabel?.(item, item.id === selectedId)}
+            onPointerDown={onItemPointerDown}
+            onPointerMove={onItemPointerMove}
+            onPointerUp={onItemPointerUp}
+            onPointerCancel={onItemPointerCancel}
+            label={renderLabel?.(item, selectedId === item.id)}
           />
         ))}
       </group>
