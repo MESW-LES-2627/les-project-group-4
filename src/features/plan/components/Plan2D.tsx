@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -221,6 +222,37 @@ export function Plan2D({
           item.id === drag.id ? { ...item, ...drag.preview } : item,
         )
 
+  const setControlsEnabled = useCallback((enabled: boolean) => {
+    const controls = controlsRef.current
+    if (controls) controls.enabled = enabled
+  }, [])
+
+  const finishDrag = useCallback(
+    (commit: boolean) => {
+      const session = dragRef.current
+      if (session === null) return
+
+      dragRef.current = null
+      setDrag(null)
+      setControlsEnabled(true)
+
+      if (!commit) return
+
+      // A drag is a transient selection: the item is highlighted while it moves,
+      // then the plan is left with nothing selected. A click without movement is
+      // still a normal selection and keeps the item selected.
+      if (!session.moved) {
+        onSelect?.(session.id)
+        return
+      }
+
+      suppressMissedRef.current = true
+      onSelect?.(null)
+      onMoveItem?.(session.id, session.preview)
+    },
+    [onMoveItem, onSelect, setControlsEnabled],
+  )
+
   // While expanded, lock page scrolling and let Escape close the plan.
   useEffect(() => {
     if (!isFullscreen) return
@@ -238,6 +270,29 @@ export function Plan2D({
       document.body.style.overflow = previousOverflow
     }
   }, [isFullscreen])
+
+  // End the drag even when R3F's pointerup misses the item (for example, the
+  // cursor is released outside the canvas). Pointer capture normally forwards
+  // the event, but this keeps the drag from surviving a lost pointerup.
+  useEffect(() => {
+    const pointerId = drag?.pointerId
+    if (pointerId === undefined) return
+
+    function handlePointerUp(event: PointerEvent) {
+      if (event.pointerId === pointerId) finishDrag(true)
+    }
+
+    function handlePointerCancel(event: PointerEvent) {
+      if (event.pointerId === pointerId) finishDrag(false)
+    }
+
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerCancel)
+    return () => {
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerCancel)
+    }
+  }, [drag?.pointerId, finishDrag])
 
   function resetView() {
     setResetToken((token) => token + 1)
@@ -258,11 +313,6 @@ export function Plan2D({
     camera.updateProjectionMatrix()
   }
 
-  function setControlsEnabled(enabled: boolean) {
-    const controls = controlsRef.current
-    if (controls) controls.enabled = enabled
-  }
-
   /** The pointer ray's intersection with the floor, in room centimetres. */
   function roomPoint(event: ThreeEvent<PointerEvent>): Point | null {
     const hit = event.ray.intersectPlane(FLOOR_PLANE, floorPointRef.current)
@@ -271,31 +321,20 @@ export function Plan2D({
   }
 
   function capturePointer(event: ThreeEvent<PointerEvent>) {
-    const target = event.nativeEvent.target
-    if (target instanceof Element) target.setPointerCapture(event.pointerId)
+    const target = event.target as unknown as {
+      setPointerCapture(id: number): void
+    }
+    target.setPointerCapture(event.pointerId)
   }
 
   function releasePointer(event: ThreeEvent<PointerEvent>) {
-    const target = event.nativeEvent.target
-    if (target instanceof Element && target.hasPointerCapture(event.pointerId)) {
+    const target = event.target as unknown as {
+      hasPointerCapture(id: number): boolean
+      releasePointerCapture(id: number): void
+    }
+    if (target.hasPointerCapture(event.pointerId)) {
       target.releasePointerCapture(event.pointerId)
     }
-  }
-
-  function finishDrag(commit: boolean) {
-    const session = dragRef.current
-    if (session === null) return
-
-    dragRef.current = null
-    setDrag(null)
-    setControlsEnabled(true)
-
-    if (!commit) return
-    onSelect?.(session.id)
-    if (!session.moved) return
-
-    suppressMissedRef.current = true
-    onMoveItem?.(session.id, session.preview)
   }
 
   function handleItemPointerDown(
@@ -352,6 +391,7 @@ export function Plan2D({
       point,
       session.grabOffsetCm,
       room,
+      0,
     )
     const moved =
       session.moved ||

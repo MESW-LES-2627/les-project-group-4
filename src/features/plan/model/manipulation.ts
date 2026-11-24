@@ -38,6 +38,7 @@ function clampAxis(
   centreCm: number,
   halfExtentCm: number,
   roomExtentCm: number,
+  snapCm: number,
 ): number {
   if (2 * halfExtentCm > roomExtentCm + EPSILON_CM) {
     return roomExtentCm / 2;
@@ -47,25 +48,29 @@ function clampAxis(
   const min = Math.min(halfExtentCm, roomExtentCm - halfExtentCm);
   const max = Math.max(halfExtentCm, roomExtentCm - halfExtentCm);
 
-  const snapped = Math.round(centreCm / DRAG_SNAP_CM) * DRAG_SNAP_CM;
+  const factor = snapCm > 0 ? snapCm : 1;
+  const snapped = snapCm > 0
+    ? Math.round(centreCm / factor) * factor
+    : centreCm;
   return clean(Math.min(max, Math.max(min, snapped)));
 }
 
 /**
- * The placement with its centre clamped inside the room (AT-4) and snapped to
- * DRAG_SNAP_CM. Rotation is preserved. The rotated bounding box is exact for
- * the axis-aligned room (see boundingBox in geometry.ts).
+ * The placement with its centre clamped inside the room (AT-4). By default it
+ * snaps to DRAG_SNAP_CM; pass 0 for a smooth drag preview that still respects
+ * the walls. Rotation is preserved.
  */
 export function clampPlacementToRoom(
   size: Size,
   placement: Placement,
   room: RoomSize,
+  snapCm = DRAG_SNAP_CM,
 ): Placement {
   const box = boundingBox(size, placement);
   return {
     ...placement,
-    xCm: clampAxis(placement.xCm, (box.maxX - box.minX) / 2, room.widthCm),
-    yCm: clampAxis(placement.yCm, (box.maxY - box.minY) / 2, room.lengthCm),
+    xCm: clampAxis(placement.xCm, (box.maxX - box.minX) / 2, room.widthCm, snapCm),
+    yCm: clampAxis(placement.yCm, (box.maxY - box.minY) / 2, room.lengthCm, snapCm),
   };
 }
 
@@ -73,8 +78,8 @@ export function clampPlacementToRoom(
  * The placement produced by dragging the footprint when the pointer is at
  * `pointer`. `grabOffsetCm` is where the pointer grabbed the item relative to
  * its centre (centre − pointer at pointerdown), so the same point of the item
- * stays under the cursor. Rotation is unchanged; the result is clamped and
- * snapped by clampPlacementToRoom.
+ * stays under the cursor. Rotation is unchanged; the result is clamped by
+ * default and snapped to DRAG_SNAP_CM. Pass snapCm = 0 for a smooth preview.
  */
 export function dragPlacement(
   size: Size,
@@ -82,6 +87,7 @@ export function dragPlacement(
   pointer: Point,
   grabOffsetCm: Point,
   room: RoomSize,
+  snapCm = DRAG_SNAP_CM,
 ): Placement {
   return clampPlacementToRoom(
     size,
@@ -91,6 +97,7 @@ export function dragPlacement(
       yCm: pointer.y + grabOffsetCm.y,
     },
     room,
+    snapCm,
   );
 }
 
