@@ -3,6 +3,7 @@
 import type { LayoutWithItems, Room } from '@/features/rooms/types'
 import type { CatalogItem } from '@/features/catalog/types'
 import { RoomCatalog } from '@/features/catalog/components/RoomCatalog'
+import { DeleteRoom } from '@/features/rooms/components/DeleteRoom'
 import { RegisterCurrentRoom } from '@/features/rooms/components/RegisterCurrentRoom'
 import { SaveLayoutForm } from '@/features/rooms/components/saved-layouts/SaveLayoutForm'
 import { SavedLayouts } from '@/features/rooms/components/saved-layouts/SavedLayouts'
@@ -16,6 +17,7 @@ import { COORDINATE_DECIMALS } from '@/features/locations/schema'
 
 /**
  * US-03: one room's details, including the 2D plan. US-15: with its saved location.
+ * US-05: the header has the delete action.
  * US-09: the placed items, the plan and the catalog form a three-panel editor.
  * US-13b / US-14b: the layouts bar underneath saves the current plan and lists
  * the room's saved layouts.
@@ -41,19 +43,22 @@ export function RoomDetails({
     <div className="grid gap-6">
       <RegisterCurrentRoom room={room} />
 
-      <header className="grid gap-1">
-        <h1 className="text-2xl font-bold tracking-tight wrap-break-word text-foreground sm:text-3xl">
-          {room.name}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {label !== null ? `${summary} · ${label}` : summary}
-        </p>
-        {location.kind === 'coordinates' ? (
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div className="grid min-w-0 gap-1">
+          <h1 className="text-2xl font-bold tracking-tight wrap-break-word text-foreground sm:text-3xl">
+            {room.name}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            {location.latitude.toFixed(COORDINATE_DECIMALS)},{' '}
-            {location.longitude.toFixed(COORDINATE_DECIMALS)}
+            {label !== null ? `${summary} · ${label}` : summary}
           </p>
-        ) : null}
+          {location.kind === 'coordinates' ? (
+            <p className="text-sm text-muted-foreground">
+              {location.latitude.toFixed(COORDINATE_DECIMALS)},{' '}
+              {location.longitude.toFixed(COORDINATE_DECIMALS)}
+            </p>
+          ) : null}
+        </div>
+        <DeleteRoom room={room} layoutCount={layouts.length} />
       </header>
 
       {/* Editor: placed items | plan | catalog. On small screens the plan comes first. */}

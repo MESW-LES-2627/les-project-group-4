@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatArea } from './roomFormat'
+import { describeRoomDeletion, formatArea } from './roomFormat'
 
 describe('formatArea', () => {
   it('converts square centimetres to square metres', () => {
@@ -13,5 +13,16 @@ describe('formatArea', () => {
 
   it('groups thousands', () => {
     expect(formatArea({ widthCm: 4000, lengthCm: 3500 })).toBe('1,400 m²')
+  })
+})
+
+describe('describeRoomDeletion', () => {
+  it('only warns that it cannot be undone when there are no saved layouts', () => {
+    expect(describeRoomDeletion(0)).toBe('This cannot be undone.')
+  })
+
+  it('names the saved layouts that go with the room', () => {
+    expect(describeRoomDeletion(1)).toBe('This also deletes its saved layout. This cannot be undone.')
+    expect(describeRoomDeletion(3)).toBe('This also deletes its 3 saved layouts. This cannot be undone.')
   })
 })
