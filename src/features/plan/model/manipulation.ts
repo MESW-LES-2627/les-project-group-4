@@ -11,6 +11,7 @@ import {
   EPSILON_CM,
   boundingBox,
   type Placement,
+  type Point,
   type RoomSize,
   type Size,
 } from "@/features/plan/model/geometry";
@@ -62,4 +63,29 @@ export function clampPlacementToRoom(
     xCm: clampAxis(placement.xCm, (box.maxX - box.minX) / 2, room.widthCm),
     yCm: clampAxis(placement.yCm, (box.maxY - box.minY) / 2, room.lengthCm),
   };
+}
+
+/**
+ * The placement produced by dragging the footprint when the pointer is at
+ * `pointer`. `grabOffsetCm` is where the pointer grabbed the item relative to
+ * its centre (centre − pointer at pointerdown), so the same point of the item
+ * stays under the cursor. Rotation is unchanged; the result is clamped and
+ * snapped by clampPlacementToRoom.
+ */
+export function dragPlacement(
+  size: Size,
+  placement: Placement,
+  pointer: Point,
+  grabOffsetCm: Point,
+  room: RoomSize,
+): Placement {
+  return clampPlacementToRoom(
+    size,
+    {
+      ...placement,
+      xCm: pointer.x + grabOffsetCm.x,
+      yCm: pointer.y + grabOffsetCm.y,
+    },
+    room,
+  );
 }

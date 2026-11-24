@@ -1,15 +1,21 @@
 import { describe, expect, it } from "vitest";
 
 import { isInsideRoom } from "@/features/plan/model/geometry";
-import type { Placement, RoomSize, Size } from "@/features/plan/model/geometry";
+import type {
+  Placement,
+  Point,
+  RoomSize,
+  Size,
+} from "@/features/plan/model/geometry";
 
-import { clampPlacementToRoom } from "./manipulation";
+import { clampPlacementToRoom, dragPlacement } from "./manipulation";
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 };
 const sofa: Size = { widthCm: 100, depthCm: 50 };
 
 function placed(xCm: number, yCm: number, rotationDeg = 0): Placement {
   return { xCm, yCm, rotationDeg };
+  j;
 }
 
 describe("clampPlacementToRoom", () => {
@@ -79,5 +85,90 @@ describe("clampPlacementToRoom", () => {
 
     expect(placement).toEqual(placed(10, 10));
     expect(clamped).not.toBe(placement);
+  });
+});
+
+describe("dragPlacement", () => {
+  it("keeps the grabbed point under the pointer", () => {
+    // The centre is 10 cm right and 5 cm below the pointer when the drag starts.
+    const grabOffset: Point = { x: 10, y: 5 };
+
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100),
+        { x: 140, y: 95 },
+        grabOffset,
+        room,
+      ),
+    ).toEqual(placed(150, 100));
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100),
+        { x: 200, y: 120 },
+        grabOffset,
+        room,
+      ),
+    ).toEqual(placed(210, 125));
+  });
+
+  it("keeps the item’s rotation while dragging", () => {
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100, 90),
+        { x: 150, y: 100 },
+        { x: 0, y: 0 },
+        room,
+      ),
+    ).toEqual(placed(150, 100, 90));
+  });
+
+  it("snaps the pointer position to whole centimetres", () => {
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100),
+        { x: 100.4, y: 99.6 },
+        { x: 0, y: 0 },
+        room,
+      ),
+    ).toEqual(placed(100, 100));
+  });
+
+  it("clamps the dragged footprint against the walls", () => {
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100),
+        { x: -50, y: -20 },
+        { x: 10, y: 5 },
+        room,
+      ),
+    ).toEqual(placed(50, 25));
+  });
+
+  it("uses the rotated bounds while dragging", () => {
+    // Turned 90°, the footprint needs 25 cm of clearance along x and 50 cm along y.
+    expect(
+      dragPlacement(
+        sofa,
+        placed(150, 100, 90),
+        { x: 1, y: 1 },
+        { x: 0, y: 0 },
+        room,
+      ),
+    ).toEqual(placed(25, 50, 90));
+  });
+
+  it("does not mutate the placement or the grab offset", () => {
+    const placement = placed(150, 100);
+    const grabOffset: Point = { x: 10, y: 5 };
+
+    dragPlacement(sofa, placement, { x: 200, y: 120 }, grabOffset, room);
+
+    expect(placement).toEqual(placed(150, 100));
+    expect(grabOffset).toEqual({ x: 10, y: 5 });
   });
 });
