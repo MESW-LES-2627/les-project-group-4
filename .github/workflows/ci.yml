@@ -182,7 +182,7 @@ jobs:
         id: acceptance
         run: |
           mkdir -p reports
-          npx vitest run --project acceptance \
+          npx vitest run --project acceptance --project components \
             --reporter=default \
             --reporter=json \
             --reporter=junit \

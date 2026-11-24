@@ -10,10 +10,11 @@
 // CI relaxes it for runs that cannot be held responsible for the registry.
 // --drift-fail is the explicit default, so CI can pass --drift-<mode>.
 
-import { existsSync, readFileSync, readdirSync, appendFileSync } from "node:fs";
+import { existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { acceptanceFilesForCheck } from "./acceptance-files";
 import { checkCoverage } from "./coverage";
 import type { Overrides } from "./coverage";
 import { listIssuesWithAcceptanceTests, resolveRepository } from "./github";
@@ -25,7 +26,6 @@ import { formatTraceabilityMarkdown } from "./traceability-summary";
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const REGISTRY_PATH = join(ROOT, "tests/registry.json");
 const OVERRIDES_PATH = join(ROOT, "tests/acceptance/overrides.json");
-const ACCEPTANCE_DIR = join(ROOT, "tests/acceptance");
 
 const warn = process.argv.includes("--warn");
 const strict = !warn;
@@ -86,7 +86,7 @@ if (requiredStories.length > 0) {
   );
 }
 
-const files = acceptanceFiles();
+const files = acceptanceFilesForCheck();
 const report = checkCoverage(registry, files, overrides, {
   required: requiredStories,
 });
@@ -209,16 +209,4 @@ if (summaryPath) {
       driftIsFatal,
     })}\n`,
   );
-}
-
-function acceptanceFiles(): Array<{ file: string; source: string }> {
-  if (!existsSync(ACCEPTANCE_DIR)) return [];
-
-  return readdirSync(ACCEPTANCE_DIR, { recursive: true, encoding: "utf8" })
-    .filter((name) => /\.test\.(ts|tsx)$/.test(name))
-    .sort()
-    .map((name) => ({
-      file: join("tests/acceptance", name),
-      source: readFileSync(join(ACCEPTANCE_DIR, name), "utf8"),
-    }));
 }
