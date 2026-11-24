@@ -33,6 +33,13 @@ export function shouldRunBaseline(input: BaselineInput): BaselineSkip | null {
   return null;
 }
 
+/**
+ * The Vitest projects whose results the report compares. CH-05: the component
+ * tests (`*.dom.test.tsx`, project `components`) are acceptance tests too. A
+ * base from before CH-05 has no such project; Vitest then runs acceptance only.
+ */
+export const BASELINE_PROJECTS = ["acceptance", "components"] as const;
+
 export interface BaselineResult {
   status: "written" | "skipped" | "unavailable";
   reason?: BaselineSkip | "vitest-failed";
@@ -119,12 +126,7 @@ export function runBaseline({
         [
           join(ROOT, "node_modules/vitest/vitest.mjs"),
           "run",
-          "--project",
-          "acceptance",
-          // CH-05: the component tests are acceptance tests too. A base from
-          // before CH-05 has no such project; Vitest then runs acceptance only.
-          "--project",
-          "components",
+          ...BASELINE_PROJECTS.flatMap((project) => ["--project", project]),
           "--reporter=json",
           "--includeTaskLocation",
           `--outputFile=${output}`,

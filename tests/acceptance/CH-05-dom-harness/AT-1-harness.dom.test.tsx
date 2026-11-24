@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, onTestFinished } from 'vitest'
 
 // A tiny component owned by this test, so AT-1 checks the harness itself and does not
 // depend on any app component.
@@ -32,9 +32,15 @@ describe(
       expect(screen.getByRole('button', { name: 'Clicked 1 times' })).toBeInTheDocument()
     })
 
-    // Relies on the order above: the previous test left a button in the DOM.
-    it('cleans up the DOM between tests', () => {
-      expect(document.body).toBeEmptyDOMElement()
+    // Self-contained: renders, then checks the DOM after the test's afterEach hooks have run
+    // (onTestFinished runs after them). Passes alone (-t), skipped siblings or any order.
+    it('cleans up the DOM after each test (afterEach(cleanup) in vitest.setup.dom.ts)', () => {
+      onTestFinished(() => {
+        expect(document.body).toBeEmptyDOMElement()
+      })
+
+      render(<Counter />)
+      expect(screen.getByRole('button', { name: 'Clicked 0 times' })).toBeInTheDocument()
     })
   },
 )
