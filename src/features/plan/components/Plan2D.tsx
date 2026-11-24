@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from 'react'
 import { MapControls, OrthographicCamera } from '@react-three/drei'
-import { Canvas, useThree, type RootState } from '@react-three/fiber'
+import { Canvas, useThree, type RootState, type ThreeEvent } from '@react-three/fiber'
 import {
   Maximize2,
   Minimize2,
@@ -17,12 +17,13 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react'
-import { Vector3 } from 'three'
+import { Plane, Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
 import { Button } from '@/components/ui/button'
-import type { RoomSize } from '@/features/plan/model/geometry'
+import type { Placement, Point, RoomSize } from '@/features/plan/model/geometry'
 import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
+import { dragPlacement } from '@/features/plan/model/manipulation'
 import type { PlacedItemSource } from '@/features/plan/types'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
@@ -40,16 +41,37 @@ import {
 } from '@/features/plan/model/ortho'
 import { RoomScene, type RoomSceneProps } from './scene/RoomScene'
 
+/** The plan floor: y = 0 in R3F scene space. */
+const FLOOR_PLANE = new Plane(new Vector3(0, 1, 0), 0)
+
+interface DragSession {
+  id: string
+  pointerId: number
+  /** Where the pointer grabbed the item, relative to its centre, in cm. */
+  grabOffsetCm: Point
+  startPlacement: Placement
+  preview: Placement
+  moved: boolean
+}
+
 export interface Plan2DProps {
   room: RoomSize
   items?: PlacedItemData[]
   selectedId?: string | null
   onSelect?: (id: string | null) => void
   onDropItem?: (item: PlacedItemSource, xCm: number, yCm: number) => void
+  onMoveItem?: (id: string, placement: Placement) => void
 }
 
 export type Plan2DSceneProps = Plan2DProps &
-  Pick<RoomSceneProps, 'renderLabel'>
+  Pick<
+    RoomSceneProps,
+    | 'renderLabel'
+    | 'onItemPointerDown'
+    | 'onItemPointerMove'
+    | 'onItemPointerUp'
+    | 'onItemPointerCancel'
+  >
 
 /**
  * The R3F subtree Plan2D mounts inside its Canvas. It is exported separately
@@ -60,6 +82,10 @@ export function Plan2DScene({
   items = [],
   selectedId = null,
   onSelect,
+  onItemPointerDown,
+  onItemPointerMove,
+  onItemPointerUp,
+  onItemPointerCancel,
   renderLabel,
 }: Plan2DSceneProps) {
   return (
@@ -68,6 +94,10 @@ export function Plan2DScene({
       items={items}
       selectedId={selectedId}
       onSelect={onSelect}
+      onItemPointerDown={onItemPointerDown}
+      onItemPointerMove={onItemPointerMove}
+      onItemPointerUp={onItemPointerUp}
+      onItemPointerCancel={onItemPointerCancel}
       renderLabel={renderLabel}
     />
   )
@@ -164,6 +194,7 @@ export function Plan2D({
   selectedId = null,
   onSelect,
   onDropItem,
+  onMoveItem,
 }: Plan2DProps) {
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const widthLabelRef = useRef<HTMLDivElement>(null)
@@ -174,10 +205,21 @@ export function Plan2D({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasStateRef = useRef<RootState | null>(null)
   const dragCounterRef = useRef(0)
+  const dragRef = useRef<DragSession | null>(null)
+  const floorPointRef = useRef(new Vector3())
+  const suppressMissedRef = useRef(false)
   const [labelRefs] = useState(() => new Map<string, HTMLDivElement | null>())
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [drag, setDrag] = useState<DragSession | null>(null)
+
+  const displayItems =
+    drag === null
+      ? items
+      : items.map((item) =>
+          item.id === drag.id ? { ...item, ...drag.preview } : item,
+        )
 
   // While expanded, lock page scrolling and let Escape close the plan.
   useEffect(() => {
@@ -214,6 +256,153 @@ export function Plan2D({
     const camera = controls.object as OrthographicCameraImpl
     camera.zoom = stepZoom(camera.zoom, direction)
     camera.updateProjectionMatrix()
+  }
+
+  function setControlsEnabled(enabled: boolean) {
+    const controls = controlsRef.current
+    if (controls) controls.enabled = enabled
+  }
+
+  /** The pointer ray's intersection with the floor, in room centimetres. */
+  function roomPoint(event: ThreeEvent<PointerEvent>): Point | null {
+    const hit = event.ray.intersectPlane(FLOOR_PLANE, floorPointRef.current)
+    if (hit === null) return null
+    return { x: hit.x * 100, y: hit.z * 100 }
+  }
+
+  function capturePointer(event: ThreeEvent<PointerEvent>) {
+    const target = event.nativeEvent.target
+    if (target instanceof Element) target.setPointerCapture(event.pointerId)
+  }
+
+  function releasePointer(event: ThreeEvent<PointerEvent>) {
+    const target = event.nativeEvent.target
+    if (target instanceof Element && target.hasPointerCapture(event.pointerId)) {
+      target.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  function finishDrag(commit: boolean) {
+    const session = dragRef.current
+    if (session === null) return
+
+    dragRef.current = null
+    setDrag(null)
+    setControlsEnabled(true)
+
+    if (!commit) return
+    onSelect?.(session.id)
+    if (!session.moved) return
+
+    suppressMissedRef.current = true
+    onMoveItem?.(session.id, session.preview)
+  }
+
+  function handleItemPointerDown(
+    item: PlacedItemData,
+    event: ThreeEvent<PointerEvent>,
+  ) {
+    if (!onMoveItem || dragRef.current !== null || event.button !== 0) return
+
+    const point = roomPoint(event)
+    if (point === null) return
+
+    event.stopPropagation()
+    setControlsEnabled(false)
+    capturePointer(event)
+    onSelect?.(item.id)
+
+    const startPlacement: Placement = {
+      xCm: item.xCm,
+      yCm: item.yCm,
+      rotationDeg: item.rotationDeg,
+    }
+    const session: DragSession = {
+      id: item.id,
+      pointerId: event.pointerId,
+      grabOffsetCm: { x: item.xCm - point.x, y: item.yCm - point.y },
+      startPlacement,
+      preview: startPlacement,
+      moved: false,
+    }
+    dragRef.current = session
+    setDrag(session)
+  }
+
+  function handleItemPointerMove(
+    item: PlacedItemData,
+    event: ThreeEvent<PointerEvent>,
+  ) {
+    const session = dragRef.current
+    if (
+      session === null ||
+      session.pointerId !== event.pointerId ||
+      session.id !== item.id
+    ) {
+      return
+    }
+
+    const point = roomPoint(event)
+    if (point === null) return
+
+    event.stopPropagation()
+    const preview = dragPlacement(
+      item,
+      session.startPlacement,
+      point,
+      session.grabOffsetCm,
+      room,
+    )
+    const moved =
+      session.moved ||
+      preview.xCm !== session.startPlacement.xCm ||
+      preview.yCm !== session.startPlacement.yCm
+    const next = { ...session, preview, moved }
+    dragRef.current = next
+    setDrag(next)
+  }
+
+  function handleItemPointerUp(
+    item: PlacedItemData,
+    event: ThreeEvent<PointerEvent>,
+  ) {
+    const session = dragRef.current
+    if (
+      session === null ||
+      session.pointerId !== event.pointerId ||
+      session.id !== item.id
+    ) {
+      return
+    }
+
+    event.stopPropagation()
+    releasePointer(event)
+    finishDrag(true)
+  }
+
+  function handleItemPointerCancel(
+    item: PlacedItemData,
+    event: ThreeEvent<PointerEvent>,
+  ) {
+    const session = dragRef.current
+    if (
+      session === null ||
+      session.pointerId !== event.pointerId ||
+      session.id !== item.id
+    ) {
+      return
+    }
+
+    releasePointer(event)
+    finishDrag(false)
+  }
+
+  function handlePointerMissed() {
+    if (suppressMissedRef.current) {
+      suppressMissedRef.current = false
+      return
+    }
+    onSelect?.(null)
   }
 
   function parseDragItem(dataTransfer: DataTransfer): PlacedItemSource | null {
@@ -279,6 +468,9 @@ export function Plan2D({
       onDragLeave={onDropItem ? handleDragLeave : undefined}
       onDragOver={onDropItem ? handleDragOver : undefined}
       onDrop={onDropItem ? handleDrop : undefined}
+      onPointerDownCapture={() => {
+        suppressMissedRef.current = false
+      }}
     >
       <PlanGrid gridRef={gridRef} />
 
@@ -287,7 +479,7 @@ export function Plan2D({
         flat
         dpr={[1, 2]}
         gl={{ antialias: true }}
-        onPointerMissed={onSelect ? () => onSelect(null) : undefined}
+        onPointerMissed={onSelect ? handlePointerMissed : undefined}
         // Double-clicking anywhere on the plan is a quick "fit to room".
         onDoubleClick={resetView}
         style={{ touchAction: 'none' }}
@@ -305,11 +497,15 @@ export function Plan2D({
         <PlanGridProjector gridRef={gridRef} />
         <Plan2DScene
           room={room}
-          items={items}
+          items={displayItems}
           selectedId={selectedId}
           onSelect={onSelect}
+          onItemPointerDown={handleItemPointerDown}
+          onItemPointerMove={handleItemPointerMove}
+          onItemPointerUp={handleItemPointerUp}
+          onItemPointerCancel={handleItemPointerCancel}
         />
-        <ItemLabelProjector items={items} labelRefs={labelRefs} />
+        <ItemLabelProjector items={displayItems} labelRefs={labelRefs} />
         <PlanControls
           room={room}
           controlsRef={controlsRef}
@@ -324,7 +520,7 @@ export function Plan2D({
       />
       <ScaleBar lineRef={scaleLineRef} textRef={scaleTextRef} />
       <ItemLabels
-        items={items}
+        items={displayItems}
         selectedId={selectedId}
         labelRefs={labelRefs}
       />
