@@ -7,7 +7,7 @@ import type { PlacedItem } from '@/features/plan/model/layout'
 import { RoomDetails } from '@/features/rooms/components/RoomDetails'
 import type { LayoutWithItems, Room } from '@/features/rooms/types'
 
-import { DraftProbe, SeedDraft } from './DraftState'
+import { DraftProbe, SeedDraft } from '../draft-state'
 
 // US-05 component tests: the room page body in jsdom (same setup as US-03), with a router
 // whose calls the tests can read, and a fake API for the DELETE requests.

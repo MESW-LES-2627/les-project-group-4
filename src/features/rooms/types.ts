@@ -17,6 +17,13 @@ export interface CreateRoomRequest {
   longitude?: number
 }
 
+/** US-04: body sent to PATCH /api/rooms/[id]. Same rules as create, without the location. */
+export interface UpdateRoomRequest {
+  name: string
+  widthCm: number
+  lengthCm: number
+}
+
 /** Body returned by POST /api/rooms with 201 Created, GET /api/rooms and GET /api/rooms/[id]. */
 export interface Room {
   id: number

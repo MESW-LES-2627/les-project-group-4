@@ -3,7 +3,7 @@ import 'server-only'
 import { CITY_SELECT } from '@/features/locations/server/cities'
 import { getDb } from '@/lib/db'
 
-import type { CreateRoomInput } from '../schema'
+import type { CreateRoomInput, UpdateRoomInput } from '../schema'
 import type { Room } from '../types'
 
 // The room fields the API returns (see Room in features/rooms/types.ts).
@@ -51,4 +51,10 @@ export function createRoom(input: CreateRoomInput): Promise<Room> {
 export async function deleteRoom(id: number): Promise<boolean> {
   const { count } = await getDb().room.deleteMany({ where: { id } })
   return count > 0
+}
+
+/** US-04: saves the new name and dimensions. The updated room, or null if it does not exist. */
+export async function updateRoom(id: number, input: UpdateRoomInput): Promise<Room | null> {
+  const { count } = await getDb().room.updateMany({ where: { id }, data: input })
+  return count > 0 ? findRoomById(id) : null
 }

@@ -1,6 +1,7 @@
 import { ROOM_NOT_FOUND, serverError, validationError } from '@/app/api/response'
-import { roomIdSchema } from '@/features/rooms/schema'
-import { deleteRoom, findRoomById } from '@/features/rooms/server/rooms'
+import { roomIdSchema, updateRoomSchema } from '@/features/rooms/schema'
+import { deleteRoom, findRoomById, updateRoom } from '@/features/rooms/server/rooms'
+import { toFieldErrors } from '@/lib/validation'
 
 type Context = { params: Promise<{ id: string }> }
 
@@ -29,6 +30,42 @@ export async function GET(_request: Request, { params }: Context) {
     return serverError(
       'Failed to load room',
       'Could not load the room. Please try again later.',
+      error,
+    )
+  }
+}
+
+/**
+ * US-04: edits a room's name and dimensions, with the same validation as create.
+ * 200 with the updated room, 400 for a malformed id or invalid body, 404 if it does not exist,
+ * 500 if the database fails.
+ */
+export async function PATCH(request: Request, { params }: Context) {
+  const id = await parseRoomId(params)
+  if (id instanceof Response) return id
+
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return validationError({ body: 'must be valid JSON' })
+  }
+
+  const parsed = updateRoomSchema.safeParse(body)
+  if (!parsed.success) {
+    return validationError(toFieldErrors(parsed.error))
+  }
+
+  try {
+    const room = await updateRoom(id, parsed.data)
+    if (room === null) {
+      return Response.json(ROOM_NOT_FOUND, { status: 404 })
+    }
+    return Response.json(room)
+  } catch (error) {
+    return serverError(
+      'Failed to update room',
+      'Could not save the room. Please try again later.',
       error,
     )
   }

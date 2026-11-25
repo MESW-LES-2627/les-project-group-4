@@ -4,6 +4,7 @@ import type { LayoutWithItems, Room } from '@/features/rooms/types'
 import type { CatalogItem } from '@/features/catalog/types'
 import { RoomCatalog } from '@/features/catalog/components/RoomCatalog'
 import { DeleteRoom } from '@/features/rooms/components/DeleteRoom'
+import { EditRoom } from '@/features/rooms/components/EditRoom'
 import { RegisterCurrentRoom } from '@/features/rooms/components/RegisterCurrentRoom'
 import { SaveLayoutForm } from '@/features/rooms/components/saved-layouts/SaveLayoutForm'
 import { SavedLayouts } from '@/features/rooms/components/saved-layouts/SavedLayouts'
@@ -18,7 +19,7 @@ import { COORDINATE_DECIMALS } from '@/features/locations/schema'
 
 /**
  * US-03: one room's details, including the 2D plan. US-15: with its saved location.
- * US-05: the header has the delete action.
+ * US-04 / US-05: the header has the edit and delete actions.
  * US-09: the placed items, the plan and the catalog form a three-panel editor.
  * US-13b / US-14b: the layouts bar underneath saves the current plan and lists
  * the room's saved layouts.
@@ -39,7 +40,7 @@ export function RoomDetails({
   const location = resolveRoomLocation(room)
   const { itemsFor, removeItem } = useDraftLayouts()
   const placedItems = itemsFor(room.id)
-  // The saved layouts as shown on this page, so the list and the delete warning agree.
+  // The saved layouts as shown on this page, so the list, the edit and the delete warnings agree.
   const { visible: savedLayouts, markDeleted } = useRoomLayouts(layouts)
 
   return (
@@ -61,8 +62,12 @@ export function RoomDetails({
             </p>
           ) : null}
         </div>
-        <DeleteRoom room={room} layoutCount={savedLayouts.length} />
+        <div className="flex flex-wrap items-start gap-2">
+          <EditRoom room={room} placedItems={placedItems} savedLayouts={savedLayouts} />
+          <DeleteRoom room={room} layoutCount={savedLayouts.length} />
+        </div>
       </header>
+
 
       {/* Editor: placed items | plan | catalog. On small screens the plan comes first. */}
       <div className="grid gap-6 lg:h-[30rem] lg:grid-rows-[minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:h-[34rem] xl:grid-cols-[18rem_minmax(0,1fr)_18rem]">

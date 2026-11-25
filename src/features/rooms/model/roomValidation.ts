@@ -2,7 +2,7 @@ import type { RoomLocationInput } from '@/features/locations/schema'
 import { MAX_INT } from '@/lib/validation'
 
 import { ROOM_NAME_MAX } from '../schema'
-import type { CreateRoomRequest } from '../types'
+import type { CreateRoomRequest, Room, UpdateRoomRequest } from '../types'
 
 // Client-side rules for the create-room form
 
@@ -155,4 +155,16 @@ export function pickLocationError(fieldErrors: Record<string, string>): string |
     return 'Your current location could not be saved. Try "Use my location" again or choose a city.'
   }
   return undefined
+}
+
+/** US-04 AT-1: a room's current name and dimensions as form values. */
+export function toRoomFormValues(room: Pick<Room, 'name' | 'widthCm' | 'lengthCm'>): RoomFormValues {
+  return { name: room.name, width: String(room.widthCm), length: String(room.lengthCm) }
+}
+
+/** US-04: validated form values as the PATCH body, or null when they would fail validation (AT-2). */
+export function toUpdateRoomRequest(values: RoomFormValues): UpdateRoomRequest | null {
+  const request = toCreateRoomRequest(values)
+  if (request === null) return null
+  return { name: request.name, widthCm: request.widthCm, lengthCm: request.lengthCm }
 }
