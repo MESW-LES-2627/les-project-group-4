@@ -19,10 +19,10 @@ const sofa: PlacedItem = {
 }
 
 describe(
-  'AT-3 — Rotate item: clicking a selected item on the plan rotates it 90°',
+  'AT-3 — Stored state: a completed drag or rotate stores the new x, y and rotation',
   { tags: ['acceptance', 'US-10', 'AT-3'] },
   () => {
-    it('stores a 90° clockwise rotation for the selected item', () => {
+    it('stores a moved and rotated placement for the selected item', () => {
       const state = {
         ...EMPTY_DRAFT_STATE,
         byRoom: { 1: [sofa] },
