@@ -12,7 +12,7 @@ describe(
   'AT-1 — Pre-filled form: the edit form starts with the current name and dimensions',
   { tags: ['acceptance', 'US-04', 'AT-1'] },
   () => {
-    it('opens from "Edit room" with name, width and length filled in', async () => {
+    it('opens a dialog from "Edit room" with name, width and length filled in', async () => {
       const user = userEvent.setup()
       renderRoomDetails()
       expect(editForm()).not.toBeInTheDocument()
@@ -23,6 +23,8 @@ describe(
       expect(screen.getByLabelText(/room name/i)).toHaveValue('Bedroom')
       expect(screen.getByLabelText(/width/i)).toHaveValue('300')
       expect(screen.getByLabelText(/length/i)).toHaveValue('400')
+      // Focus goes into the form, on the first field.
+      expect(screen.getByLabelText(/room name/i)).toHaveFocus()
     })
 
     it('Cancel closes the form without sending anything', async () => {
@@ -34,7 +36,7 @@ describe(
       await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
       expect(editForm()).not.toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Edit room' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Edit room' })).toHaveFocus()
       expect(fetchMock).not.toHaveBeenCalled()
     })
   },

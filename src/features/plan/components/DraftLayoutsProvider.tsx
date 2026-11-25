@@ -56,6 +56,11 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'dismiss-error', roomId })
   }, [])
 
+  const forgetRoom = useCallback((roomId: number) => {
+    dispatch({ type: 'forget', roomId })
+    setCurrentRoom((current) => (current?.id === roomId ? null : current))
+  }, [])
+
   const value = useMemo<DraftLayouts>(
     () => ({
       currentRoom,
@@ -67,8 +72,19 @@ export function DraftLayoutsProvider({ children }: { children: ReactNode }) {
       removeItem,
       replaceItems,
       dismissError,
+      forgetRoom,
     }),
-    [currentRoom, itemsFor, errorFor, addItem, addItemAt, removeItem, replaceItems, dismissError],
+    [
+      currentRoom,
+      itemsFor,
+      errorFor,
+      addItem,
+      addItemAt,
+      removeItem,
+      replaceItems,
+      dismissError,
+      forgetRoom,
+    ],
   )
 
   return <DraftLayoutsContext.Provider value={value}>{children}</DraftLayoutsContext.Provider>

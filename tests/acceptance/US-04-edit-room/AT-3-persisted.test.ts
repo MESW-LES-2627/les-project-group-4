@@ -2,21 +2,27 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GET, PATCH } from '@/app/api/rooms/[id]/route'
 
-const { updateRooms, findRoom } = vi.hoisted(() => ({ updateRooms: vi.fn(), findRoom: vi.fn() }))
-
-vi.mock('@/lib/db', () => ({
-  getDb: () => ({ room: { updateMany: updateRooms, findUnique: findRoom } }),
+// A small in-memory "database" behind getDb(), so the test follows what the user sees: the
+// edit is saved, and the next load of the room (a reload of its page) shows the new values.
+const rows = vi.hoisted(() => ({
+  rooms: [] as Array<{ id: number; name: string; widthCm: number; lengthCm: number }>,
 }))
 
-const saved = {
-  id: 3,
-  name: 'Guest room',
-  widthCm: 280,
-  lengthCm: 350,
-  city: null,
-  latitude: null,
-  longitude: null,
-}
+vi.mock('@/lib/db', () => ({
+  getDb: () => ({
+    room: {
+      findUnique: async ({ where }: { where: { id: number } }) => {
+        const row = rows.rooms.find((room) => room.id === where.id)
+        return row ? { ...row, city: null, latitude: null, longitude: null } : null
+      },
+      updateMany: async ({ where, data }: { where: { id: number }; data: object }) => {
+        const row = rows.rooms.find((room) => room.id === where.id)
+        if (row) Object.assign(row, data)
+        return { count: row ? 1 : 0 }
+      },
+    },
+  }),
+}))
 
 function patch(id: string, body: unknown) {
   return PATCH(
@@ -29,49 +35,44 @@ function patch(id: string, body: unknown) {
   )
 }
 
+async function reload(id: string) {
+  const response = await GET(new Request(`http://localhost/api/rooms/${id}`), {
+    params: Promise.resolve({ id }),
+  })
+  return response.json()
+}
+
 beforeEach(() => {
-  updateRooms.mockReset()
-  findRoom.mockReset()
-  vi.restoreAllMocks()
+  rows.rooms = [
+    { id: 3, name: 'Bedroom', widthCm: 300, lengthCm: 400 },
+    { id: 4, name: 'Office', widthCm: 250, lengthCm: 250 },
+  ]
 })
 
-// The room page and GET /api/rooms/[id] read the room from the database on every request
-// (US-03), so what PATCH saves is what a reload shows.
 describe(
-  'AT-3 — Persisted edit: the new name and dimensions are saved and returned',
+  'AT-3 — Persisted edit: after saving, a reload shows the new name and dimensions',
   { tags: ['acceptance', 'US-04', 'AT-3'] },
   () => {
-    it('saves the trimmed name and the dimensions of that room, and returns the updated room', async () => {
-      updateRooms.mockResolvedValue({ count: 1 })
-      findRoom.mockResolvedValue(saved)
-
+    it('saves the changes and the reloaded room has them; other rooms are untouched', async () => {
       const response = await patch('3', { name: '  Guest room ', widthCm: 280, lengthCm: 350 })
 
       expect(response.status).toBe(200)
-      expect(await response.json()).toEqual(saved)
-      expect(updateRooms).toHaveBeenCalledWith({
-        where: { id: 3 },
-        data: { name: 'Guest room', widthCm: 280, lengthCm: 350 },
-      })
+      expect(await response.json()).toMatchObject({ id: 3, name: 'Guest room', widthCm: 280, lengthCm: 350 })
+      expect(await reload('3')).toMatchObject({ name: 'Guest room', widthCm: 280, lengthCm: 350 })
+      expect(await reload('4')).toMatchObject({ name: 'Office', widthCm: 250, lengthCm: 250 })
     })
 
-    it('a reload (GET) shows the saved values', async () => {
-      findRoom.mockResolvedValue(saved)
+    it('an invalid edit changes nothing', async () => {
+      const response = await patch('3', { name: '', widthCm: 280, lengthCm: 350 })
 
-      const response = await GET(new Request('http://localhost/api/rooms/3'), {
-        params: Promise.resolve({ id: '3' }),
-      })
-
-      expect(await response.json()).toMatchObject({ name: 'Guest room', widthCm: 280, lengthCm: 350 })
+      expect(response.status).toBe(400)
+      expect(await reload('3')).toMatchObject({ name: 'Bedroom', widthCm: 300, lengthCm: 400 })
     })
 
-    it('returns 404 for a room that no longer exists', async () => {
-      updateRooms.mockResolvedValue({ count: 0 })
-
-      const response = await patch('3', { name: 'Guest room', widthCm: 280, lengthCm: 350 })
+    it('editing a room that no longer exists answers 404', async () => {
+      const response = await patch('99', { name: 'Guest room', widthCm: 280, lengthCm: 350 })
 
       expect(response.status).toBe(404)
-      expect(findRoom).not.toHaveBeenCalled()
     })
   },
 )

@@ -59,6 +59,16 @@ describe('DELETE /api/rooms/[id]', () => {
     expect(deleteRooms).not.toHaveBeenCalled()
   })
 
+  it('returns 204 and deletes only that room (its layouts go by ON DELETE CASCADE)', async () => {
+    deleteRooms.mockResolvedValue({ count: 1 })
+
+    const response = await remove('3')
+
+    expect(response.status).toBe(204)
+    expect(await response.text()).toBe('')
+    expect(deleteRooms).toHaveBeenCalledWith({ where: { id: 3 } })
+  })
+
   it('returns 404 when the room does not exist', async () => {
     deleteRooms.mockResolvedValue({ count: 0 })
 

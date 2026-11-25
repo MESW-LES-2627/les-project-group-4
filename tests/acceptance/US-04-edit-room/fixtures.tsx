@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 import { DraftLayoutsProvider } from '@/features/plan/components/DraftLayoutsProvider'
 import type { PlacedItem } from '@/features/plan/model/layout'
 import { RoomDetails } from '@/features/rooms/components/RoomDetails'
-import type { Room } from '@/features/rooms/types'
+import type { LayoutWithItems, Room } from '@/features/rooms/types'
 
 import { WithPlacedItems } from './WithPlacedItems'
 
@@ -45,11 +45,18 @@ export const sofa: PlacedItem = {
 }
 
 /** Renders the room page body the way the app does: inside the session draft provider. */
-export function renderRoomDetails(options: { room?: Room; placedItems?: PlacedItem[] } = {}) {
+export function renderRoomDetails(
+  options: { room?: Room; placedItems?: PlacedItem[]; layouts?: LayoutWithItems[] } = {},
+) {
   const body = (current: Room) => (
     <DraftLayoutsProvider>
       <WithPlacedItems roomId={room.id} items={options.placedItems ?? []}>
-        <RoomDetails room={current} catalogItems={[]} category={undefined} layouts={[]} />
+        <RoomDetails
+          room={current}
+          catalogItems={[]}
+          category={undefined}
+          layouts={options.layouts ?? []}
+        />
       </WithPlacedItems>
     </DraftLayoutsProvider>
   )
@@ -64,12 +71,12 @@ export function stubUpdateRoomApi() {
   )
 }
 
-/** Opens the edit form from the room header. */
+/** Opens the edit dialog from the room header. */
 export async function openEditForm(user: UserEvent) {
   await user.click(screen.getByRole('button', { name: 'Edit room' }))
 }
 
-/** The edit form, found by its heading. */
+/** The edit form (in the dialog), found by its name. */
 export function editForm() {
   return screen.queryByRole('form', { name: 'Edit room' })
 }

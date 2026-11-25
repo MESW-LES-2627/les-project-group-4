@@ -17,7 +17,7 @@ afterEach(() => {
   router.refresh.mockReset()
 })
 
-const warning = '1 placed item would be outside the room with these dimensions (Sofa).'
+const warning = '1 placed item would be outside the room (Sofa).'
 
 describe(
   'AT-4 — Smaller-than-items warning: shrinking below a placed item warns before saving',
@@ -55,6 +55,31 @@ describe(
 
       expect(screen.queryByText(warning, { exact: false })).not.toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument()
+      expect(fetchMock).not.toHaveBeenCalled()
+    })
+
+    it('also warns about a saved layout whose items would be outside', async () => {
+      const fetchMock = stubUpdateRoomApi()
+      const user = userEvent.setup()
+      renderRoomDetails({
+        layouts: [
+          {
+            id: 7,
+            name: 'Cosy corner',
+            itemCount: 1,
+            updatedAt: '2026-11-20T10:00:00.000Z',
+            items: [{ ...sofa, id: 11, catalogItemId: 4 }],
+          },
+        ],
+      })
+
+      await openEditForm(user)
+      await retype(user, /width/i, '150')
+      await user.click(screen.getByRole('button', { name: 'Save changes' }))
+
+      expect(
+        screen.getByText('1 saved layout has items that would be outside (Cosy corner).'),
+      ).toBeInTheDocument()
       expect(fetchMock).not.toHaveBeenCalled()
     })
 

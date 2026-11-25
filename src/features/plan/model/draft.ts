@@ -39,6 +39,8 @@ export type DraftAction =
   | { type: 'remove'; roomId: number; id: string }
   | { type: 'replace'; roomId: number; items: PlacedItem[] }
   | { type: 'dismiss-error'; roomId: number }
+  /** US-05: the room was deleted, so its draft and its error go too. */
+  | { type: 'forget'; roomId: number }
 
 /** Drops the error only when it belongs to this room; another room's stays. */
 function withoutError(state: DraftState, roomId: number): DraftState['error'] {
@@ -112,6 +114,13 @@ export function draftReducer(state: DraftState, action: DraftAction): DraftState
         byRoom: { ...state.byRoom, [action.roomId]: action.items },
         error: withoutError(state, action.roomId),
       }
+    case 'forget': {
+      if (state.byRoom[action.roomId] === undefined && state.error?.roomId !== action.roomId) {
+        return state
+      }
+      const { [action.roomId]: _forgotten, ...byRoom } = state.byRoom
+      return { byRoom, error: withoutError(state, action.roomId) }
+    }
     case 'dismiss-error':
       return state.error?.roomId === action.roomId ? { ...state, error: null } : state
     default: {
