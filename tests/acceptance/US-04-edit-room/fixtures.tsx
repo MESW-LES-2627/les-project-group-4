@@ -7,7 +7,7 @@ import type { PlacedItem } from '@/features/plan/model/layout'
 import { RoomDetails } from '@/features/rooms/components/RoomDetails'
 import type { LayoutWithItems, Room } from '@/features/rooms/types'
 
-import { WithPlacedItems } from './WithPlacedItems'
+import { SeedDraft } from '../draft-state'
 
 // US-04 component tests: the room page body in jsdom (same setup as US-03 and US-05), with a
 // router whose calls the tests can read, and a fake PATCH /api/rooms/[id].
@@ -50,14 +50,14 @@ export function renderRoomDetails(
 ) {
   const body = (current: Room) => (
     <DraftLayoutsProvider>
-      <WithPlacedItems roomId={room.id} items={options.placedItems ?? []}>
+      <SeedDraft drafts={{ [room.id]: options.placedItems ?? [] }}>
         <RoomDetails
           room={current}
           catalogItems={[]}
           category={undefined}
           layouts={options.layouts ?? []}
         />
-      </WithPlacedItems>
+      </SeedDraft>
     </DraftLayoutsProvider>
   )
   const view = render(body(options.room ?? room))
