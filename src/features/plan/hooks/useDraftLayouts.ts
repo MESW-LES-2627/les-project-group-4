@@ -17,6 +17,8 @@ export interface DraftLayouts {
   removeItem: (roomId: number, id: string) => void
   replaceItems: (roomId: number, items: PlacedItem[]) => void
   dismissError: (roomId: number) => void
+  /** US-05: drops a deleted room's draft, and stops the catalog adding to it. */
+  forgetRoom: (roomId: number) => void
 }
 
 export const DraftLayoutsContext = createContext<DraftLayouts | null>(null)

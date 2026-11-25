@@ -10,6 +10,7 @@ import { SavedLayouts } from '@/features/rooms/components/saved-layouts/SavedLay
 import { PlacedItemsList } from '@/features/plan/components/PlacedItemsList'
 import { RoomPlan } from '@/features/rooms/components/RoomPlan'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
+import { useRoomLayouts } from '@/features/rooms/hooks/useRoomLayouts'
 import type { ItemCategory } from '@/features/catalog/model/catalog'
 import { formatRoomLocation, resolveRoomLocation } from '@/features/locations/model/location'
 import { formatArea } from '@/features/rooms/model/roomFormat'
@@ -38,6 +39,8 @@ export function RoomDetails({
   const location = resolveRoomLocation(room)
   const { itemsFor, removeItem } = useDraftLayouts()
   const placedItems = itemsFor(room.id)
+  // The saved layouts as shown on this page, so the list and the delete warning agree.
+  const { visible: savedLayouts, markDeleted } = useRoomLayouts(layouts)
 
   return (
     <div className="grid gap-6">
@@ -58,7 +61,7 @@ export function RoomDetails({
             </p>
           ) : null}
         </div>
-        <DeleteRoom room={room} layoutCount={layouts.length} />
+        <DeleteRoom room={room} layoutCount={savedLayouts.length} />
       </header>
 
       {/* Editor: placed items | plan | catalog. On small screens the plan comes first. */}
@@ -108,8 +111,13 @@ export function RoomDetails({
 
       {/* Layouts: the current plan can be saved, and its saved versions live here. */}
       <div className="mt-6">
-        <SavedLayouts room={room} roomId={room.id} layouts={layouts}>
-          <SaveLayoutForm roomId={room.id} items={placedItems} savedLayouts={layouts} />
+        <SavedLayouts
+          room={room}
+          roomId={room.id}
+          layouts={savedLayouts}
+          onLayoutGone={markDeleted}
+        >
+          <SaveLayoutForm roomId={room.id} items={placedItems} savedLayouts={savedLayouts} />
         </SavedLayouts>
       </div>
     </div>

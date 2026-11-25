@@ -16,21 +16,24 @@ import {
   isAlreadyDeleted,
   needsReplaceConfirmation,
   toDraftItems,
-  visibleLayouts,
 } from '@/features/rooms/model/savedLayouts'
 
 interface SavedLayoutsProps {
   room: Room
   roomId: number
-  /** Includes each layout's items, so every card can draw a miniature of the plan. */
+  /**
+   * The layouts to show (without the ones deleted on this page, see useRoomLayouts), with
+   * their items so every card can draw a miniature of the plan.
+   */
   layouts: readonly LayoutWithItems[]
+  /** A layout was deleted here, or turned out to be gone already: it leaves the list. */
+  onLayoutGone: (layoutId: number) => void
   /** The save card, shown in the section header. */
   children?: ReactNode
 }
 
 /** US-14b: the room's saved layouts, with open and delete. */
-export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsProps) {
-  const [deletedIds, setDeletedIds] = useState<ReadonlySet<number>>(new Set())
+export function SavedLayouts({ room, roomId, layouts, onLayoutGone, children }: SavedLayoutsProps) {
   const [confirmingId, setConfirmingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [error, setError] = useState<{ id: number; message: string } | null>(null)
@@ -41,8 +44,6 @@ export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsPr
   const router = useRouter()
   const [, startRefresh] = useTransition()
 
-  const shown = visibleLayouts(layouts, deletedIds)
-
   async function confirmDelete(layout: LayoutSummary) {
     if (deletingId !== null) return
     setDeletingId(layout.id)
@@ -51,7 +52,7 @@ export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsPr
       const result = await deleteLayout(roomId, layout.id)
       if (result.ok || isAlreadyDeleted(result.error)) {
         // AT-5: it leaves the list; the plan is not touched.
-        setDeletedIds((ids) => new Set(ids).add(layout.id))
+        onLayoutGone(layout.id)
         setConfirmingId(null)
         // Reloads the room's layouts, so the save form's "Saved …" confirmation also goes away.
         startRefresh(() => router.refresh())
@@ -93,7 +94,7 @@ export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsPr
       if (failure.missing) {
         // AT-6: the plan is not touched, and the layout leaves the list.
         setNotFound(failure.message)
-        setDeletedIds((ids) => new Set(ids).add(layout.id))
+        onLayoutGone(layout.id)
         startRefresh(() => router.refresh())
         return
       }
@@ -119,7 +120,7 @@ export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsPr
         </Alert>
       ) : null}
 
-      {shown.length === 0 ? (
+      {layouts.length === 0 ? (
         // AT-2
         <p className="rounded-lg border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
           Save this plan to compare arrangements later.
@@ -127,7 +128,7 @@ export function SavedLayouts({ room, roomId, layouts, children }: SavedLayoutsPr
       ) : (
         // AT-1
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {shown.map((layout) => {
+          {layouts.map((layout) => {
             const confirming = confirmingId === layout.id
             const deleting = deletingId === layout.id
             const replacing = replacingId === layout.id
