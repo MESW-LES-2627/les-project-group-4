@@ -37,8 +37,9 @@ export default defineConfig({
     // rejects any tag that is not declared here.
     tags,
     strictTags: true,
-    // Two suites with different jobs: unit tests stay next to the code they
-    // cover, acceptance tests are grouped by story under tests/acceptance/.
+    // Three suites with different jobs: unit tests stay next to the code they
+    // cover, acceptance tests are grouped by story under tests/acceptance/, and
+    // CH-05 component tests (`*.dom.test.tsx`) sit with their story but run in jsdom.
     projects: [
       {
         extends: true,
@@ -53,6 +54,18 @@ export default defineConfig({
         test: {
           name: 'acceptance',
           include: ['tests/acceptance/**/*.test.{ts,tsx}'],
+          // Component tests run once, in the components project below.
+          exclude: ['**/node_modules/**', '**/*.dom.test.tsx'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'components',
+          include: ['tests/acceptance/**/*.dom.test.tsx'],
+          // CH-05: a browser-like DOM for React components. The other projects stay on node.
+          environment: 'jsdom',
+          setupFiles: ['./vitest.setup.ts', './vitest.setup.dom.ts'],
         },
       },
     ],
