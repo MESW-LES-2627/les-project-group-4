@@ -62,6 +62,8 @@ export interface Plan2DProps {
   onSelect?: (id: string | null) => void
   onDropItem?: (item: PlacedItemSource, xCm: number, yCm: number) => void
   onMoveItem?: (id: string, placement: Placement) => void
+  /** US-10: rotate the selected item when it is clicked again without moving. */
+  onRotateItem?: (id: string) => void
 }
 
 export type Plan2DSceneProps = Plan2DProps &
@@ -196,6 +198,7 @@ export function Plan2D({
   onSelect,
   onDropItem,
   onMoveItem,
+  onRotateItem,
 }: Plan2DProps) {
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const widthLabelRef = useRef<HTMLDivElement>(null)
@@ -239,10 +242,15 @@ export function Plan2D({
       if (!commit) return
 
       // A drag is a transient selection: the item is highlighted while it moves,
-      // then the plan is left with nothing selected. A click without movement is
-      // still a normal selection and keeps the item selected.
+      // then the plan is left with nothing selected. A click without movement
+      // either selects the item or, if it is already selected, rotates it in
+      // place (US-10).
       if (!session.moved) {
-        onSelect?.(session.id)
+        if (selectedId === session.id) {
+          onRotateItem?.(session.id)
+        } else {
+          onSelect?.(session.id)
+        }
         return
       }
 
@@ -250,7 +258,7 @@ export function Plan2D({
       onSelect?.(null)
       onMoveItem?.(session.id, session.preview)
     },
-    [onMoveItem, onSelect, setControlsEnabled],
+    [onMoveItem, onRotateItem, onSelect, selectedId, setControlsEnabled],
   )
 
   // While expanded, lock page scrolling and let Escape close the plan.

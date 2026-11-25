@@ -4,7 +4,9 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 import type { Room } from '@/features/rooms/types'
+import { SelectedItemControls } from '@/features/plan/components/SelectedItemControls'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
+import { rotatePlacement } from '@/features/plan/model/manipulation'
 import type { PlacedItemSource } from '@/features/plan/types'
 
 const Plan2D = dynamic(
@@ -41,18 +43,25 @@ export function RoomPlan({ room }: { room: Room }) {
     addItemAt(room.id, room, item, { xCm, yCm, rotationDeg: 0 })
   }
 
-  const caption = selected
-    ? `Selected: ${selected.name} · ${selected.widthCm} × ${selected.depthCm} cm`
-    : items.length === 0
-      ? null
-      : 'Click an item to select it.'
+  function handleRotateItem(id: string) {
+    const item = items.find((item) => item.id === id)
+    if (item === undefined) return
+    updateItemPlacement(
+      room.id,
+      room,
+      id,
+      rotatePlacement(item, item, room),
+    )
+  }
+
+  const hasCaption = selected !== null || items.length > 0
 
   return (
     <figure
       className={
-        caption === null
-          ? 'grid lg:h-full'
-          : 'grid gap-3 lg:h-full lg:grid-rows-[minmax(0,1fr)_auto]'
+        hasCaption
+          ? 'grid gap-3 lg:h-full lg:grid-rows-[minmax(0,1fr)_auto]'
+          : 'grid lg:h-full'
       }
     >
       <div className="relative h-80 min-h-0 w-full overflow-hidden rounded-lg border border-border bg-secondary sm:h-105 lg:h-full">
@@ -66,13 +75,18 @@ export function RoomPlan({ room }: { room: Room }) {
             onMoveItem={(id, placement) =>
               updateItemPlacement(room.id, room, id, placement)
             }
+            onRotateItem={handleRotateItem}
           />
         </div>
       </div>
 
-      {caption !== null ? (
+      {hasCaption ? (
         <figcaption aria-live="polite" className="text-sm text-muted-foreground">
-          {caption}
+          {selected !== null ? (
+            <SelectedItemControls item={selected} />
+          ) : (
+            'Click an item to select it.'
+          )}
         </figcaption>
       ) : null}
     </figure>
