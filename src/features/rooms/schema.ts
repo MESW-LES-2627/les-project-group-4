@@ -11,6 +11,17 @@ const dimensionCm = z
   .positive({ error: 'must be greater than 0' })
   .max(MAX_INT, { error: 'is too large' })
 
+/** US-01 / US-04: the name and dimensions, with the same rules when creating and editing. */
+const roomFields = {
+  name: z
+    .string({ error: 'is required' })
+    .trim()
+    .min(1, { error: 'is required' })
+    .max(ROOM_NAME_MAX, { error: `must be at most ${ROOM_NAME_MAX} characters` }),
+  widthCm: dimensionCm,
+  lengthCm: dimensionCm,
+}
+
 /**
  * US-01: the rules for creating a room, shared by POST /api/rooms and the create-room form.
  * US-15: plus the optional location (see features/locations/schema.ts).
@@ -19,13 +30,7 @@ const dimensionCm = z
 export const createRoomSchema = z
   .object(
     {
-      name: z
-        .string({ error: 'is required' })
-        .trim()
-        .min(1, { error: 'is required' })
-        .max(ROOM_NAME_MAX, { error: `must be at most ${ROOM_NAME_MAX} characters` }),
-      widthCm: dimensionCm,
-      lengthCm: dimensionCm,
+      ...roomFields,
       ...locationFields,
     },
     { error: 'must be a JSON object' },
@@ -33,6 +38,14 @@ export const createRoomSchema = z
   .superRefine(checkLocation)
 
 export type CreateRoomInput = z.infer<typeof createRoomSchema>
+
+/**
+ * US-04: the body of PATCH /api/rooms/[id]. The edit form always sends the name and both
+ * dimensions, with the same rules as create (AT-2). The location is not edited here.
+ */
+export const updateRoomSchema = z.object(roomFields, { error: 'must be a JSON object' })
+
+export type UpdateRoomInput = z.infer<typeof updateRoomSchema>
 
 /** US-03: a room id from the URL. Only positive whole numbers that fit in a Postgres INTEGER. */
 export const roomIdSchema = z

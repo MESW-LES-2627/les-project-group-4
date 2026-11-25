@@ -1,9 +1,14 @@
 'use client'
 
+import { useState } from 'react'
+import { Pencil } from 'lucide-react'
+
 import type { LayoutWithItems, Room } from '@/features/rooms/types'
 import type { CatalogItem } from '@/features/catalog/types'
 import { RoomCatalog } from '@/features/catalog/components/RoomCatalog'
+import { Button } from '@/components/ui/button'
 import { DeleteRoom } from '@/features/rooms/components/DeleteRoom'
+import { EditRoomForm } from '@/features/rooms/components/EditRoomForm'
 import { RegisterCurrentRoom } from '@/features/rooms/components/RegisterCurrentRoom'
 import { SaveLayoutForm } from '@/features/rooms/components/saved-layouts/SaveLayoutForm'
 import { SavedLayouts } from '@/features/rooms/components/saved-layouts/SavedLayouts'
@@ -17,7 +22,7 @@ import { COORDINATE_DECIMALS } from '@/features/locations/schema'
 
 /**
  * US-03: one room's details, including the 2D plan. US-15: with its saved location.
- * US-05: the header has the delete action.
+ * US-04 / US-05: the header has the edit and delete actions.
  * US-09: the placed items, the plan and the catalog form a three-panel editor.
  * US-13b / US-14b: the layouts bar underneath saves the current plan and lists
  * the room's saved layouts.
@@ -38,6 +43,7 @@ export function RoomDetails({
   const location = resolveRoomLocation(room)
   const { itemsFor, removeItem } = useDraftLayouts()
   const placedItems = itemsFor(room.id)
+  const [editing, setEditing] = useState(false)
 
   return (
     <div className="grid gap-6">
@@ -58,8 +64,25 @@ export function RoomDetails({
             </p>
           ) : null}
         </div>
-        <DeleteRoom room={room} layoutCount={layouts.length} />
+        {editing ? null : (
+          <div className="flex flex-wrap items-start gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(true)}>
+              <Pencil aria-hidden="true" />
+              Edit room
+            </Button>
+            <DeleteRoom room={room} layoutCount={layouts.length} />
+          </div>
+        )}
       </header>
+
+      {editing ? (
+        <EditRoomForm
+          room={room}
+          placedItems={placedItems}
+          onSaved={() => setEditing(false)}
+          onCancel={() => setEditing(false)}
+        />
+      ) : null}
 
       {/* Editor: placed items | plan | catalog. On small screens the plan comes first. */}
       <div className="grid gap-6 lg:h-[30rem] lg:grid-rows-[minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)_16rem] xl:h-[34rem] xl:grid-cols-[18rem_minmax(0,1fr)_18rem]">

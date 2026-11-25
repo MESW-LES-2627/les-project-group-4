@@ -27,8 +27,9 @@ export interface RoomFormFieldProps {
   inputRef: Ref<HTMLInputElement>
 }
 
-export function useRoomForm() {
-  const [values, setValues] = useState<RoomFormValues>(EMPTY_VALUES)
+/** US-01; US-04 passes the room's current values so the edit form starts pre-filled. */
+export function useRoomForm(initialValues: RoomFormValues = EMPTY_VALUES) {
+  const [values, setValues] = useState<RoomFormValues>(initialValues)
   const [touched, setTouched] = useState<TouchedFields>({})
   const [submitted, setSubmitted] = useState(false)
   const [serverErrors, setServerErrors] = useState<RoomFormErrors>({})
@@ -113,7 +114,7 @@ export function useRoomForm() {
   }
 
   function reset() {
-    setValues(EMPTY_VALUES)
+    setValues(initialValues)
     setTouched({})
     setSubmitted(false)
     setServerErrors({})

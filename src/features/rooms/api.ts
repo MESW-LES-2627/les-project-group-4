@@ -5,12 +5,21 @@ import type {
   CreateRoomRequest,
   LayoutDetails,
   Room,
+  UpdateRoomRequest,
 } from './types'
 
 /** US-01: creates a room. Resolves with the created room (including its id) or an error. */
 export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
   return request<Room>('/api/rooms', {
     method: 'POST',
+    body: JSON.stringify(room),
+  })
+}
+
+/** US-04: saves a room's new name and dimensions. Resolves with the updated room, or an error (400 with field errors, 404). */
+export function updateRoom(roomId: number, room: UpdateRoomRequest): Promise<ApiResult<Room>> {
+  return request<Room>(`/api/rooms/${roomId}`, {
+    method: 'PATCH',
     body: JSON.stringify(room),
   })
 }
