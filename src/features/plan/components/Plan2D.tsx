@@ -22,9 +22,9 @@ import { Plane, Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
 import { Button } from '@/components/ui/button'
+import { usePlanDrag } from '@/features/plan/hooks/usePlanDrag'
 import type { Placement, Point, RoomSize } from '@/features/plan/model/geometry'
 import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
-import { dragPlacement } from '@/features/plan/model/manipulation'
 import type { PlacedItemSource } from '@/features/plan/types'
 
 import { DimensionLabels, DimensionProjector } from './DimensionLabels'
@@ -44,16 +44,6 @@ import { RoomScene, type RoomSceneProps } from './scene/RoomScene'
 
 /** The plan floor: y = 0 in R3F scene space. */
 const FLOOR_PLANE = new Plane(new Vector3(0, 1, 0), 0)
-
-interface DragSession {
-  id: string
-  pointerId: number
-  /** Where the pointer grabbed the item, relative to its centre, in cm. */
-  grabOffsetCm: Point
-  startPlacement: Placement
-  preview: Placement
-  moved: boolean
-}
 
 export interface Plan2DProps {
   room: RoomSize
@@ -209,117 +199,16 @@ export function Plan2D({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasStateRef = useRef<RootState | null>(null)
   const dragCounterRef = useRef(0)
-  const dragRef = useRef<DragSession | null>(null)
   const floorPointRef = useRef(new Vector3())
-  const suppressMissedRef = useRef(false)
   const [labelRefs] = useState(() => new Map<string, HTMLDivElement | null>())
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
-  const [drag, setDrag] = useState<DragSession | null>(null)
-
-  const displayItems =
-    drag === null
-      ? items
-      : items.map((item) =>
-          item.id === drag.id ? { ...item, ...drag.preview } : item,
-        )
 
   const setControlsEnabled = useCallback((enabled: boolean) => {
     const controls = controlsRef.current
     if (controls) controls.enabled = enabled
   }, [])
-
-  const finishDrag = useCallback(
-    (commit: boolean) => {
-      const session = dragRef.current
-      if (session === null) return
-
-      dragRef.current = null
-      setDrag(null)
-      setControlsEnabled(true)
-
-      if (!commit) return
-
-      // A drag is a transient selection: the item is highlighted while it moves,
-      // then the plan is left with nothing selected. A click without movement
-      // either selects the item or, if it is already selected, rotates it in
-      // place (US-10).
-      if (!session.moved) {
-        if (selectedId === session.id) {
-          onRotateItem?.(session.id)
-        } else {
-          onSelect?.(session.id)
-        }
-        return
-      }
-
-      suppressMissedRef.current = true
-      onSelect?.(null)
-      onMoveItem?.(session.id, session.preview)
-    },
-    [onMoveItem, onRotateItem, onSelect, selectedId, setControlsEnabled],
-  )
-
-  // While expanded, lock page scrolling and let Escape close the plan.
-  useEffect(() => {
-    if (!isFullscreen) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setIsFullscreen(false)
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-    }
-  }, [isFullscreen])
-
-  // End the drag even when R3F's pointerup misses the item (for example, the
-  // cursor is released outside the canvas). Pointer capture normally forwards
-  // the event, but this keeps the drag from surviving a lost pointerup.
-  useEffect(() => {
-    const pointerId = drag?.pointerId
-    if (pointerId === undefined) return
-
-    function handlePointerUp(event: PointerEvent) {
-      if (event.pointerId === pointerId) finishDrag(true)
-    }
-
-    function handlePointerCancel(event: PointerEvent) {
-      if (event.pointerId === pointerId) finishDrag(false)
-    }
-
-    window.addEventListener('pointerup', handlePointerUp)
-    window.addEventListener('pointercancel', handlePointerCancel)
-    return () => {
-      window.removeEventListener('pointerup', handlePointerUp)
-      window.removeEventListener('pointercancel', handlePointerCancel)
-    }
-  }, [drag?.pointerId, finishDrag])
-
-  function resetView() {
-    setResetToken((token) => token + 1)
-  }
-
-  function toggleFullscreen() {
-    // Expanding changes the viewport aspect, so start from the fitted view.
-    if (!isFullscreen) resetView()
-    setIsFullscreen(!isFullscreen)
-  }
-
-  function zoom(direction: ZoomDirection) {
-    const controls = controlsRef.current
-    if (!controls) return
-
-    const camera = controls.object as OrthographicCameraImpl
-    camera.zoom = stepZoom(camera.zoom, direction)
-    camera.updateProjectionMatrix()
-  }
 
   /** The pointer ray's intersection with the floor, in room centimetres. */
   function roomPoint(event: ThreeEvent<PointerEvent>): Point | null {
@@ -345,112 +234,87 @@ export function Plan2D({
     }
   }
 
-  function handleItemPointerDown(
-    item: PlacedItemData,
-    event: ThreeEvent<PointerEvent>,
-  ) {
-    if (!onMoveItem || dragRef.current !== null || event.button !== 0) return
+  const planDrag = usePlanDrag({
+    room,
+    items,
+    selectedId,
+    onSelect,
+    onMoveItem,
+    onRotateItem,
+    onDraggingChange: (dragging) => setControlsEnabled(!dragging),
+    roomPoint,
+    capturePointer,
+    releasePointer,
+  })
+  const {
+    displayItems,
+    pointerId: dragPointerId,
+    finishDrag,
+    handleItemPointerDown,
+    handleItemPointerMove,
+    handleItemPointerUp,
+    handleItemPointerCancel,
+    handlePointerMissed,
+    resetPointerMissed,
+  } = planDrag
 
-    const point = roomPoint(event)
-    if (point === null) return
+  // While expanded, lock page scrolling and let Escape close the plan.
+  useEffect(() => {
+    if (!isFullscreen) return
 
-    event.stopPropagation()
-    setControlsEnabled(false)
-    capturePointer(event)
-    onSelect?.(item.id)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
 
-    const startPlacement: Placement = {
-      xCm: item.xCm,
-      yCm: item.yCm,
-      rotationDeg: item.rotationDeg,
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsFullscreen(false)
     }
-    const session: DragSession = {
-      id: item.id,
-      pointerId: event.pointerId,
-      grabOffsetCm: { x: item.xCm - point.x, y: item.yCm - point.y },
-      startPlacement,
-      preview: startPlacement,
-      moved: false,
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
     }
-    dragRef.current = session
-    setDrag(session)
+  }, [isFullscreen])
+
+  // End the drag even when R3F's pointerup misses the item (for example, the
+  // cursor is released outside the canvas). Pointer capture normally forwards
+  // the event, but this keeps the drag from surviving a lost pointerup.
+  useEffect(() => {
+    if (dragPointerId === null) return
+
+    function handlePointerUp(event: PointerEvent) {
+      if (event.pointerId === dragPointerId) finishDrag(true)
+    }
+
+    function handlePointerCancel(event: PointerEvent) {
+      if (event.pointerId === dragPointerId) finishDrag(false)
+    }
+
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerCancel)
+    return () => {
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerCancel)
+    }
+  }, [dragPointerId, finishDrag])
+
+  function resetView() {
+    setResetToken((token) => token + 1)
   }
 
-  function handleItemPointerMove(
-    item: PlacedItemData,
-    event: ThreeEvent<PointerEvent>,
-  ) {
-    const session = dragRef.current
-    if (
-      session === null ||
-      session.pointerId !== event.pointerId ||
-      session.id !== item.id
-    ) {
-      return
-    }
-
-    const point = roomPoint(event)
-    if (point === null) return
-
-    event.stopPropagation()
-    const preview = dragPlacement(
-      item,
-      session.startPlacement,
-      point,
-      session.grabOffsetCm,
-      room,
-      0,
-    )
-    const moved =
-      session.moved ||
-      preview.xCm !== session.startPlacement.xCm ||
-      preview.yCm !== session.startPlacement.yCm
-    const next = { ...session, preview, moved }
-    dragRef.current = next
-    setDrag(next)
+  function toggleFullscreen() {
+    // Expanding changes the viewport aspect, so start from the fitted view.
+    if (!isFullscreen) resetView()
+    setIsFullscreen(!isFullscreen)
   }
 
-  function handleItemPointerUp(
-    item: PlacedItemData,
-    event: ThreeEvent<PointerEvent>,
-  ) {
-    const session = dragRef.current
-    if (
-      session === null ||
-      session.pointerId !== event.pointerId ||
-      session.id !== item.id
-    ) {
-      return
-    }
+  function zoom(direction: ZoomDirection) {
+    const controls = controlsRef.current
+    if (!controls) return
 
-    event.stopPropagation()
-    releasePointer(event)
-    finishDrag(true)
-  }
-
-  function handleItemPointerCancel(
-    item: PlacedItemData,
-    event: ThreeEvent<PointerEvent>,
-  ) {
-    const session = dragRef.current
-    if (
-      session === null ||
-      session.pointerId !== event.pointerId ||
-      session.id !== item.id
-    ) {
-      return
-    }
-
-    releasePointer(event)
-    finishDrag(false)
-  }
-
-  function handlePointerMissed() {
-    if (suppressMissedRef.current) {
-      suppressMissedRef.current = false
-      return
-    }
-    onSelect?.(null)
+    const camera = controls.object as OrthographicCameraImpl
+    camera.zoom = stepZoom(camera.zoom, direction)
+    camera.updateProjectionMatrix()
   }
 
   function parseDragItem(dataTransfer: DataTransfer): PlacedItemSource | null {
@@ -516,9 +380,7 @@ export function Plan2D({
       onDragLeave={onDropItem ? handleDragLeave : undefined}
       onDragOver={onDropItem ? handleDragOver : undefined}
       onDrop={onDropItem ? handleDrop : undefined}
-      onPointerDownCapture={() => {
-        suppressMissedRef.current = false
-      }}
+      onPointerDownCapture={resetPointerMissed}
     >
       <PlanGrid gridRef={gridRef} />
 
