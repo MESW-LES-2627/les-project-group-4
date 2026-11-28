@@ -17,11 +17,22 @@ export const ITEM_HEIGHT_M = 0.02
 
 const CLICK_TOLERANCE_PX = 4
 
+/** US-10: a pointer event on one placed item, with the item it belongs to. */
+export type ItemPointerHandler = (
+  item: PlacedItemData,
+  event: ThreeEvent<PointerEvent>,
+) => void
+
 export interface PlacedItemProps {
   item: PlacedItemData
   height?: number // box height in metres (2D plan uses a thin footprint)
   selected?: boolean
   onSelect?: (id: string) => void
+  /** US-10: pointer handlers used by the plan to drag the item. */
+  onPointerDown?: ItemPointerHandler
+  onPointerMove?: ItemPointerHandler
+  onPointerUp?: ItemPointerHandler
+  onPointerCancel?: ItemPointerHandler
   /** Optional label rendered above the footprint (2D uses an HTML label). */
   label?: ReactNode
 }
@@ -34,6 +45,10 @@ export function PlacedItem({
   height = ITEM_HEIGHT_M,
   selected = false,
   onSelect,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   label,
 }: PlacedItemProps) {
   const { x, z, rotationY } = toScene(item)
@@ -76,6 +91,16 @@ export function PlacedItem({
         name={`placed-item-mesh-${item.id}`}
         position={[0, height / 2, 0]}
         onClick={onSelect ? handleClick : undefined}
+        onPointerDown={
+          onPointerDown ? (event) => onPointerDown(item, event) : undefined
+        }
+        onPointerMove={
+          onPointerMove ? (event) => onPointerMove(item, event) : undefined
+        }
+        onPointerUp={onPointerUp ? (event) => onPointerUp(item, event) : undefined}
+        onPointerCancel={
+          onPointerCancel ? (event) => onPointerCancel(item, event) : undefined
+        }
       >
         <boxGeometry args={[width, height, depth]} />
         <meshBasicMaterial

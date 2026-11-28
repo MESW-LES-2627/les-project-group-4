@@ -10,6 +10,7 @@
 import { boundingBox, isInsideRoom, type Placement, type RoomSize } from '@/features/plan/model/geometry'
 import { toPlacedItem } from '@/features/plan/model/layout'
 import type { PlacedItem } from '@/features/plan/model/layout'
+import { clampPlacementToRoom } from '@/features/plan/model/manipulation'
 import type { PlacedItemSource } from '@/features/plan/types'
 import {
   DOES_NOT_FIT_MESSAGE,
@@ -36,6 +37,7 @@ export const EMPTY_DRAFT_STATE: DraftState = { byRoom: {}, error: null }
 export type DraftAction =
   | { type: 'add'; roomId: number; room: RoomSize; id: string; item: PlacedItemSource }
   | { type: 'add-at'; roomId: number; room: RoomSize; id: string; item: PlacedItemSource; placement: Placement }
+  | { type: 'update-placement'; roomId: number; room: RoomSize; id: string; placement: Placement }
   | { type: 'remove'; roomId: number; id: string }
   | { type: 'replace'; roomId: number; items: PlacedItem[] }
   | { type: 'dismiss-error'; roomId: number }
@@ -89,6 +91,35 @@ export function draftReducer(state: DraftState, action: DraftAction): DraftState
         byRoom: {
           ...state.byRoom,
           [action.roomId]: [...items, toPlacedItem(action.item, action.id, placement)],
+        },
+        error: withoutError(state, action.roomId),
+      }
+    }
+    case 'update-placement': {
+      const items = state.byRoom[action.roomId]
+      if (items === undefined) return state
+
+      const item = items.find((candidate) => candidate.id === action.id)
+      if (item === undefined) return state
+
+      // Clamping keeps drags inside the walls. A rotation whose turned footprint
+      // cannot fit does not have a valid placement, so refuse it instead of
+      // storing it outside the room (US-10 AT-4).
+      const placement = clampPlacementToRoom(item, action.placement, action.room)
+      if (!isInsideRoom(item, placement, action.room)) {
+        return {
+          ...state,
+          error: { roomId: action.roomId, message: DOES_NOT_FIT_MESSAGE },
+        }
+      }
+
+      return {
+        ...state,
+        byRoom: {
+          ...state.byRoom,
+          [action.roomId]: items.map((candidate) =>
+            candidate.id === action.id ? { ...candidate, ...placement } : candidate,
+          ),
         },
         error: withoutError(state, action.roomId),
       }

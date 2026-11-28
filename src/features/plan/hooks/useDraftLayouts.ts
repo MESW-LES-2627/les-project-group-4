@@ -14,6 +14,7 @@ export interface DraftLayouts {
   errorFor: (roomId: number) => string | null
   addItem: (roomId: number, room: RoomSize, item: PlacedItemSource) => void
   addItemAt: (roomId: number, room: RoomSize, item: PlacedItemSource, placement: Placement) => void
+  updateItemPlacement: (roomId: number, room: RoomSize, id: string, placement: Placement) => void
   removeItem: (roomId: number, id: string) => void
   replaceItems: (roomId: number, items: PlacedItem[]) => void
   dismissError: (roomId: number) => void

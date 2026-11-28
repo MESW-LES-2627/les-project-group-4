@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -9,7 +10,7 @@ import {
   type RefObject,
 } from 'react'
 import { MapControls, OrthographicCamera } from '@react-three/drei'
-import { Canvas, useThree, type RootState } from '@react-three/fiber'
+import { Canvas, useThree, type RootState, type ThreeEvent } from '@react-three/fiber'
 import {
   Maximize2,
   Minimize2,
@@ -17,11 +18,12 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react'
-import { Vector3 } from 'three'
+import { Plane, Vector3 } from 'three'
 import type { OrthographicCamera as OrthographicCameraImpl } from 'three'
 
 import { Button } from '@/components/ui/button'
-import type { RoomSize } from '@/features/plan/model/geometry'
+import { usePlanDrag } from '@/features/plan/hooks/usePlanDrag'
+import type { Placement, Point, RoomSize } from '@/features/plan/model/geometry'
 import type { PlacedItem as PlacedItemData } from '@/features/plan/model/layout'
 import type { PlacedItemSource } from '@/features/plan/types'
 
@@ -40,16 +42,29 @@ import {
 } from '@/features/plan/model/ortho'
 import { RoomScene, type RoomSceneProps } from './scene/RoomScene'
 
+/** The plan floor: y = 0 in R3F scene space. */
+const FLOOR_PLANE = new Plane(new Vector3(0, 1, 0), 0)
+
 export interface Plan2DProps {
   room: RoomSize
   items?: PlacedItemData[]
   selectedId?: string | null
   onSelect?: (id: string | null) => void
   onDropItem?: (item: PlacedItemSource, xCm: number, yCm: number) => void
+  onMoveItem?: (id: string, placement: Placement) => void
+  /** US-10: rotate the selected item when it is clicked again without moving. */
+  onRotateItem?: (id: string) => void
 }
 
 export type Plan2DSceneProps = Plan2DProps &
-  Pick<RoomSceneProps, 'renderLabel'>
+  Pick<
+    RoomSceneProps,
+    | 'renderLabel'
+    | 'onItemPointerDown'
+    | 'onItemPointerMove'
+    | 'onItemPointerUp'
+    | 'onItemPointerCancel'
+  >
 
 /**
  * The R3F subtree Plan2D mounts inside its Canvas. It is exported separately
@@ -60,6 +75,10 @@ export function Plan2DScene({
   items = [],
   selectedId = null,
   onSelect,
+  onItemPointerDown,
+  onItemPointerMove,
+  onItemPointerUp,
+  onItemPointerCancel,
   renderLabel,
 }: Plan2DSceneProps) {
   return (
@@ -68,6 +87,10 @@ export function Plan2DScene({
       items={items}
       selectedId={selectedId}
       onSelect={onSelect}
+      onItemPointerDown={onItemPointerDown}
+      onItemPointerMove={onItemPointerMove}
+      onItemPointerUp={onItemPointerUp}
+      onItemPointerCancel={onItemPointerCancel}
       renderLabel={renderLabel}
     />
   )
@@ -164,6 +187,8 @@ export function Plan2D({
   selectedId = null,
   onSelect,
   onDropItem,
+  onMoveItem,
+  onRotateItem,
 }: Plan2DProps) {
   const controlsRef = useRef<ComponentRef<typeof MapControls>>(null)
   const widthLabelRef = useRef<HTMLDivElement>(null)
@@ -174,10 +199,64 @@ export function Plan2D({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasStateRef = useRef<RootState | null>(null)
   const dragCounterRef = useRef(0)
+  const floorPointRef = useRef(new Vector3())
   const [labelRefs] = useState(() => new Map<string, HTMLDivElement | null>())
   const [resetToken, setResetToken] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
+
+  const setControlsEnabled = useCallback((enabled: boolean) => {
+    const controls = controlsRef.current
+    if (controls) controls.enabled = enabled
+  }, [])
+
+  /** The pointer ray's intersection with the floor, in room centimetres. */
+  function roomPoint(event: ThreeEvent<PointerEvent>): Point | null {
+    const hit = event.ray.intersectPlane(FLOOR_PLANE, floorPointRef.current)
+    if (hit === null) return null
+    return { x: hit.x * 100, y: hit.z * 100 }
+  }
+
+  function capturePointer(event: ThreeEvent<PointerEvent>) {
+    const target = event.target as unknown as {
+      setPointerCapture(id: number): void
+    }
+    target.setPointerCapture(event.pointerId)
+  }
+
+  function releasePointer(event: ThreeEvent<PointerEvent>) {
+    const target = event.target as unknown as {
+      hasPointerCapture(id: number): boolean
+      releasePointerCapture(id: number): void
+    }
+    if (target.hasPointerCapture(event.pointerId)) {
+      target.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const planDrag = usePlanDrag({
+    room,
+    items,
+    selectedId,
+    onSelect,
+    onMoveItem,
+    onRotateItem,
+    onDraggingChange: (dragging) => setControlsEnabled(!dragging),
+    roomPoint,
+    capturePointer,
+    releasePointer,
+  })
+  const {
+    displayItems,
+    pointerId: dragPointerId,
+    finishDrag,
+    handleItemPointerDown,
+    handleItemPointerMove,
+    handleItemPointerUp,
+    handleItemPointerCancel,
+    handlePointerMissed,
+    resetPointerMissed,
+  } = planDrag
 
   // While expanded, lock page scrolling and let Escape close the plan.
   useEffect(() => {
@@ -196,6 +275,28 @@ export function Plan2D({
       document.body.style.overflow = previousOverflow
     }
   }, [isFullscreen])
+
+  // End the drag even when R3F's pointerup misses the item (for example, the
+  // cursor is released outside the canvas). Pointer capture normally forwards
+  // the event, but this keeps the drag from surviving a lost pointerup.
+  useEffect(() => {
+    if (dragPointerId === null) return
+
+    function handlePointerUp(event: PointerEvent) {
+      if (event.pointerId === dragPointerId) finishDrag(true)
+    }
+
+    function handlePointerCancel(event: PointerEvent) {
+      if (event.pointerId === dragPointerId) finishDrag(false)
+    }
+
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerCancel)
+    return () => {
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerCancel)
+    }
+  }, [dragPointerId, finishDrag])
 
   function resetView() {
     setResetToken((token) => token + 1)
@@ -279,6 +380,7 @@ export function Plan2D({
       onDragLeave={onDropItem ? handleDragLeave : undefined}
       onDragOver={onDropItem ? handleDragOver : undefined}
       onDrop={onDropItem ? handleDrop : undefined}
+      onPointerDownCapture={resetPointerMissed}
     >
       <PlanGrid gridRef={gridRef} />
 
@@ -287,7 +389,7 @@ export function Plan2D({
         flat
         dpr={[1, 2]}
         gl={{ antialias: true }}
-        onPointerMissed={onSelect ? () => onSelect(null) : undefined}
+        onPointerMissed={onSelect ? handlePointerMissed : undefined}
         // Double-clicking anywhere on the plan is a quick "fit to room".
         onDoubleClick={resetView}
         style={{ touchAction: 'none' }}
@@ -305,11 +407,15 @@ export function Plan2D({
         <PlanGridProjector gridRef={gridRef} />
         <Plan2DScene
           room={room}
-          items={items}
+          items={displayItems}
           selectedId={selectedId}
           onSelect={onSelect}
+          onItemPointerDown={handleItemPointerDown}
+          onItemPointerMove={handleItemPointerMove}
+          onItemPointerUp={handleItemPointerUp}
+          onItemPointerCancel={handleItemPointerCancel}
         />
-        <ItemLabelProjector items={items} labelRefs={labelRefs} />
+        <ItemLabelProjector items={displayItems} labelRefs={labelRefs} />
         <PlanControls
           room={room}
           controlsRef={controlsRef}
@@ -324,7 +430,7 @@ export function Plan2D({
       />
       <ScaleBar lineRef={scaleLineRef} textRef={scaleTextRef} />
       <ItemLabels
-        items={items}
+        items={displayItems}
         selectedId={selectedId}
         labelRefs={labelRefs}
       />
