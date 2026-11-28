@@ -16,18 +16,18 @@ import {
   type Point,
   type RoomSize,
   type Size,
-} from "@/features/plan/model/geometry";
+} from '@/features/plan/model/geometry'
 
 /** Dragging snaps the footprint centre to whole centimetres. */
-export const DRAG_SNAP_CM = 1;
+export const DRAG_SNAP_CM = 1
 
 /** One rotate action turns the footprint a quarter turn clockwise. */
-export const ROTATION_STEP_DEG = 90;
+export const ROTATION_STEP_DEG = 90
 
 /** Keeps near-integer results integral when a rotated box adds float noise. */
 function clean(value: number): number {
-  const rounded = Math.round(value);
-  return Math.abs(value - rounded) <= EPSILON_CM ? rounded : value;
+  const rounded = Math.round(value)
+  return Math.abs(value - rounded) <= EPSILON_CM ? rounded : value
 }
 
 /**
@@ -42,18 +42,18 @@ function clampAxis(
   snapCm: number,
 ): number {
   if (2 * halfExtentCm > roomExtentCm + EPSILON_CM) {
-    return roomExtentCm / 2;
+    return roomExtentCm / 2
   }
 
   // min/max because an exact fit can produce 50.00000000000001 and 49.99…
-  const min = Math.min(halfExtentCm, roomExtentCm - halfExtentCm);
-  const max = Math.max(halfExtentCm, roomExtentCm - halfExtentCm);
+  const min = Math.min(halfExtentCm, roomExtentCm - halfExtentCm)
+  const max = Math.max(halfExtentCm, roomExtentCm - halfExtentCm)
 
-  const factor = snapCm > 0 ? snapCm : 1;
+  const factor = snapCm > 0 ? snapCm : 1
   const snapped = snapCm > 0
     ? Math.round(centreCm / factor) * factor
-    : centreCm;
-  return clean(Math.min(max, Math.max(min, snapped)));
+    : centreCm
+  return clean(Math.min(max, Math.max(min, snapped)))
 }
 
 /**
@@ -67,12 +67,12 @@ export function clampPlacementToRoom(
   room: RoomSize,
   snapCm = DRAG_SNAP_CM,
 ): Placement {
-  const box = boundingBox(size, placement);
+  const box = boundingBox(size, placement)
   return {
     ...placement,
     xCm: clampAxis(placement.xCm, (box.maxX - box.minX) / 2, room.widthCm, snapCm),
     yCm: clampAxis(placement.yCm, (box.maxY - box.minY) / 2, room.lengthCm, snapCm),
-  };
+  }
 }
 
 /**
@@ -99,7 +99,7 @@ export function dragPlacement(
     },
     room,
     snapCm,
-  );
+  )
 }
 
 /**
@@ -120,5 +120,5 @@ export function rotatePlacement(
       rotationDeg: normalizeRotation(placement.rotationDeg + stepDeg),
     },
     room,
-  );
+  )
 }
