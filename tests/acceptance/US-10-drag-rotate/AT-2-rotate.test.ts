@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { RoomSize } from '@/features/plan/model/geometry'
+import { boundingBox } from '@/features/plan/model/geometry'
 import { rotatePlacement } from '@/features/plan/model/manipulation'
 
 const room: RoomSize = { widthCm: 300, lengthCm: 200 }
@@ -31,11 +32,14 @@ describe(
 
     it('swaps the effective width and depth at 90°', () => {
       const turned = rotatePlacement(sofa, placement(150, 100, 0), room)
+      const box = boundingBox(sofa, turned)
 
-      // The centre stays put in a roomy plan; only the angle changes.
+      // The centre stays put; the footprint now spans 50 cm in x and 100 cm in y.
       expect(turned.xCm).toBe(150)
       expect(turned.yCm).toBe(100)
       expect(turned.rotationDeg).toBe(90)
+      expect(box.maxX - box.minX).toBe(50)
+      expect(box.maxY - box.minY).toBe(100)
     })
   },
 )

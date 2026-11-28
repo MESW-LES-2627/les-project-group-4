@@ -33,12 +33,13 @@ describe(
         roomId: 1,
         room,
         id: 'sofa-1',
-        placement: { xCm: 150, yCm: 100, rotationDeg: 90 },
+        // Move and rotate together, so storing only the angle cannot pass.
+        placement: { xCm: 80, yCm: 60, rotationDeg: 90 },
       })
 
       expect(next.byRoom[1]?.[0]).toMatchObject({
-        xCm: 150,
-        yCm: 100,
+        xCm: 80,
+        yCm: 60,
         rotationDeg: 90,
       })
     })
