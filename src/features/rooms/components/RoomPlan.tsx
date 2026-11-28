@@ -4,7 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 import type { Room } from '@/features/rooms/types'
-import { SelectedItemControls } from '@/features/plan/components/SelectedItemControls'
+import { SelectedItemCaption } from '@/features/plan/components/SelectedItemCaption'
 import { useDraftLayouts } from '@/features/plan/hooks/useDraftLayouts'
 import { rotatePlacement } from '@/features/plan/model/manipulation'
 import type { PlacedItemSource } from '@/features/plan/types'
@@ -54,7 +54,8 @@ export function RoomPlan({ room }: { room: Room }) {
     )
   }
 
-  const hasCaption = selected !== null || items.length > 0
+  // A selection implies there are items, so the caption needs either.
+  const hasCaption = items.length > 0
 
   return (
     <figure
@@ -83,7 +84,7 @@ export function RoomPlan({ room }: { room: Room }) {
       {hasCaption ? (
         <figcaption aria-live="polite" className="text-sm text-muted-foreground">
           {selected !== null ? (
-            <SelectedItemControls item={selected} />
+            <SelectedItemCaption item={selected} />
           ) : (
             'Click an item to select it.'
           )}
