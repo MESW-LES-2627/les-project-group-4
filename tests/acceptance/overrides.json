@@ -24,8 +24,9 @@
     "note": "the renderer AT is US-06a/AT-5"
   },
   "US-06b/AT-5": {
-    "status": "deferred",
-    "note": "item-vs-item overlap is US-11"
+    "status": "covered-by",
+    "by": "US-11a",
+    "note": "item-vs-item overlap at any rotation is US-11a/AT-1 and AT-4"
   },
   "US-06b/AT-7": {
     "status": "deferred",
@@ -173,6 +174,31 @@
     "status": "covered-by",
     "by": "US-14b",
     "note": "the list AT is US-14b/AT-5 (cancelling keeps it)"
+  },
+  "US-11/AT-1": {
+    "status": "covered-by",
+    "by": "US-11b",
+    "note": "the highlight AT is US-11b/AT-1; the overlap model is US-11a/AT-1"
+  },
+  "US-11/AT-2": {
+    "status": "covered-by",
+    "by": "US-11b",
+    "note": "the highlight AT is US-11b/AT-2; the model is US-11a/AT-2 and AT-3"
+  },
+  "US-11/AT-3": {
+    "status": "covered-by",
+    "by": "US-11b",
+    "note": "the highlight AT is US-11b/AT-3 (needs US-10 drag)"
+  },
+  "US-11/AT-4": {
+    "status": "covered-by",
+    "by": "US-11a",
+    "note": "the SAT model AT is US-11a/AT-4"
+  },
+  "US-11/AT-5": {
+    "status": "covered-by",
+    "by": "US-11a",
+    "note": "the model AT is US-11a/AT-5; the plan shows it in US-11b/AT-4"
   },
   "US-13b/AT-2": {
     "status": "manual",

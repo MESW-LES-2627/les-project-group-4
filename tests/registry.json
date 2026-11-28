@@ -663,6 +663,54 @@
         }
       ]
     },
+    "US-11a": {
+      "issue": 97,
+      "title": "Collision detection model",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Overlap"
+        },
+        {
+          "id": "AT-2",
+          "title": "No overlap"
+        },
+        {
+          "id": "AT-3",
+          "title": "Touching"
+        },
+        {
+          "id": "AT-4",
+          "title": "Rotated rectangles"
+        },
+        {
+          "id": "AT-5",
+          "title": "Out of bounds"
+        }
+      ]
+    },
+    "US-11b": {
+      "issue": 98,
+      "title": "Highlight collisions on the plan",
+      "ats": [
+        {
+          "id": "AT-1",
+          "title": "Highlight"
+        },
+        {
+          "id": "AT-2",
+          "title": "Normal colour"
+        },
+        {
+          "id": "AT-3",
+          "title": "Resolve"
+        },
+        {
+          "id": "AT-4",
+          "title": "Invalid"
+        }
+      ]
+    },
     "US-12": {
       "issue": 34,
       "title": "Running total cost of placed items",

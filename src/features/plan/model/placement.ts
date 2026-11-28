@@ -1,11 +1,12 @@
 /**
  * US-09 — default placement: shelf-pack new items against the top wall, left to
  * right, wrapping to the next row; upright (0°) first, then 90°. Coordinates
- * and the centre-based contract are in src/lib/geometry/plan.ts.
+ * and the centre-based contract are in ./geometry.ts.
  *
  * Candidates are the walls plus the bottom/right edges of existing items; the
  * first free spot wins (margin 0, touching allowed). Existing items are never
- * moved. Overlap uses AABBs, exact at 0°/90°; SAT is US-11.
+ * moved. Overlap here uses AABBs, which is exact because new items are only
+ * placed at 0°/90°; exact overlap at any angle (SAT) is in ./collision.ts (US-11a).
  */
 
 import { EPSILON_CM, boundingBox, isInsideRoom } from '@/features/plan/model/geometry'
