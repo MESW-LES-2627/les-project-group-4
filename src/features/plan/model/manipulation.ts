@@ -3,8 +3,9 @@
  *
  * Positions stay in room centimetres and use the geometry contract in
  * geometry.ts: (xCm, yCm) is the footprint centre and rotationDeg turns
- * clockwise. Dragging and rotating both end in clampPlacementToRoom, so an
- * item can never be committed outside the room (AT-4).
+ * clockwise. Dragging and rotating both end in clampPlacementToRoom, and the
+ * draft reducer refuses a placement that still does not fit, so an item can
+ * never be committed outside the room (AT-4).
  */
 
 import {

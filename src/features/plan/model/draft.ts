@@ -99,17 +99,28 @@ export function draftReducer(state: DraftState, action: DraftAction): DraftState
       const items = state.byRoom[action.roomId]
       if (items === undefined) return state
 
-      let found = false
-      const updated = items.map((item) => {
-        if (item.id !== action.id) return item
-        found = true
-        return { ...item, ...clampPlacementToRoom(item, action.placement, action.room) }
-      })
-      if (!found) return state
+      const item = items.find((candidate) => candidate.id === action.id)
+      if (item === undefined) return state
+
+      // Clamping keeps drags inside the walls. A rotation whose turned footprint
+      // cannot fit does not have a valid placement, so refuse it instead of
+      // storing it outside the room (US-10 AT-4).
+      const placement = clampPlacementToRoom(item, action.placement, action.room)
+      if (!isInsideRoom(item, placement, action.room)) {
+        return {
+          ...state,
+          error: { roomId: action.roomId, message: DOES_NOT_FIT_MESSAGE },
+        }
+      }
 
       return {
         ...state,
-        byRoom: { ...state.byRoom, [action.roomId]: updated },
+        byRoom: {
+          ...state.byRoom,
+          [action.roomId]: items.map((candidate) =>
+            candidate.id === action.id ? { ...candidate, ...placement } : candidate,
+          ),
+        },
         error: withoutError(state, action.roomId),
       }
     }

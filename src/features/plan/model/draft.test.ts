@@ -30,6 +30,15 @@ const lamp: PlacedItemSource = {
 
 const table: PlacedItemSource = { ...sofa, id: 14, name: 'Table', depthCm: 100 }
 
+/** Fits upright (250 × 90), but not turned in a 200 cm deep room (90 × 250). */
+const longSofa: PlacedItemSource = {
+  ...sofa,
+  id: 16,
+  name: 'Long sofa',
+  widthCm: 250,
+  depthCm: 90,
+}
+
 const wardrobe: PlacedItemSource = {
   ...sofa,
   id: 15,
@@ -254,6 +263,21 @@ describe('draftReducer', () => {
     })
 
     expect(next.byRoom[1]?.[0]).toMatchObject({ xCm: 50, yCm: 175, rotationDeg: 0 })
+  })
+
+  it('refuses an update whose footprint still does not fit after clamping', () => {
+    const filled = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', longSofa))
+
+    const next = draftReducer(filled, {
+      type: 'update-placement',
+      roomId: 1,
+      room,
+      id: 'sofa-1',
+      placement: { xCm: 150, yCm: 100, rotationDeg: 90 },
+    })
+
+    expect(next.byRoom[1]?.[0]).toBe(filled.byRoom[1]?.[0])
+    expect(next.error).toEqual({ roomId: 1, message: DOES_NOT_FIT_MESSAGE })
   })
 
   it('ignores an update for an item that is not in the room', () => {
