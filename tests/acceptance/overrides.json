@@ -274,5 +274,9 @@
     "status": "covered-by",
     "by": "US-03",
     "note": "the component tests are US-03/AT-1 and AT-4 (*.dom.test.tsx)"
+  },
+  "US-05/AT-5": {
+    "status": "manual",
+    "note": "the cascade is done by PostgreSQL foreign keys; no database in the test run. Checked by hand (delete a room with saved layouts, then the layout and layout_item rows are gone); the migrations are guarded by src/features/rooms/server/cascade.test.ts"
   }
 }

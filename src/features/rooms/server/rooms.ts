@@ -43,3 +43,12 @@ export async function roomExists(id: number): Promise<boolean> {
 export function createRoom(input: CreateRoomInput): Promise<Room> {
   return getDb().room.create({ data: input, select: ROOM_SELECT })
 }
+
+/**
+ * US-05: deletes the room. Its saved layouts and their items go with it (ON DELETE CASCADE
+ * on layout.room_id and layout_item.layout_id). False if the room does not exist.
+ */
+export async function deleteRoom(id: number): Promise<boolean> {
+  const { count } = await getDb().room.deleteMany({ where: { id } })
+  return count > 0
+}

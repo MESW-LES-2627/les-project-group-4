@@ -234,6 +234,26 @@ describe('draftReducer', () => {
     expect(dismissed.byRoom).toBe(failed.byRoom)
   })
 
+  it('forgets a deleted room: its draft and its error go, other rooms stay (US-05)', () => {
+    const withRooms = draftReducer(
+      draftReducer(EMPTY_DRAFT_STATE, { type: 'replace', roomId: 1, items: [placedSofa] }),
+      { type: 'replace', roomId: 2, items: [placedSofa] },
+    )
+    const failed = draftReducer(withRooms, add(1, 'wardrobe-1', wardrobe, smallRoom))
+
+    const next = draftReducer(failed, { type: 'forget', roomId: 1 })
+
+    expect(next.byRoom).not.toHaveProperty('1')
+    expect(next.byRoom[2]).toEqual([placedSofa])
+    expect(next.error).toBeNull()
+  })
+
+  it('keeps another room\'s error, and the same state when there is nothing to forget', () => {
+    const failed = draftReducer(EMPTY_DRAFT_STATE, add(2, 'wardrobe-1', wardrobe, smallRoom))
+
+    expect(draftReducer(failed, { type: 'forget', roomId: 1 })).toBe(failed)
+  })
+
   it('never mutates the state it is given', () => {
     const first = draftReducer(EMPTY_DRAFT_STATE, add(1, 'sofa-1', sofa))
     const firstItems = first.byRoom[1]

@@ -15,6 +15,11 @@ export function createRoom(room: CreateRoomRequest): Promise<ApiResult<Room>> {
   })
 }
 
+/** US-05: deletes a room and its saved layouts. The server answers 204 with no body, so the data is null. */
+export function deleteRoom(roomId: number): Promise<ApiResult<null>> {
+  return request<null>(`/api/rooms/${roomId}`, { method: 'DELETE' })
+}
+
 /** US-13: saves the current layout under a room. Resolves with the saved layout, or an error (409 for a duplicate name). */
 export function saveLayout(
   roomId: number,

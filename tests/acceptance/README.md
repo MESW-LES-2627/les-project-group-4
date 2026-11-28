@@ -24,7 +24,7 @@ npm test -- --project components    # only the component tests (jsdom)
 npm test -- --project unit          # only the unit tests
 ```
 
-The `acceptance` project contains every story that has started: US-01, US-03,
+The `acceptance` project contains every story that has started: US-01, US-03, US-05,
 US-06/06a/06b, US-07, US-08, US-09/09a/09b, US-12, US-13/13a/13b,
 US-14/14a/14b, US-15, CH-01, CH-02, CH-03a and CH-03b. `--project acceptance`
 runs only those tests.
