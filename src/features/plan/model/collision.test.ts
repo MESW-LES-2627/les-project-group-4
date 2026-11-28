@@ -67,6 +67,13 @@ describe('findCollisions', () => {
     expect(findCollisions(items, room).colliding).toEqual(['c', 'a', 'b'])
   })
 
+  it('keeps the input order when the overlaps are found in another order', () => {
+    // c overlaps a and b, which are apart: the pairs found are a+c, then b+c.
+    const items = [box('a', 100, 100), box('b', 220, 100), box('c', 160, 100)]
+
+    expect(findCollisions(items, room).colliding).toEqual(['a', 'b', 'c'])
+  })
+
   it('reports two items placed exactly on top of each other', () => {
     expect(findCollisions([box('a', 300, 200), box('b', 300, 200)], room).colliding).toEqual([
       'a',

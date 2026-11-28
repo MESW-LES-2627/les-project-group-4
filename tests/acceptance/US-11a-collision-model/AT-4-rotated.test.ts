@@ -31,6 +31,17 @@ describe(
       expect(findCollisions([a, b], room).colliding).toEqual([])
     })
 
+    it('separates a straight and a rotated square only on the rotated one\'s axis, in both orders', () => {
+      // A straight 1 m square and a 1 m diamond: their bounding boxes overlap and
+      // neither x nor y separates them, only the diamond's own edge direction does.
+      const straight = square('straight', 100, 100)
+      const diamond = square('diamond', 200, 200, 45)
+
+      expect(overlaps(boundingBox(straight, straight), boundingBox(diamond, diamond))).toBe(true)
+      expect(findCollisions([straight, diamond], room).colliding).toEqual([])
+      expect(findCollisions([diamond, straight], room).colliding).toEqual([])
+    })
+
     it('detects the same diamonds once they are moved closer', () => {
       const a = square('a', 150, 150, 45)
       const b = square('b', 200, 200, 45)
